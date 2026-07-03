@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/ui";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import {
   BOOKING_STATUS_LABELS,
   PAYMENT_METHOD_LABELS,
@@ -52,6 +53,11 @@ export default async function ConfirmationPage({
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+      <Breadcrumbs items={[
+        { label: "Trang chủ", href: "/" },
+        { label: "Vé của tôi", href: "/bookings" },
+        { label: booking.code },
+      ]} />
       <div className="text-center">
         <span className="text-6xl">🎉</span>
         <h1 className="mt-4 text-3xl font-bold">Đặt vé thành công!</h1>

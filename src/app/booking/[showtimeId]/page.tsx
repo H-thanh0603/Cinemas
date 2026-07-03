@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { BookingFlow } from "@/components/booking/booking-flow";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { formatDateTime } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
@@ -72,7 +73,13 @@ export default async function BookingPage({
   ]);
 
   return (
-    <BookingFlow
+    <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
+      <Breadcrumbs items={[
+        { label: "Trang chủ", href: "/" },
+        { label: showtime.movie.title, href: `/movies/${showtime.movie.slug}` },
+        { label: "Đặt vé" },
+      ]} />
+      <BookingFlow
       showtime={{
         id: showtime.id,
         startsAt: showtime.startsAt.toISOString(),
@@ -120,5 +127,6 @@ export default async function BookingPage({
         category: c.category,
       }))}
     />
+    </div>
   );
 }
