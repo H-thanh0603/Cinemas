@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/ui";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import {
   AGE_RATING_LABELS,
   formatDate,
@@ -53,6 +54,14 @@ export default async function MovieDetailPage({
 
   return (
     <div>
+      {/* Breadcrumbs */}
+      <div className="mx-auto max-w-7xl px-4 pt-4 sm:px-6">
+        <Breadcrumbs items={[
+          { label: "Trang chủ", href: "/" },
+          { label: "Phim", href: "/movies" },
+          { label: movie.title },
+        ]} />
+      </div>
       {/* Backdrop hero */}
       <section className="relative overflow-hidden border-b border-border">
         <div className="absolute inset-0">

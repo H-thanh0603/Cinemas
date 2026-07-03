@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { ToastProvider } from "@/components/ui/toast";
+import { ScrollToTop } from "@/components/ui/scroll-to-top";
 
 const inter = Inter({
   subsets: ["latin", "vietnamese"],
@@ -28,6 +29,7 @@ export default function RootLayout({
     <html lang="vi" className={inter.variable}>
       <body className="min-h-screen flex flex-col">
         <ToastProvider>
+          <ScrollToTop />
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />

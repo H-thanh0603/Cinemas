@@ -54,6 +54,12 @@ export function Header() {
 
         <div className="flex items-center gap-3">
           <Link
+            href="/admin"
+            className="hidden rounded-lg border border-border px-3 py-2 text-sm font-medium text-muted transition-colors hover:bg-surface hover:text-foreground lg:block"
+          >
+            Quản trị
+          </Link>
+          <Link
             href="/movies?status=NOW_SHOWING"
             className="hidden rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover sm:block"
           >
@@ -93,6 +99,13 @@ export function Header() {
               {link.label}
             </Link>
           ))}
+          <Link
+            href="/admin"
+            onClick={() => setOpen(false)}
+            className="block rounded-lg px-4 py-3 text-sm font-medium text-muted hover:bg-surface-raised hover:text-foreground"
+          >
+            Quản trị
+          </Link>
           <Link
             href="/movies?status=NOW_SHOWING"
             onClick={() => setOpen(false)}
