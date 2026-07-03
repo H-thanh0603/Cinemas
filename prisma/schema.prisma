@@ -1,0 +1,230 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Users ────────────────────────────────────────────────────────────────
+
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  name      String
+  phone     String?
+  role      String    @default("CUSTOMER") // CUSTOMER | ADMIN
+  createdAt DateTime  @default(now())
+  bookings  Booking[]
+}
+
+// ─── Movies ───────────────────────────────────────────────────────────────
+
+model Genre {
+  id     String       @id @default(cuid())
+  name   String       @unique
+  slug   String       @unique
+  movies MovieGenre[]
+}
+
+model Movie {
+  id          String       @id @default(cuid())
+  slug        String       @unique
+  title       String
+  description String
+  posterUrl   String
+  backdropUrl String?
+  trailerUrl  String?
+  durationMin Int
+  ageRating   String // P | K | T13 | T16 | T18
+  director    String
+  cast        String // comma separated names
+  releaseDate DateTime
+  status      String       @default("COMING_SOON") // NOW_SHOWING | COMING_SOON | ARCHIVED
+  popularity  Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  genres      MovieGenre[]
+  showtimes   Showtime[]
+}
+
+model MovieGenre {
+  movieId String
+  genreId String
+  movie   Movie  @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  genre   Genre  @relation(fields: [genreId], references: [id], onDelete: Cascade)
+
+  @@id([movieId, genreId])
+}
+
+// ─── Cinemas / Rooms / Seats ──────────────────────────────────────────────
+
+model Cinema {
+  id           String     @id @default(cuid())
+  slug         String     @unique
+  name         String
+  address      String
+  city         String
+  phone        String
+  openingHours String     @default("8:00 - 23:00")
+  description  String?
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  rooms        Room[]
+  showtimes    Showtime[]
+}
+
+model Room {
+  id        String     @id @default(cuid())
+  name      String
+  cinemaId  String
+  rows      Int
+  cols      Int
+  isActive  Boolean    @default(true)
+  cinema    Cinema     @relation(fields: [cinemaId], references: [id], onDelete: Cascade)
+  seats     Seat[]
+  showtimes Showtime[]
+
+  @@unique([cinemaId, name])
+}
+
+model Seat {
+  id           String        @id @default(cuid())
+  roomId       String
+  row          String // "A", "B", ...
+  number       Int
+  type         String        @default("NORMAL") // NORMAL | VIP | COUPLE
+  isActive     Boolean       @default(true) // false = broken/unavailable seat
+  room         Room          @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  bookingSeats BookingSeat[]
+
+  @@unique([roomId, row, number])
+}
+
+// ─── Showtimes ────────────────────────────────────────────────────────────
+
+model Showtime {
+  id        String    @id @default(cuid())
+  movieId   String
+  cinemaId  String
+  roomId    String
+  startsAt  DateTime
+  endsAt    DateTime
+  basePrice Int // VND for a NORMAL seat
+  format    String    @default("2D") // 2D | 3D | IMAX
+  status    String    @default("SCHEDULED") // SCHEDULED | CANCELLED
+  createdAt DateTime  @default(now())
+  movie     Movie     @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  cinema    Cinema    @relation(fields: [cinemaId], references: [id], onDelete: Cascade)
+  room      Room      @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  bookings  Booking[]
+
+  @@index([movieId, startsAt])
+  @@index([roomId, startsAt])
+}
+
+// ─── Pricing / Products ───────────────────────────────────────────────────
+
+model TicketType {
+  id           String        @id @default(cuid())
+  code         String        @unique // ADULT | STUDENT | CHILD
+  name         String
+  description  String?
+  priceModifier Int // VND adjustment vs base price (can be negative)
+  isActive     Boolean       @default(true)
+  bookingSeats BookingSeat[]
+}
+
+model FoodCombo {
+  id            String         @id @default(cuid())
+  name          String
+  description   String
+  imageUrl      String?
+  price         Int
+  category      String         @default("COMBO") // COMBO | POPCORN | DRINK | SNACK
+  isActive      Boolean        @default(true)
+  bookingCombos BookingCombo[]
+}
+
+model Promotion {
+  id            String    @id @default(cuid())
+  code          String    @unique
+  description   String
+  discountType  String // PERCENT | FIXED
+  discountValue Int // percent (1-100) or VND amount
+  maxDiscount   Int? // cap for percent discounts (VND)
+  minOrderValue Int       @default(0)
+  usageLimit    Int?
+  usedCount     Int       @default(0)
+  startsAt      DateTime
+  expiresAt     DateTime
+  isActive      Boolean   @default(true)
+  bookings      Booking[]
+}
+
+// ─── Bookings ─────────────────────────────────────────────────────────────
+
+model Booking {
+  id             String         @id @default(cuid())
+  code           String         @unique // e.g. CS-XXXXXX
+  showtimeId     String
+  userId         String?
+  contactName    String
+  contactEmail   String
+  contactPhone   String
+  status         String         @default("PENDING") // PENDING | CONFIRMED | CANCELLED | EXPIRED
+  seatsTotal     Int
+  combosTotal    Int
+  discountTotal  Int            @default(0)
+  finalTotal     Int
+  promotionId    String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  showtime       Showtime       @relation(fields: [showtimeId], references: [id])
+  user           User?          @relation(fields: [userId], references: [id])
+  promotion      Promotion?     @relation(fields: [promotionId], references: [id])
+  seats          BookingSeat[]
+  combos         BookingCombo[]
+  payment        Payment?
+
+  @@index([showtimeId])
+  @@index([contactEmail])
+}
+
+model BookingSeat {
+  id           String     @id @default(cuid())
+  bookingId    String
+  seatId       String
+  ticketTypeId String
+  price        Int // final per-seat price at time of booking
+  booking      Booking    @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  seat         Seat       @relation(fields: [seatId], references: [id])
+  ticketType   TicketType @relation(fields: [ticketTypeId], references: [id])
+
+  @@unique([bookingId, seatId])
+}
+
+model BookingCombo {
+  id        String    @id @default(cuid())
+  bookingId String
+  comboId   String
+  quantity  Int
+  unitPrice Int
+  booking   Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  combo     FoodCombo @relation(fields: [comboId], references: [id])
+
+  @@unique([bookingId, comboId])
+}
+
+model Payment {
+  id        String   @id @default(cuid())
+  bookingId String   @unique
+  method    String // CREDIT_CARD | E_WALLET | BANK_TRANSFER | AT_COUNTER
+  status    String   @default("UNPAID") // UNPAID | PAID | FAILED | REFUNDED
+  amount    Int
+  paidAt    DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+}
