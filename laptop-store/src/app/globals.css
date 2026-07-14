@@ -1,0 +1,36 @@
+@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap");
+
+@theme {
+  --font-sans: "Outfit", system-ui, sans-serif;
+  --color-brand-50: #eef6ff;
+  --color-brand-100: #d9eaff;
+  --color-brand-200: #bcdbff;
+  --color-brand-300: #8ec5ff;
+  --color-brand-400: #59a5ff;
+  --color-brand-500: #3381ff;
+  --color-brand-600: #1a5ff5;
+  --color-brand-700: #134ae1;
+  --color-brand-800: #163db6;
+  --color-brand-900: #18378f;
+  --color-brand-950: #142257;
+  --color-surface-50: #f8fafc;
+  --color-surface-100: #f1f5f9;
+  --color-surface-200: #e2e8f0;
+  --color-surface-300: #cbd5e1;
+  --color-surface-400: #94a3b8;
+  --color-surface-500: #64748b;
+  --color-surface-600: #475569;
+  --color-surface-700: #334155;
+  --color-surface-800: #1e293b;
+  --color-surface-900: #0f172a;
+  --color-surface-950: #020617;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-sans);
+  background: var(--color-surface-950);
+  color: var(--color-surface-200);
+  min-height: 100vh;
+}
