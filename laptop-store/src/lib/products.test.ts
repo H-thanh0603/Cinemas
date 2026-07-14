@@ -33,7 +33,7 @@ const sample: Product[] = [
     name: "MacBook Air M3",
     brand: "apple",
     category: "ultralight",
-    price: 28_000_000,
+    price: 20_000_000,
     rating: 5,
     reviewCount: 20,
     stock: 3,

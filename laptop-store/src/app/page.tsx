@@ -1,8 +1,17 @@
+import { Hero } from "@/components/home/hero";
+import { BrandStrip } from "@/components/home/brand-strip";
+import { DealSection } from "@/components/home/deal-section";
+import { FeaturedGrid } from "@/components/home/featured-grid";
+import { BlogTeaser } from "@/components/home/blog-teaser";
+
 export default function HomePage() {
   return (
-    <main className="p-8">
-      <h1 className="text-3xl font-bold text-white">TechZone</h1>
-      <p className="mt-2 text-surface-400">Scaffold OK — port 3001</p>
-    </main>
+    <div className="mx-auto max-w-7xl space-y-16 px-4 py-8 lg:px-6">
+      <Hero />
+      <BrandStrip />
+      <DealSection />
+      <FeaturedGrid />
+      <BlogTeaser />
+    </div>
   );
 }
