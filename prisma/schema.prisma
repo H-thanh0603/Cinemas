@@ -3,20 +3,21 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 // ─── Users ────────────────────────────────────────────────────────────────
 
 model User {
-  id        String    @id @default(cuid())
-  email     String    @unique
-  name      String
-  phone     String?
-  role      String    @default("CUSTOMER") // CUSTOMER | ADMIN
-  createdAt DateTime  @default(now())
-  bookings  Booking[]
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String
+  phone        String?
+  passwordHash String?
+  role         String    @default("CUSTOMER") // CUSTOMER | ADMIN
+  createdAt    DateTime  @default(now())
+  bookings     Booking[]
 }
 
 // ─── Movies ───────────────────────────────────────────────────────────────
@@ -96,8 +97,9 @@ model Seat {
   number       Int
   type         String        @default("NORMAL") // NORMAL | VIP | COUPLE
   isActive     Boolean       @default(true) // false = broken/unavailable seat
-  room         Room          @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  room         Room              @relation(fields: [roomId], references: [id], onDelete: Cascade)
   bookingSeats BookingSeat[]
+  seatLocks    ShowtimeSeatLock[]
 
   @@unique([roomId, row, number])
 }
@@ -119,6 +121,7 @@ model Showtime {
   cinema    Cinema    @relation(fields: [cinemaId], references: [id], onDelete: Cascade)
   room      Room      @relation(fields: [roomId], references: [id], onDelete: Cascade)
   bookings  Booking[]
+  seatLocks ShowtimeSeatLock[]
 
   @@index([movieId, startsAt])
   @@index([roomId, startsAt])
@@ -127,13 +130,13 @@ model Showtime {
 // ─── Pricing / Products ───────────────────────────────────────────────────
 
 model TicketType {
-  id           String        @id @default(cuid())
-  code         String        @unique // ADULT | STUDENT | CHILD
-  name         String
-  description  String?
+  id            String        @id @default(cuid())
+  code          String        @unique // ADULT | STUDENT | CHILD
+  name          String
+  description   String?
   priceModifier Int // VND adjustment vs base price (can be negative)
-  isActive     Boolean       @default(true)
-  bookingSeats BookingSeat[]
+  isActive      Boolean       @default(true)
+  bookingSeats  BookingSeat[]
 }
 
 model FoodCombo {
@@ -179,6 +182,8 @@ model Booking {
   discountTotal  Int            @default(0)
   finalTotal     Int
   promotionId    String?
+  expiresAt      DateTime? // seat hold deadline for PENDING bookings
+  emailSentAt    DateTime?
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
   showtime       Showtime       @relation(fields: [showtimeId], references: [id])
@@ -187,9 +192,26 @@ model Booking {
   seats          BookingSeat[]
   combos         BookingCombo[]
   payment        Payment?
+  seatLocks      ShowtimeSeatLock[]
 
   @@index([showtimeId])
   @@index([contactEmail])
+  @@index([status, expiresAt])
+}
+
+/// Hard lock: one seat can only belong to one active booking per showtime.
+/// Rows deleted when booking expires/cancels; kept when CONFIRMED (sold).
+model ShowtimeSeatLock {
+  showtimeId String
+  seatId     String
+  bookingId  String
+  createdAt  DateTime @default(now())
+  showtime   Showtime @relation(fields: [showtimeId], references: [id], onDelete: Cascade)
+  seat       Seat     @relation(fields: [seatId], references: [id], onDelete: Cascade)
+  booking    Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@id([showtimeId, seatId])
+  @@index([bookingId])
 }
 
 model BookingSeat {
@@ -203,6 +225,7 @@ model BookingSeat {
   ticketType   TicketType @relation(fields: [ticketTypeId], references: [id])
 
   @@unique([bookingId, seatId])
+  @@index([seatId])
 }
 
 model BookingCombo {
@@ -218,13 +241,14 @@ model BookingCombo {
 }
 
 model Payment {
-  id        String   @id @default(cuid())
-  bookingId String   @unique
-  method    String // CREDIT_CARD | E_WALLET | BANK_TRANSFER | AT_COUNTER
-  status    String   @default("UNPAID") // UNPAID | PAID | FAILED | REFUNDED
-  amount    Int
-  paidAt    DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  id          String    @id @default(cuid())
+  bookingId   String    @unique
+  method      String // CREDIT_CARD | E_WALLET | BANK_TRANSFER | AT_COUNTER
+  status      String    @default("UNPAID") // UNPAID | PAID | FAILED | REFUNDED
+  amount      Int
+  paidAt      DateTime?
+  sandboxTxnId String? // demo gateway transaction id
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  booking     Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
 }

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { formatVnd, formatDateTime, MOVIE_STATUS_LABELS } from "@/lib/constants";
 import { AnimatedStats } from "./animated-stats";
+import { RevenueChart } from "@/components/admin/revenue-chart";
 
 export const dynamic = "force-dynamic";
 
@@ -92,7 +93,6 @@ async function getStats() {
 
 export default async function AdminOverviewPage() {
   const stats = await getStats();
-  const maxRevenue = Math.max(...stats.last7DaysRevenue.map((d) => d.amount), 1);
 
   const statCards = [
     { key: "movieCount", subKey: "nowShowingCount", label: "Phim", subLabel: "đang chiếu", icon: "🎬", href: "/admin/movies", color: "from-red-500/20 to-red-500/5", iconBg: "bg-red-500/20" },
@@ -161,29 +161,18 @@ export default async function AdminOverviewPage() {
           </div>
         </div>
 
-        {/* Revenue chart */}
+        {/* Revenue chart (Chart.js) */}
         <div className="rounded-2xl border border-border bg-surface-raised p-6 lg:col-span-2">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="font-bold">Doanh thu 7 ngày qua</h2>
-            <span className="text-xs text-muted">Theo ngày thanh toán</span>
+            <span className="text-xs text-muted">Chart.js · theo ngày thanh toán</span>
           </div>
-          <div className="flex h-40 items-end justify-between gap-2 sm:gap-4">
-            {stats.last7DaysRevenue.map((d, i) => (
-              <div key={i} className="flex flex-1 flex-col items-center gap-2">
-                <div className="relative flex w-full flex-1 items-end">
-                  <div
-                    className="group relative w-full rounded-t-lg bg-gradient-to-t from-primary/60 to-primary transition-all duration-500 hover:from-primary hover:to-primary-hover"
-                    style={{ height: `${(d.amount / maxRevenue) * 100}%`, minHeight: d.amount > 0 ? "8px" : "2px" }}
-                  >
-                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-background px-2 py-1 text-[10px] font-semibold text-foreground opacity-0 transition-opacity group-hover:opacity-100">
-                      {formatVnd(d.amount)}
-                    </div>
-                  </div>
-                </div>
-                <span className="text-[10px] text-muted">{d.label}</span>
-              </div>
-            ))}
-          </div>
+          <RevenueChart
+            data={stats.last7DaysRevenue.map((d) => ({
+              label: d.label,
+              amount: d.amount,
+            }))}
+          />
         </div>
       </div>
 

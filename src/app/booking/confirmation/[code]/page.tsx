@@ -8,10 +8,14 @@ import {
   BOOKING_STATUS_LABELS,
   PAYMENT_METHOD_LABELS,
   PAYMENT_STATUS_LABELS,
+  SEAT_HOLD_MINUTES,
   SEAT_TYPE_LABELS,
   formatDateTime,
   formatVnd,
 } from "@/lib/constants";
+import { QrTicket } from "@/components/booking/qr-ticket";
+import { HoldCountdown } from "@/components/booking/hold-countdown";
+import { expirePendingBookings } from "@/lib/booking-expire";
 
 export const dynamic = "force-dynamic";
 
@@ -35,6 +39,7 @@ export default async function ConfirmationPage({
   params: Promise<{ code: string }>;
 }) {
   const { code } = await params;
+  await expirePendingBookings();
 
   const booking = await prisma.booking.findUnique({
     where: { code },
@@ -59,11 +64,45 @@ export default async function ConfirmationPage({
         { label: booking.code },
       ]} />
       <div className="text-center">
-        <span className="text-6xl">🎉</span>
-        <h1 className="mt-4 text-3xl font-bold">Đặt vé thành công!</h1>
+        <span className="text-6xl">
+          {booking.status === "PENDING" ? "⏳" : "🎉"}
+        </span>
+        <h1 className="mt-4 text-3xl font-bold">
+          {booking.status === "PENDING"
+            ? "Đang giữ ghế — chờ thanh toán"
+            : booking.status === "EXPIRED"
+              ? "Vé đã hết hạn giữ chỗ"
+              : "Đặt vé thành công!"}
+        </h1>
         <p className="mt-2 text-sm text-muted">
-          Vé điện tử đã được gửi tới <b>{booking.contactEmail}</b>
+          {booking.status === "CONFIRMED" ? (
+            <>
+              Vé điện tử đã được gửi tới <b>{booking.contactEmail}</b>
+              {booking.emailSentAt ? " (email đã gửi)" : " (nếu cấu hình Resend)"}
+            </>
+          ) : booking.status === "PENDING" && booking.expiresAt ? (
+            <>
+              Giữ ghế tối đa {SEAT_HOLD_MINUTES} phút · hết hạn{" "}
+              <b>{formatDateTime(booking.expiresAt)}</b>
+            </>
+          ) : (
+            <>Mã đặt vé: <b>{booking.code}</b></>
+          )}
         </p>
+        {booking.status === "PENDING" && booking.expiresAt && (
+          <div className="mx-auto mt-5 max-w-md">
+            <HoldCountdown expiresAt={booking.expiresAt} />
+            {booking.payment?.method !== "AT_COUNTER" &&
+              booking.payment?.status === "UNPAID" && (
+                <Link
+                  href={`/booking/pay/${booking.code}`}
+                  className="mt-3 inline-flex w-full items-center justify-center rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white"
+                >
+                  Tiếp tục thanh toán sandbox →
+                </Link>
+              )}
+          </div>
+        )}
       </div>
 
       <div className="mt-8 overflow-hidden rounded-3xl border border-border bg-surface">
@@ -138,31 +177,7 @@ export default async function ConfirmationPage({
             </div>
           </div>
 
-          {/* QR placeholder */}
-          <div className="flex flex-col items-center justify-center">
-            <div className="flex h-32 w-32 items-center justify-center rounded-xl border-2 border-border bg-white p-2">
-              <svg viewBox="0 0 100 100" className="h-full w-full" aria-label="QR code">
-                <rect width="100" height="100" fill="white" />
-                {[
-                  [0, 0], [20, 0], [40, 0], [70, 0], [90, 0],
-                  [0, 10], [30, 10], [60, 10], [90, 10],
-                  [10, 20], [40, 20], [50, 20], [80, 20],
-                  [0, 30], [20, 30], [60, 30], [90, 30],
-                  [10, 40], [30, 40], [50, 40], [70, 40],
-                  [0, 50], [40, 50], [80, 50],
-                  [20, 60], [50, 60], [90, 60],
-                  [0, 70], [30, 70], [60, 70], [70, 70],
-                  [10, 80], [40, 80], [80, 80],
-                  [0, 90], [20, 90], [50, 90], [90, 90],
-                ].map(([x, y], i) => (
-                  <rect key={i} x={x} y={y} width="10" height="10" fill="#0a0a0f" />
-                ))}
-              </svg>
-            </div>
-            <p className="mt-2 text-center text-[11px] text-muted">
-              Quét mã tại quầy soát vé
-            </p>
-          </div>
+          <QrTicket code={booking.code} />
         </div>
 
         {/* Price detail */}

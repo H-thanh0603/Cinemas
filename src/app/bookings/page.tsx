@@ -10,6 +10,8 @@ import {
   formatVnd,
 } from "@/lib/constants";
 import { LookupForm } from "./lookup-form";
+import { auth } from "@/auth";
+import { expirePendingBookings } from "@/lib/booking-expire";
 
 export const metadata: Metadata = {
   title: "Vé của tôi",
@@ -109,8 +111,36 @@ export default async function BookingsPage({
 }: {
   searchParams: Promise<{ email?: string }>;
 }) {
-  const { email } = await searchParams;
-  const bookings = email ? await findBookings(email.trim()) : null;
+  await expirePendingBookings();
+  const session = await auth();
+  const { email: emailParam } = await searchParams;
+  const email =
+    emailParam?.trim() ||
+    session?.user?.email?.trim() ||
+    undefined;
+
+  let bookings = email ? await findBookings(email) : null;
+
+  // Also include bookings linked to the logged-in user id
+  if (session?.user?.id) {
+    const byUser = await prisma.booking.findMany({
+      where: { userId: session.user.id },
+      orderBy: { createdAt: "desc" },
+      include: {
+        showtime: { include: { movie: true, cinema: true, room: true } },
+        seats: { include: { seat: true } },
+        payment: true,
+      },
+    });
+    if (!bookings) {
+      bookings = byUser;
+    } else {
+      const seen = new Set(bookings.map((b) => b.id));
+      for (const b of byUser) {
+        if (!seen.has(b.id)) bookings.push(b);
+      }
+    }
+  }
 
   const now = new Date();
   const upcoming =
@@ -135,7 +165,9 @@ export default async function BookingsPage({
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
       <h1 className="text-3xl font-bold tracking-tight">Vé của tôi</h1>
       <p className="mt-1 text-sm text-muted">
-        Nhập email đã dùng khi đặt vé để tra cứu lịch sử đặt vé
+        {session?.user
+          ? `Xin chào ${session.user.name || session.user.email} — lịch sử đặt vé của bạn`
+          : "Nhập email đã dùng khi đặt vé, hoặc đăng nhập để xem lịch sử"}
       </p>
 
       <div className="mt-6">

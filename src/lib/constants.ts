@@ -12,12 +12,15 @@ export const SEAT_TYPE_LABELS: Record<string, string> = {
 
 export const MAX_SEATS_PER_BOOKING = 8;
 
+/** Seat hold duration for PENDING bookings (minutes). */
+export const SEAT_HOLD_MINUTES = 8;
+
 export const AGE_RATING_LABELS: Record<string, string> = {
-  P: "P — Mọi lứa tuổi",
-  K: "K — Dưới 13 tuổi cần người lớn",
-  T13: "T13 — Từ 13 tuổi",
-  T16: "T16 — Từ 16 tuổi",
-  T18: "T18 — Từ 18 tuổi",
+  P: "P - Mọi lứa tuổi",
+  K: "K - Dưới 13 tuổi cần người lớn",
+  T13: "T13 - Từ 13 tuổi",
+  T16: "T16 - Từ 16 tuổi",
+  T18: "T18 - Từ 18 tuổi",
 };
 
 export const MOVIE_STATUS_LABELS: Record<string, string> = {

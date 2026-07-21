@@ -511,7 +511,7 @@ export default function LandingPage() {
                   </svg>
                 ))}
               </div>
-              <p className="mt-4 text-sm leading-relaxed text-muted">"{t.content}"</p>
+              <p className="mt-4 text-sm leading-relaxed text-muted">&ldquo;{t.content}&rdquo;</p>
               <div className="mt-6 flex items-center gap-3">
                 <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/15 text-lg font-bold text-primary">
                   {t.avatar}

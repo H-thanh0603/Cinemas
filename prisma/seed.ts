@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
@@ -37,12 +38,15 @@ async function main() {
 
   // ── Users ────────────────────────────────────────────────────────────
   console.log("👤 Seeding users...");
+  const adminHash = await bcrypt.hash("admin123", 10);
+  const customerHash = await bcrypt.hash("khach123", 10);
   const admin = await prisma.user.create({
     data: {
       email: "admin@cinestar.vn",
       name: "Quản trị viên",
       phone: "0900000001",
       role: "ADMIN",
+      passwordHash: adminHash,
     },
   });
   const customer = await prisma.user.create({
@@ -51,6 +55,7 @@ async function main() {
       name: "Nguyễn Văn Khách",
       phone: "0900000002",
       role: "CUSTOMER",
+      passwordHash: customerHash,
     },
   });
 
@@ -603,6 +608,7 @@ async function main() {
     const combosTotal = combo.price;
     const finalTotal = seatsTotal + combosTotal;
 
+    const status = bookingIdx % 7 === 0 ? "CANCELLED" : "CONFIRMED";
     const booking = await prisma.booking.create({
       data: {
         code: bookingCode(bookingIdx),
@@ -612,7 +618,7 @@ async function main() {
         contactEmail:
           bookingIdx % 3 === 0 ? customer.email : `khach${bookingIdx}@example.com`,
         contactPhone: `09${String(10000000 + bookingIdx * 37)}`,
-        status: bookingIdx % 7 === 0 ? "CANCELLED" : "CONFIRMED",
+        status,
         seatsTotal,
         combosTotal,
         finalTotal,
@@ -631,20 +637,31 @@ async function main() {
             method: ["CREDIT_CARD", "E_WALLET", "BANK_TRANSFER", "AT_COUNTER"][
               bookingIdx % 4
             ],
-            status: bookingIdx % 7 === 0 ? "REFUNDED" : "PAID",
+            status: status === "CANCELLED" ? "REFUNDED" : "PAID",
             amount: finalTotal,
             paidAt: new Date(),
+            sandboxTxnId: status === "CONFIRMED" ? `SBX-SEED-${bookingIdx}` : null,
           },
         },
       },
     });
+    // Active inventory lock (CONFIRMED only)
+    if (status === "CONFIRMED") {
+      await prisma.showtimeSeatLock.createMany({
+        data: chosen.map((s) => ({
+          showtimeId: st.id,
+          seatId: s.id,
+          bookingId: booking.id,
+        })),
+      });
+    }
     console.log(`  → booking ${booking.code} (${chosen.length} ghế)`);
     bookingIdx++;
   }
 
   console.log("✅ Seed hoàn tất!");
-  console.log(`   Admin: ${admin.email}`);
-  console.log(`   Khách: ${customer.email}`);
+  console.log(`   Customer: ${customer.email} / khach123`);
+  console.log(`   Admin:    ${admin.email} / admin123  → /admin/login`);
 }
 
 main()

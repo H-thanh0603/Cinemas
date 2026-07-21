@@ -27,25 +27,25 @@ const paymentOptions = [
     value: "CREDIT_CARD",
     label: "Thẻ tín dụng / ghi nợ",
     icon: "💳",
-    note: "Visa, Mastercard, JCB (mô phỏng)",
+    note: "Sandbox: thẻ 4242… → OK · 4000…0002 → fail",
   },
   {
     value: "E_WALLET",
     label: "Ví điện tử",
     icon: "📱",
-    note: "Momo, ZaloPay, VNPay (mô phỏng)",
+    note: "Sandbox: QR giả + xác nhận đã thanh toán",
   },
   {
     value: "BANK_TRANSFER",
     label: "Chuyển khoản ngân hàng",
     icon: "🏦",
-    note: "Quét mã QR ngân hàng (mô phỏng)",
+    note: "Sandbox: STK demo + QR CK",
   },
   {
     value: "AT_COUNTER",
     label: "Thanh toán tại quầy",
     icon: "🎫",
-    note: "Giữ vé và thanh toán trước giờ chiếu 30 phút",
+    note: "Giữ ghế 8 phút · thanh toán tại rạp",
   },
 ];
 
@@ -219,9 +219,9 @@ export function CheckoutStep({
       </div>
 
       <p className="mt-4 rounded-lg border border-info/30 bg-info/5 px-4 py-3 text-xs text-info">
-        ℹ️ Đây là môi trường demo — thanh toán trực tuyến được mô phỏng và
-        không trừ tiền thật. Chọn &quot;Thanh toán tại quầy&quot; sẽ tạo vé ở
-        trạng thái chưa thanh toán.
+        ℹ️ Sau khi xác nhận, hệ thống <b>giữ ghế 8 phút</b>. Online → cổng
+        sandbox CineStar Pay (không trừ tiền thật). Tại quầy → giữ PENDING đến
+        khi hết giờ hoặc thanh toán tại rạp.
       </p>
     </div>
   );

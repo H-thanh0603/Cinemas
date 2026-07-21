@@ -1,0 +1,336 @@
+
+         /\      Grafana   /ΓÇ╛ΓÇ╛/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ΓÇ╛ΓÇ╛\ 
+  /          \   |   (  |  (ΓÇ╛)  |
+ / __________ \  |_|\_\  \_____/ 
+
+     execution: local
+        script: /scripts/test.js
+        output: -
+
+     scenarios: (100.00%) 1 scenario, 1000 max VUs, 1m5s max duration (incl. graceful stop):
+              * mixed: 1000 looping VUs for 35s (gracefulStop: 30s)
+
+
+running (0m00.7s), 1000/1000 VUs, 0 complete and 0 interrupted iterations
+mixed   [   2% ] 1000 VUs  00.7s/35s
+
+running (0m01.7s), 1000/1000 VUs, 2 complete and 0 interrupted iterations
+mixed   [   5% ] 1000 VUs  01.7s/35s
+
+running (0m02.7s), 1000/1000 VUs, 12 complete and 0 interrupted iterations
+mixed   [   8% ] 1000 VUs  02.7s/35s
+
+running (0m03.7s), 1000/1000 VUs, 24 complete and 0 interrupted iterations
+mixed   [  11% ] 1000 VUs  03.7s/35s
+
+running (0m04.7s), 1000/1000 VUs, 28 complete and 0 interrupted iterations
+mixed   [  13% ] 1000 VUs  04.7s/35s
+
+running (0m05.7s), 1000/1000 VUs, 51 complete and 0 interrupted iterations
+mixed   [  16% ] 1000 VUs  05.7s/35s
+
+running (0m06.7s), 1000/1000 VUs, 150 complete and 0 interrupted iterations
+mixed   [  19% ] 1000 VUs  06.7s/35s
+
+running (0m07.7s), 1000/1000 VUs, 246 complete and 0 interrupted iterations
+mixed   [  22% ] 1000 VUs  07.7s/35s
+
+running (0m08.7s), 1000/1000 VUs, 392 complete and 0 interrupted iterations
+mixed   [  25% ] 1000 VUs  08.7s/35s
+
+running (0m09.7s), 1000/1000 VUs, 516 complete and 0 interrupted iterations
+mixed   [  28% ] 1000 VUs  09.7s/35s
+
+running (0m10.7s), 1000/1000 VUs, 603 complete and 0 interrupted iterations
+mixed   [  31% ] 1000 VUs  10.7s/35s
+
+running (0m11.7s), 1000/1000 VUs, 726 complete and 0 interrupted iterations
+mixed   [  33% ] 1000 VUs  11.7s/35s
+
+running (0m12.7s), 1000/1000 VUs, 810 complete and 0 interrupted iterations
+mixed   [  36% ] 1000 VUs  12.7s/35s
+
+running (0m13.7s), 1000/1000 VUs, 828 complete and 0 interrupted iterations
+mixed   [  39% ] 1000 VUs  13.7s/35s
+
+running (0m14.7s), 1000/1000 VUs, 906 complete and 0 interrupted iterations
+mixed   [  42% ] 1000 VUs  14.7s/35s
+
+running (0m15.7s), 1000/1000 VUs, 1000 complete and 0 interrupted iterations
+mixed   [  45% ] 1000 VUs  15.7s/35s
+
+running (0m16.7s), 1000/1000 VUs, 1119 complete and 0 interrupted iterations
+mixed   [  48% ] 1000 VUs  16.7s/35s
+
+running (0m17.7s), 1000/1000 VUs, 1255 complete and 0 interrupted iterations
+mixed   [  51% ] 1000 VUs  17.7s/35s
+
+running (0m18.7s), 1000/1000 VUs, 1354 complete and 0 interrupted iterations
+mixed   [  53% ] 1000 VUs  18.7s/35s
+
+running (0m19.7s), 1000/1000 VUs, 1452 complete and 0 interrupted iterations
+mixed   [  56% ] 1000 VUs  19.7s/35s
+
+running (0m20.7s), 1000/1000 VUs, 1536 complete and 0 interrupted iterations
+mixed   [  59% ] 1000 VUs  20.7s/35s
+
+running (0m21.7s), 1000/1000 VUs, 1597 complete and 0 interrupted iterations
+mixed   [  62% ] 1000 VUs  21.7s/35s
+
+running (0m22.7s), 1000/1000 VUs, 1646 complete and 0 interrupted iterations
+mixed   [  65% ] 1000 VUs  22.7s/35s
+
+running (0m23.7s), 1000/1000 VUs, 1715 complete and 0 interrupted iterations
+mixed   [  68% ] 1000 VUs  23.7s/35s
+
+running (0m24.7s), 1000/1000 VUs, 1811 complete and 0 interrupted iterations
+mixed   [  71% ] 1000 VUs  24.7s/35s
+
+running (0m23.4s), 1000/1000 VUs, 1914 complete and 0 interrupted iterations
+mixed   [  73% ] 1000 VUs  25.7s/35s
+
+running (0m24.4s), 1000/1000 VUs, 2012 complete and 0 interrupted iterations
+mixed   [  76% ] 1000 VUs  26.7s/35s
+
+running (0m25.4s), 1000/1000 VUs, 2021 complete and 0 interrupted iterations
+mixed   [  79% ] 1000 VUs  27.7s/35s
+
+running (0m26.4s), 1000/1000 VUs, 2021 complete and 0 interrupted iterations
+mixed   [  82% ] 1000 VUs  28.7s/35s
+
+running (0m27.4s), 1000/1000 VUs, 2082 complete and 0 interrupted iterations
+mixed   [  85% ] 1000 VUs  29.7s/35s
+time="2026-07-21T12:58:50Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial: i/o timeout"
+time="2026-07-21T12:58:50Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": request timeout"
+time="2026-07-21T12:58:50Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial: i/o timeout"
+time="2026-07-21T12:58:50Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/api/showtimes/cmrun93yf00l6num84u4gntlj/seats\": request timeout"
+time="2026-07-21T12:58:50Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies/giai-dieu-cuoi-cung\": request timeout"
+time="2026-07-21T12:58:50Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": request timeout"
+time="2026-07-21T12:58:50Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial: i/o timeout"
+time="2026-07-21T12:58:50Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies/giai-dieu-cuoi-cung\": dial: i/o timeout"
+time="2026-07-21T12:58:50Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial: i/o timeout"
+time="2026-07-21T12:58:50Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": request timeout"
+
+running (0m28.4s), 1000/1000 VUs, 2216 complete and 0 interrupted iterations
+mixed   [  88% ] 1000 VUs  30.7s/35s
+time="2026-07-21T12:58:51Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies/giai-dieu-cuoi-cung\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:51Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:51Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:51Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/api/showtimes/cmrun93yf00l6num84u4gntlj/seats\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:51Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:51Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies/giai-dieu-cuoi-cung\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:51Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:51Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/api/showtimes/cmrun93yf00l6num84u4gntlj/seats\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:51Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:51Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/api/showtimes/cmrun93yf00l6num84u4gntlj/seats\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:51Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies/giai-dieu-cuoi-cung\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:51Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:52Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies/giai-dieu-cuoi-cung\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:52Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies/giai-dieu-cuoi-cung\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:52Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:52Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:52Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:52Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies/giai-dieu-cuoi-cung\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:52Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies/giai-dieu-cuoi-cung\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:52Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:52Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:52Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies/giai-dieu-cuoi-cung\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:52Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies/giai-dieu-cuoi-cung\": dial tcp 192.168.65.254:3000: connect: connection refused"
+
+running (0m29.4s), 1000/1000 VUs, 2346 complete and 0 interrupted iterations
+mixed   [  91% ] 1000 VUs  31.7s/35s
+time="2026-07-21T12:58:52Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/api/showtimes/cmrun93yf00l6num84u4gntlj/seats\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:52Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:52Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:52Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/api/showtimes/cmrun93yf00l6num84u4gntlj/seats\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:52Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/api/showtimes/cmrun93yf00l6num84u4gntlj/seats\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:52Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/api/showtimes/cmrun93yf00l6num84u4gntlj/seats\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:52Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:52Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/api/showtimes/cmrun93yf00l6num84u4gntlj/seats\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:52Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies/giai-dieu-cuoi-cung\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:52Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:52Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:52Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:52Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies/giai-dieu-cuoi-cung\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:52Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:52Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:53Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:53Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:53Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:53Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:53Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:53Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies/giai-dieu-cuoi-cung\": dial tcp 192.168.65.254:3000: connect: connection refused"
+
+running (0m30.4s), 1000/1000 VUs, 2436 complete and 0 interrupted iterations
+mixed   [  93% ] 1000 VUs  32.7s/35s
+time="2026-07-21T12:58:53Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies/giai-dieu-cuoi-cung\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:53Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies/giai-dieu-cuoi-cung\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:53Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:53Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:53Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:53Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:53Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:53Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:53Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:53Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies/giai-dieu-cuoi-cung\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:53Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/api/showtimes/cmrun93yf00l6num84u4gntlj/seats\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:53Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/api/showtimes/cmrun93yf00l6num84u4gntlj/seats\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:53Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/api/showtimes/cmrun93yf00l6num84u4gntlj/seats\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:53Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies/giai-dieu-cuoi-cung\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:53Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies/giai-dieu-cuoi-cung\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:54Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/api/showtimes/cmrun93yf00l6num84u4gntlj/seats\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:54Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies/giai-dieu-cuoi-cung\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:54Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:54Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/api/showtimes/cmrun93yf00l6num84u4gntlj/seats\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:54Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+
+running (0m31.4s), 1000/1000 VUs, 2530 complete and 0 interrupted iterations
+mixed   [  96% ] 1000 VUs  33.7s/35s
+time="2026-07-21T12:58:54Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/api/showtimes/cmrun93yf00l6num84u4gntlj/seats\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:54Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:54Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/api/showtimes/cmrun93yf00l6num84u4gntlj/seats\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:54Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:54Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:54Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies/giai-dieu-cuoi-cung\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:54Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:54Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:54Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/api/showtimes/cmrun93yf00l6num84u4gntlj/seats\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:54Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/api/showtimes/cmrun93yf00l6num84u4gntlj/seats\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:54Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:54Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:54Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies/giai-dieu-cuoi-cung\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:54Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/api/showtimes/cmrun93yf00l6num84u4gntlj/seats\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:54Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:54Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:54Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:55Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/api/showtimes/cmrun93yf00l6num84u4gntlj/seats\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:55Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:55Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:55Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:55Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies/giai-dieu-cuoi-cung\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:55Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies/giai-dieu-cuoi-cung\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:55Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies/giai-dieu-cuoi-cung\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:55Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+
+running (0m32.4s), 1000/1000 VUs, 2612 complete and 0 interrupted iterations
+mixed   [  99% ] 1000 VUs  34.7s/35s
+time="2026-07-21T12:58:55Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:55Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/api/showtimes/cmrun93yf00l6num84u4gntlj/seats\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:55Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:58:55Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+
+running (0m33.4s), 0943/1000 VUs, 2695 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+
+running (0m34.4s), 0808/1000 VUs, 2830 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+
+running (0m35.4s), 0702/1000 VUs, 2936 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+
+running (0m36.4s), 0612/1000 VUs, 3026 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+
+running (0m37.4s), 0497/1000 VUs, 3141 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+
+running (0m38.4s), 0287/1000 VUs, 3351 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+
+running (0m39.4s), 0113/1000 VUs, 3525 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+
+running (0m40.4s), 0011/1000 VUs, 3627 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+
+running (0m41.4s), 0009/1000 VUs, 3629 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+
+running (0m42.4s), 0009/1000 VUs, 3629 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+
+running (0m43.4s), 0009/1000 VUs, 3629 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+
+running (0m44.4s), 0009/1000 VUs, 3629 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+
+running (0m45.4s), 0009/1000 VUs, 3629 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+
+running (0m46.4s), 0009/1000 VUs, 3629 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+
+running (0m47.4s), 0009/1000 VUs, 3629 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+
+running (0m48.4s), 0009/1000 VUs, 3629 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+
+running (0m49.4s), 0009/1000 VUs, 3629 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+
+running (0m50.4s), 0009/1000 VUs, 3629 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+
+running (0m51.4s), 0009/1000 VUs, 3629 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+
+running (0m52.4s), 0009/1000 VUs, 3629 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+time="2026-07-21T12:59:14Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": request timeout"
+
+running (0m51.8s), 0009/1000 VUs, 3629 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+
+running (0m52.7s), 0008/1000 VUs, 3630 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+
+running (0m53.7s), 0008/1000 VUs, 3630 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+
+running (0m54.8s), 0008/1000 VUs, 3630 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+
+running (0m55.7s), 0008/1000 VUs, 3630 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+
+running (0m56.7s), 0008/1000 VUs, 3630 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+time="2026-07-21T12:59:20Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/api/showtimes/cmrun93yf00l6num84u4gntlj/seats\": request timeout"
+time="2026-07-21T12:59:20Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/api/showtimes/cmrun93yf00l6num84u4gntlj/seats\": request timeout"
+time="2026-07-21T12:59:20Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": request timeout"
+time="2026-07-21T12:59:20Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": request timeout"
+
+running (0m57.8s), 0008/1000 VUs, 3630 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+time="2026-07-21T12:59:20Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/api/showtimes/cmrun93yf00l6num84u4gntlj/seats\": request timeout"
+time="2026-07-21T12:59:21Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies/giai-dieu-cuoi-cung\": request timeout"
+
+running (0m58.8s), 0003/1000 VUs, 3635 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+time="2026-07-21T12:59:21Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": request timeout"
+
+running (0m59.8s), 0001/1000 VUs, 3637 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+time="2026-07-21T12:59:23Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies/giai-dieu-cuoi-cung\": request timeout"
+
+running (1m00.7s), 0001/1000 VUs, 3637 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 1000 VUs  35s
+time="2026-07-21T12:59:23Z" level=error msg="failed to handle the end-of-test summary" error="Could not save some summary information:\n\t- could not open 'scripts/k6/results-last.json': open scripts/k6/results-last.json: no such file or directory"
+
+========== LOAD TEST SUMMARY ==========
+VUs=1000  duration=35s  book_ratio=0.05
+http_reqs=3639  rate=59.6/s
+http_req_failed=3.08%
+http_req_duration p50=n/a  p95=15652ms  p99=n/a  avg=9482ms
+page_duration p95=15652ms  avg=9484ms
+book_duration p95=n/a  avg=n/a
+book_ok=0  book_fail=0
+=======================================
+
+running (1m01.0s), 0000/1000 VUs, 3637 complete and 1 interrupted iterations
+mixed Γ£ô [ 100% ] 1000 VUs  35s
+time="2026-07-21T12:59:24Z" level=error msg="thresholds on metrics 'http_req_duration' have been crossed"

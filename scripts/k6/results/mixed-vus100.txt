@@ -1,0 +1,136 @@
+
+         /\      Grafana   /ΓÇ╛ΓÇ╛/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ΓÇ╛ΓÇ╛\ 
+  /          \   |   (  |  (ΓÇ╛)  |
+ / __________ \  |_|\_\  \_____/ 
+
+     execution: local
+        script: /scripts/test.js
+        output: -
+
+     scenarios: (100.00%) 1 scenario, 100 max VUs, 1m5s max duration (incl. graceful stop):
+              * mixed: 100 looping VUs for 35s (gracefulStop: 30s)
+
+
+running (0m01.0s), 100/100 VUs, 3 complete and 0 interrupted iterations
+mixed   [   3% ] 100 VUs  01.0s/35s
+
+running (0m02.0s), 100/100 VUs, 121 complete and 0 interrupted iterations
+mixed   [   6% ] 100 VUs  02.0s/35s
+
+running (0m03.0s), 100/100 VUs, 218 complete and 0 interrupted iterations
+mixed   [   8% ] 100 VUs  03.0s/35s
+
+running (0m04.0s), 100/100 VUs, 320 complete and 0 interrupted iterations
+mixed   [  11% ] 100 VUs  04.0s/35s
+
+running (0m05.0s), 100/100 VUs, 449 complete and 0 interrupted iterations
+mixed   [  14% ] 100 VUs  05.0s/35s
+
+running (0m06.0s), 100/100 VUs, 545 complete and 0 interrupted iterations
+mixed   [  17% ] 100 VUs  06.0s/35s
+
+running (0m07.0s), 100/100 VUs, 657 complete and 0 interrupted iterations
+mixed   [  20% ] 100 VUs  07.0s/35s
+
+running (0m08.0s), 100/100 VUs, 755 complete and 0 interrupted iterations
+mixed   [  23% ] 100 VUs  08.0s/35s
+
+running (0m09.0s), 100/100 VUs, 845 complete and 0 interrupted iterations
+mixed   [  26% ] 100 VUs  09.0s/35s
+
+running (0m10.0s), 100/100 VUs, 955 complete and 0 interrupted iterations
+mixed   [  28% ] 100 VUs  10.0s/35s
+
+running (0m11.0s), 100/100 VUs, 1059 complete and 0 interrupted iterations
+mixed   [  31% ] 100 VUs  11.0s/35s
+
+running (0m12.0s), 100/100 VUs, 1136 complete and 0 interrupted iterations
+mixed   [  34% ] 100 VUs  12.0s/35s
+
+running (0m13.0s), 100/100 VUs, 1228 complete and 0 interrupted iterations
+mixed   [  37% ] 100 VUs  13.0s/35s
+
+running (0m14.0s), 100/100 VUs, 1355 complete and 0 interrupted iterations
+mixed   [  40% ] 100 VUs  14.0s/35s
+
+running (0m15.0s), 100/100 VUs, 1456 complete and 0 interrupted iterations
+mixed   [  43% ] 100 VUs  15.0s/35s
+
+running (0m16.0s), 100/100 VUs, 1598 complete and 0 interrupted iterations
+mixed   [  46% ] 100 VUs  16.0s/35s
+
+running (0m17.0s), 100/100 VUs, 1699 complete and 0 interrupted iterations
+mixed   [  48% ] 100 VUs  17.0s/35s
+
+running (0m18.0s), 100/100 VUs, 1812 complete and 0 interrupted iterations
+mixed   [  51% ] 100 VUs  18.0s/35s
+
+running (0m19.0s), 100/100 VUs, 1897 complete and 0 interrupted iterations
+mixed   [  54% ] 100 VUs  19.0s/35s
+
+running (0m20.0s), 100/100 VUs, 2029 complete and 0 interrupted iterations
+mixed   [  57% ] 100 VUs  20.0s/35s
+
+running (0m21.0s), 100/100 VUs, 2149 complete and 0 interrupted iterations
+mixed   [  60% ] 100 VUs  21.0s/35s
+
+running (0m22.0s), 100/100 VUs, 2261 complete and 0 interrupted iterations
+mixed   [  63% ] 100 VUs  22.0s/35s
+
+running (0m23.0s), 100/100 VUs, 2360 complete and 0 interrupted iterations
+mixed   [  66% ] 100 VUs  23.0s/35s
+
+running (0m24.0s), 100/100 VUs, 2456 complete and 0 interrupted iterations
+mixed   [  68% ] 100 VUs  24.0s/35s
+
+running (0m25.0s), 100/100 VUs, 2569 complete and 0 interrupted iterations
+mixed   [  71% ] 100 VUs  25.0s/35s
+
+running (0m26.0s), 100/100 VUs, 2656 complete and 0 interrupted iterations
+mixed   [  74% ] 100 VUs  26.0s/35s
+
+running (0m27.0s), 100/100 VUs, 2787 complete and 0 interrupted iterations
+mixed   [  77% ] 100 VUs  27.0s/35s
+
+running (0m28.0s), 100/100 VUs, 2910 complete and 0 interrupted iterations
+mixed   [  80% ] 100 VUs  28.0s/35s
+
+running (0m29.0s), 100/100 VUs, 3016 complete and 0 interrupted iterations
+mixed   [  83% ] 100 VUs  29.0s/35s
+
+running (0m30.0s), 100/100 VUs, 3128 complete and 0 interrupted iterations
+mixed   [  86% ] 100 VUs  30.0s/35s
+
+running (0m31.0s), 100/100 VUs, 3257 complete and 0 interrupted iterations
+mixed   [  88% ] 100 VUs  31.0s/35s
+
+running (0m32.0s), 100/100 VUs, 3345 complete and 0 interrupted iterations
+mixed   [  91% ] 100 VUs  32.0s/35s
+
+running (0m33.0s), 100/100 VUs, 3459 complete and 0 interrupted iterations
+mixed   [  94% ] 100 VUs  33.0s/35s
+
+running (0m34.0s), 100/100 VUs, 3577 complete and 0 interrupted iterations
+mixed   [  97% ] 100 VUs  34.0s/35s
+
+running (0m35.0s), 100/100 VUs, 3661 complete and 0 interrupted iterations
+mixed   [ 100% ] 100 VUs  35.0s/35s
+
+running (0m36.0s), 001/100 VUs, 3764 complete and 0 interrupted iterations
+mixed Γåô [ 100% ] 100 VUs  35s
+
+========== LOAD TEST SUMMARY ==========
+VUs=100  duration=35s  book_ratio=0.1
+http_reqs=3766  rate=104.6/s
+http_req_failed=9.80%
+http_req_duration p50=n/a  p95=1004ms  p99=n/a  avg=540ms
+page_duration p95=823ms  avg=490ms
+book_duration p95=1490ms  avg=952ms
+book_ok=40  book_fail=369
+=======================================
+
+running (0m36.0s), 000/100 VUs, 3765 complete and 0 interrupted iterations
+mixed Γ£ô [ 100% ] 100 VUs  35s
+time="2026-07-21T12:56:41Z" level=error msg="failed to handle the end-of-test summary" error="Could not save some summary information:\n\t- could not open 'scripts/k6/results-last.json': open scripts/k6/results-last.json: no such file or directory"

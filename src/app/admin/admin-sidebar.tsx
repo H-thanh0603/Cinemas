@@ -3,15 +3,27 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { signOut, useSession } from "next-auth/react";
 
 type NavItem = { href: string; label: string; icon: string };
 
 export function AdminSidebar({ navItems }: { navItems: NavItem[] }) {
   const pathname = usePathname();
+  const { data: session } = useSession();
   const [open, setOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const isActive = (href: string) =>
     href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);
+
+  async function handleLogout() {
+    setLoggingOut(true);
+    try {
+      await signOut({ callbackUrl: "/admin/login" });
+    } finally {
+      setLoggingOut(false);
+    }
+  }
 
   return (
     <>
@@ -41,10 +53,15 @@ export function AdminSidebar({ navItems }: { navItems: NavItem[] }) {
           <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-lg font-black text-white shadow-lg shadow-primary/20">
             C
           </span>
-          <span className="text-lg font-extrabold tracking-tight">
-            Cine<span className="text-primary">Star</span>
-          </span>
-          <span className="ml-auto rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+          <div className="min-w-0 flex-1">
+            <span className="text-lg font-extrabold tracking-tight">
+              Cine<span className="text-primary">Star</span>
+            </span>
+            <p className="truncate text-[10px] text-muted">
+              {session?.user?.email ?? "ADMIN"}
+            </p>
+          </div>
+          <span className="shrink-0 rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
             Admin
           </span>
         </div>
@@ -82,8 +99,8 @@ export function AdminSidebar({ navItems }: { navItems: NavItem[] }) {
           })}
         </nav>
 
-        {/* Bottom link */}
-        <div className="absolute bottom-0 left-0 right-0 border-t border-border p-3">
+        {/* Bottom links */}
+        <div className="absolute bottom-0 left-0 right-0 space-y-1 border-t border-border p-3">
           <Link
             href="/"
             className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted transition-colors hover:bg-surface hover:text-foreground"
@@ -91,6 +108,15 @@ export function AdminSidebar({ navItems }: { navItems: NavItem[] }) {
             <span className="text-base">🌐</span>
             Về trang web
           </Link>
+          <button
+            type="button"
+            onClick={handleLogout}
+            disabled={loggingOut}
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-muted transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
+          >
+            <span className="text-base">🚪</span>
+            {loggingOut ? "Đang thoát…" : "Đăng xuất"}
+          </button>
         </div>
       </aside>
 

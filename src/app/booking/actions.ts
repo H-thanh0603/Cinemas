@@ -2,7 +2,10 @@
 
 import { prisma } from "@/lib/prisma";
 import { generateBookingCode, seatBasePrice } from "@/lib/booking";
-import { MAX_SEATS_PER_BOOKING } from "@/lib/constants";
+import { expirePendingBookings } from "@/lib/booking-expire";
+import { sendBookingConfirmationEmail } from "@/lib/email";
+import { MAX_SEATS_PER_BOOKING, SEAT_HOLD_MINUTES } from "@/lib/constants";
+import { auth } from "@/auth";
 
 export type CreateBookingInput = {
   showtimeId: string;
@@ -80,10 +83,18 @@ function computeDiscount(
 
 export async function createBooking(
   input: CreateBookingInput
-): Promise<ActionResult<{ code: string }>> {
-  // ── Contact validation ────────────────────────────────────────────────
+): Promise<
+  ActionResult<{
+    code: string;
+    status: string;
+    expiresAt: string | null;
+    needsPayment: boolean;
+  }>
+> {
+  await expirePendingBookings();
+
   const name = input.contact.name?.trim();
-  const email = input.contact.email?.trim();
+  const email = input.contact.email?.trim().toLowerCase();
   const phone = input.contact.phone?.trim();
 
   if (!name || name.length < 2) {
@@ -93,13 +104,15 @@ export async function createBooking(
     return { ok: false, error: "Vui lòng nhập email hợp lệ" };
   }
   if (!phone || !PHONE_RE.test(phone)) {
-    return { ok: false, error: "Vui lòng nhập số điện thoại hợp lệ (bắt đầu bằng 0, 10-11 số)" };
+    return {
+      ok: false,
+      error: "Vui lòng nhập số điện thoại hợp lệ (bắt đầu bằng 0, 10-11 số)",
+    };
   }
   if (!PAYMENT_METHODS.includes(input.paymentMethod)) {
     return { ok: false, error: "Phương thức thanh toán không hợp lệ" };
   }
 
-  // ── Seat validation ──────────────────────────────────────────────────
   if (!input.seats || input.seats.length === 0) {
     return { ok: false, error: "Vui lòng chọn ít nhất 1 ghế" };
   }
@@ -114,9 +127,9 @@ export async function createBooking(
     return { ok: false, error: "Danh sách ghế bị trùng lặp" };
   }
 
-  // ── Showtime validation ──────────────────────────────────────────────
   const showtime = await prisma.showtime.findUnique({
     where: { id: input.showtimeId },
+    include: { movie: true, cinema: true, room: true },
   });
   if (!showtime || showtime.status !== "SCHEDULED") {
     return { ok: false, error: "Suất chiếu không tồn tại hoặc đã bị hủy" };
@@ -125,7 +138,6 @@ export async function createBooking(
     return { ok: false, error: "Suất chiếu đã bắt đầu, không thể đặt vé" };
   }
 
-  // ── Load seats & ticket types & combos ───────────────────────────────
   const seats = await prisma.seat.findMany({
     where: { id: { in: seatIds }, roomId: showtime.roomId },
   });
@@ -162,7 +174,6 @@ export async function createBooking(
   }
   const comboById = new Map(combosDb.map((c) => [c.id, c]));
 
-  // ── Price computation (server-side, authoritative) ───────────────────
   const seatLines = input.seats.map((s) => {
     const seat = seatById.get(s.seatId)!;
     const tt = ticketTypeById.get(s.ticketTypeId)!;
@@ -189,7 +200,6 @@ export async function createBooking(
 
   const orderValue = seatsTotal + combosTotal;
 
-  // ── Promotion ────────────────────────────────────────────────────────
   let promotionId: string | null = null;
   let discountTotal = 0;
   if (input.promotionCode?.trim()) {
@@ -207,7 +217,8 @@ export async function createBooking(
     ) {
       return {
         ok: false,
-        error: "Mã ưu đãi không hợp lệ hoặc đã hết hạn. Vui lòng kiểm tra lại.",
+        error:
+          "Mã ưu đãi không hợp lệ hoặc đã hết hạn. Vui lòng kiểm tra lại.",
       };
     }
     promotionId = promo.id;
@@ -220,18 +231,27 @@ export async function createBooking(
   }
 
   const finalTotal = orderValue - discountTotal;
+  let userId: string | null = null;
+  try {
+    const session = await auth();
+    userId = session?.user?.id ?? null;
+  } catch {
+    // Outside request scope (scripts/tests) — guest booking
+    userId = null;
+  }
 
-  // ── Transaction: prevent double booking ──────────────────────────────
+  // Always hold seats first (PENDING + lock + expiresAt).
+  // Online → user completes sandbox payment; AT_COUNTER stays PENDING.
+  const expiresAt = new Date(Date.now() + SEAT_HOLD_MINUTES * 60_000);
+  const needsOnlinePay = input.paymentMethod !== "AT_COUNTER";
+
   try {
     const result = await prisma.$transaction(async (tx) => {
-      // check conflicts inside the transaction
-      const conflicts = await tx.bookingSeat.findMany({
+      // Pre-check locks for friendly seat names
+      const conflicts = await tx.showtimeSeatLock.findMany({
         where: {
+          showtimeId: showtime.id,
           seatId: { in: seatIds },
-          booking: {
-            showtimeId: showtime.id,
-            status: { in: ["PENDING", "CONFIRMED"] },
-          },
         },
         include: { seat: true },
       });
@@ -249,10 +269,6 @@ export async function createBooking(
         });
       }
 
-      // simulate payment: AT_COUNTER stays UNPAID, others succeed
-      const paid = input.paymentMethod !== "AT_COUNTER";
-
-      // generate unique code with retries
       let code = generateBookingCode();
       for (let i = 0; i < 5; i++) {
         const exists = await tx.booking.findUnique({ where: { code } });
@@ -264,32 +280,58 @@ export async function createBooking(
         data: {
           code,
           showtimeId: showtime.id,
+          userId,
           contactName: name,
           contactEmail: email,
           contactPhone: phone,
-          status: "CONFIRMED",
+          status: "PENDING",
           seatsTotal,
           combosTotal,
           discountTotal,
           finalTotal,
           promotionId,
+          expiresAt,
           seats: { create: seatLines },
           combos: { create: comboLines },
           payment: {
             create: {
               method: input.paymentMethod,
-              status: paid ? "PAID" : "UNPAID",
+              status: "UNPAID",
               amount: finalTotal,
-              paidAt: paid ? new Date() : null,
+              paidAt: null,
             },
           },
         },
+        include: {
+          seats: { include: { seat: true } },
+        },
       });
+
+      // DB unique (showtimeId, seatId) — concurrent inserts fail hard
+      try {
+        await tx.showtimeSeatLock.createMany({
+          data: seatIds.map((seatId) => ({
+            showtimeId: showtime.id,
+            seatId,
+            bookingId: booking.id,
+          })),
+        });
+      } catch {
+        throw new Error("SEAT_TAKEN:ghế vừa bị người khác giữ");
+      }
 
       return booking;
     });
 
-    return { ok: true, data: { code: result.code } };
+    return {
+      ok: true,
+      data: {
+        code: result.code,
+        status: result.status,
+        expiresAt: result.expiresAt?.toISOString() ?? null,
+        needsPayment: needsOnlinePay,
+      },
+    };
   } catch (e) {
     if (e instanceof Error && e.message.startsWith("SEAT_TAKEN:")) {
       const names = e.message.slice("SEAT_TAKEN:".length);
@@ -304,4 +346,102 @@ export async function createBooking(
       error: "Không thể tạo đơn đặt vé. Vui lòng thử lại sau.",
     };
   }
+}
+
+export type CompletePaymentInput = {
+  code: string;
+  cardNumber?: string;
+  outcome?: "success" | "fail";
+};
+
+/** Complete sandbox payment for a PENDING online booking. */
+export async function completeSandboxPayment(
+  input: CompletePaymentInput
+): Promise<ActionResult<{ code: string; status: string }>> {
+  await expirePendingBookings();
+
+  const booking = await prisma.booking.findUnique({
+    where: { code: input.code },
+    include: {
+      payment: true,
+      seats: { include: { seat: true } },
+      showtime: { include: { movie: true, cinema: true, room: true } },
+    },
+  });
+
+  if (!booking) {
+    return { ok: false, error: "Không tìm thấy đơn đặt vé" };
+  }
+  if (booking.status === "EXPIRED") {
+    return { ok: false, error: "Đơn đã hết hạn giữ ghế. Vui lòng đặt lại." };
+  }
+  if (booking.status === "CONFIRMED") {
+    return { ok: true, data: { code: booking.code, status: "CONFIRMED" } };
+  }
+  if (booking.status !== "PENDING" || !booking.payment) {
+    return { ok: false, error: "Đơn không thể thanh toán" };
+  }
+  if (booking.payment.method === "AT_COUNTER") {
+    return {
+      ok: false,
+      error: "Đơn thanh toán tại quầy — không qua cổng online",
+    };
+  }
+  if (booking.expiresAt && booking.expiresAt < new Date()) {
+    await expirePendingBookings();
+    return { ok: false, error: "Hết thời gian giữ ghế" };
+  }
+
+  const { runSandboxPayment } = await import("@/lib/payment-sandbox");
+  const pay = runSandboxPayment({
+    method: booking.payment.method,
+    cardNumber: input.cardNumber,
+    outcome: input.outcome ?? "success",
+  });
+
+  if (!pay.ok) {
+    await prisma.payment.update({
+      where: { id: booking.payment.id },
+      data: { status: "FAILED" },
+    });
+    return { ok: false, error: pay.error };
+  }
+
+  await prisma.$transaction([
+    prisma.booking.update({
+      where: { id: booking.id },
+      data: { status: "CONFIRMED", expiresAt: null },
+    }),
+    prisma.payment.update({
+      where: { id: booking.payment.id },
+      data: {
+        status: "PAID",
+        paidAt: new Date(),
+        sandboxTxnId: pay.txnId,
+      },
+    }),
+  ]);
+
+  void (async () => {
+    const mail = await sendBookingConfirmationEmail({
+      code: booking.code,
+      contactName: booking.contactName,
+      contactEmail: booking.contactEmail,
+      movieTitle: booking.showtime.movie.title,
+      cinemaName: booking.showtime.cinema.name,
+      roomName: booking.showtime.room.name,
+      startsAt: booking.showtime.startsAt,
+      seats: booking.seats.map((s) => `${s.seat.row}${s.seat.number}`),
+      finalTotal: booking.finalTotal,
+      status: "CONFIRMED",
+    });
+    if (mail.sent) {
+      await prisma.booking.update({
+        where: { id: booking.id },
+        data: { emailSentAt: new Date() },
+      });
+    }
+  })();
+
+  return { ok: true, data: { code: booking.code, status: "CONFIRMED" } };
 }

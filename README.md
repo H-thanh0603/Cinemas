@@ -1,23 +1,27 @@
 # CineStar — Nền tảng đặt vé xem phim trực tuyến
 
-Nền tảng đặt vé xem phim hoàn chỉnh, xây dựng với **Next.js 15**, **TypeScript**, **Tailwind CSS**, **Prisma** và **SQLite**.
+Nền tảng đặt vé xem phim hoàn chỉnh, xây dựng với **Next.js 15**, **TypeScript**, **Tailwind CSS**, **Prisma**, **PostgreSQL** (Docker) và **NextAuth**.
 
 ## Tính năng chính
 
 ### Người dùng
+- **Đăng ký / Đăng nhập**: NextAuth credentials (email + mật khẩu)
 - **Trang chủ**: Hero phim nổi bật, điều hướng theo thể loại, phim đang chiếu / sắp chiếu, hệ thống rạp, ưu đãi
 - **Danh sách phim**: Lọc theo trạng thái, thể loại, xếp hạng tuổi; sắp xếp theo phổ biến / mới nhất / ngày khởi chiếu; phân trang
 - **Chi tiết phim**: Thông tin đầy đủ (đạo diễn, diễn viên, mô tả, trailer), lịch chiếu theo ngày và rạp
 - **Hệ thống rạp**: Danh sách rạp, chi tiết rạp với phòng chiếu và suất chiếu
 - **Đặt vé 3 bước**:
-  1. **Chọn ghế**: Sơ đồ ghế trực quan (thường / VIP / đôi), ghế đã đặt, giới hạn số ghế
+  1. **Chọn ghế**: Sơ đồ ghế realtime (SSE + polling fallback), giới hạn số ghế
   2. **Chọn vé & combo**: Loại vé (người lớn / học sinh / trẻ em), combo bắp nước
   3. **Thanh toán**: Thông tin liên hệ, mã khuyến mãi, phương thức thanh toán
-- **Xác nhận đặt vé**: Mã vé, QR placeholder, chi tiết đầy đủ, hướng dẫn đến rạp
-- **Tra cứu vé**: Nhập email để xem vé sắp tới, đã xem, đã hủy
+- **Giữ ghế**: Mọi đơn bắt đầu `PENDING` + **lock DB** `(showtime, seat)` · countdown **8 phút**
+- **Thanh toán sandbox**: `/booking/pay/[code]` — thẻ test `4242…` / fail `4000…0002`, QR ví/CK demo
+- **Xác nhận đặt vé**: Mã vé, **QR code thật**, email Resend (nếu cấu hình), hướng dẫn đến rạp
+- **Tra cứu vé**: Đăng nhập hoặc nhập email để xem vé sắp tới / đã xem / đã hủy
 - **Khuyến mãi**: Danh sách mã ưu đãi đang hoạt động
 
 ### Quản trị (Admin)
+- **Đăng nhập**: Bảo vệ `/admin` và `/api/admin/*` bằng NextAuth + role `ADMIN`
 - **Tổng quan**: Thống kê phim, rạp, suất chiếu, đặt vé, doanh thu; đặt vé và suất chiếu gần đây
 - **Quản lý phim**: Thêm / xóa phim, gán thể loại
 - **Quản lý rạp**: Thêm / xóa rạp
@@ -44,14 +48,18 @@ Nền tảng đặt vé xem phim hoàn chỉnh, xây dựng với **Next.js 15**
 | Framework | Next.js 15 (App Router) |
 | Language | TypeScript |
 | Styling | Tailwind CSS v4 |
-| Database | SQLite (Prisma ORM) |
-| Runtime | Node.js |
+| Database | PostgreSQL 16 + Prisma ORM |
+| Auth | NextAuth credentials (CUSTOMER / ADMIN) |
+| Charts | Chart.js |
+| Email | Resend (optional) |
+| Runtime | Node.js + Docker Compose |
 
 ## Cài đặt
 
 ### Yêu cầu
 - Node.js 18+
 - npm
+- Docker Desktop (PostgreSQL)
 
 ### Bước cài đặt
 
@@ -65,16 +73,36 @@ npm install
 
 # 3. Tạo file .env
 cp .env.example .env
+# Chỉnh AUTH_SECRET; thêm RESEND_API_KEY nếu muốn gửi email
 
-# 4. Tạo database và seed data
-npx prisma migrate dev
-npx prisma db seed
+# 4. Bật Postgres + schema + seed
+npm run db:setup
+# (tương đương: docker compose up -d db && npx prisma db push && npm run db:seed)
 
 # 5. Chạy dev server
 npm run dev
 ```
 
 Truy cập: http://localhost:3000
+
+| Tài khoản | Email / mật khẩu | Role |
+|-----------|------------------|------|
+| Khách | `khach@example.com` / `khach123` | CUSTOMER |
+| Admin | `admin@cinestar.vn` / `admin123` | ADMIN → `/admin` |
+
+**Expire ghế giữ chỗ:** `GET/POST /api/cron/expire-bookings` (header `Authorization: Bearer CRON_SECRET` nếu set).
+
+### Load test (k6)
+
+```bash
+# Terminal 1: production server + LOADTEST_SECRET in .env
+npm run build && npm run start
+
+# Terminal 2: ladder 100 → 500 → 1000 VU (Docker k6)
+npm run loadtest
+```
+
+Chi tiết: [`scripts/k6/README.md`](scripts/k6/README.md).
 
 ## Scripts
 
@@ -91,7 +119,7 @@ npx prisma db seed   # Re-seed database
 ## Database Schema
 
 ### Các entity chính
-- **User**: Người dùng (CUSTOMER / ADMIN)
+- **User**: Người dùng (CUSTOMER / ADMIN, `passwordHash` cho NextAuth)
 - **Movie**: Phim (NOW_SHOWING / COMING_SOON / ARCHIVED)
 - **Genre / MovieGenre**: Thể loại (many-to-many)
 - **Cinema**: Rạp chiếu
@@ -101,7 +129,7 @@ npx prisma db seed   # Re-seed database
 - **TicketType**: Loại vé (ADULT / STUDENT / CHILD)
 - **FoodCombo**: Combo bắp nước
 - **Promotion**: Khuyến mãi (PERCENT / FIXED)
-- **Booking**: Đặt vé (PENDING / CONFIRMED / CANCELLED / EXPIRED)
+- **Booking**: Đặt vé (PENDING / CONFIRMED / CANCELLED / EXPIRED) + `expiresAt` giữ ghế + `emailSentAt`
 - **BookingSeat**: Ghế trong đặt vé (giá ghi lại lúc đặt)
 - **BookingCombo**: Combo trong đặt vé
 - **Payment**: Thanh toán (UNPAID / PAID / FAILED / REFUNDED)

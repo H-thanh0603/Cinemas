@@ -3,10 +3,12 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import { useSession } from "next-auth/react";
 import { useToast } from "@/components/ui/toast";
 import { createBooking } from "@/app/booking/actions";
 import {
   MAX_SEATS_PER_BOOKING,
+  SEAT_HOLD_MINUTES,
   SEAT_TYPE_LABELS,
   formatDateTime,
   formatVnd,
@@ -20,6 +22,7 @@ import {
   type ContactInfo,
   type PromoState,
 } from "./checkout-step";
+import { useSeatRealtime } from "./use-seat-realtime";
 import type { ComboDto, SeatDto, ShowtimeDto, TicketTypeDto } from "./types";
 
 type BookingFlowProps = {
@@ -28,6 +31,7 @@ type BookingFlowProps = {
   bookedSeatIds: string[];
   ticketTypes: TicketTypeDto[];
   combos: ComboDto[];
+  prefillContact?: Partial<ContactInfo>;
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -39,9 +43,11 @@ export function BookingFlow({
   bookedSeatIds,
   ticketTypes,
   combos,
+  prefillContact,
 }: BookingFlowProps) {
   const router = useRouter();
   const { toast } = useToast();
+  const { data: session } = useSession();
 
   const [step, setStep] = useState<"seats" | "extras" | "checkout">("seats");
   const [selectedSeatIds, setSelectedSeatIds] = useState<string[]>([]);
@@ -52,9 +58,9 @@ export function BookingFlow({
     Record<string, number>
   >({});
   const [contact, setContact] = useState<ContactInfo>({
-    name: "",
-    email: "",
-    phone: "",
+    name: prefillContact?.name || session?.user?.name || "",
+    email: prefillContact?.email || session?.user?.email || "",
+    phone: prefillContact?.phone || "",
   });
   const [paymentMethod, setPaymentMethod] = useState("CREDIT_CARD");
   const [promo, setPromo] = useState<PromoState>(null);
@@ -63,7 +69,7 @@ export function BookingFlow({
   >({});
   const [submitting, setSubmitting] = useState(false);
 
-  const bookedSet = useMemo(() => new Set(bookedSeatIds), [bookedSeatIds]);
+  const bookedSet = useSeatRealtime(showtime.id, bookedSeatIds);
   const seatById = useMemo(() => new Map(seats.map((s) => [s.id, s])), [seats]);
   const defaultTicket =
     ticketTypes.find((t) => t.code === "ADULT") ?? ticketTypes[0];
@@ -173,8 +179,19 @@ export function BookingFlow({
     setSubmitting(false);
 
     if (result.ok) {
-      toast("Đặt vé thành công!", "success");
-      router.push(`/booking/confirmation/${result.data.code}`);
+      if (result.data.needsPayment) {
+        toast(
+          `Đã giữ ghế ${SEAT_HOLD_MINUTES} phút — hoàn tất thanh toán sandbox`,
+          "success"
+        );
+        router.push(`/booking/pay/${result.data.code}`);
+      } else {
+        toast(
+          `Giữ ghế ${SEAT_HOLD_MINUTES} phút — thanh toán tại quầy trước khi hết hạn`,
+          "success"
+        );
+        router.push(`/booking/confirmation/${result.data.code}`);
+      }
     } else {
       toast(result.error, "error");
       // if seats were taken, go back to seat selection and refresh data
@@ -215,7 +232,8 @@ export function BookingFlow({
                 Chọn ghế — {showtime.room.name}
               </h1>
               <p className="mt-1 text-center text-xs text-muted">
-                Tối đa {MAX_SEATS_PER_BOOKING} ghế mỗi lần đặt
+                Tối đa {MAX_SEATS_PER_BOOKING} ghế mỗi lần đặt · ghế cập nhật
+                realtime
               </p>
               <div className="mt-8">
                 <SeatMap

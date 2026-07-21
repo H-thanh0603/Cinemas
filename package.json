@@ -8,24 +8,41 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
+    "db:up": "docker compose up -d db",
+    "db:down": "docker compose down",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
-    "db:reset": "prisma migrate reset --force"
+    "db:reset": "prisma migrate reset --force",
+    "db:setup": "docker compose up -d db && prisma db push && tsx prisma/seed.ts",
+    "cron:expire": "tsx -e \"import { expirePendingBookings } from './src/lib/booking-expire.ts'; expirePendingBookings().then(n => console.log('expired', n))\"",
+    "loadtest": "pwsh -File scripts/k6/run-all.ps1",
+    "loadtest:100": "docker run --rm -e BASE_URL=http://host.docker.internal:3000 -e LOADTEST_SECRET=loadtest-dev-secret -e VUS=100 -e DURATION=30s -e BOOK_RATIO=0.1 -v \"%cd%/scripts/k6/mixed.js:/scripts/test.js:ro\" grafana/k6:0.54.0 run /scripts/test.js",
+    "build:start": "next build && next start"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.2.1",
+    "bcryptjs": "^3.0.3",
+    "chart.js": "^4.5.1",
+    "framer-motion": "^12.42.2",
+    "lucide-react": "^1.25.0",
     "next": "^15.1.6",
+    "next-auth": "^5.0.0-beta.32",
+    "qrcode": "^1.5.4",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-chartjs-2": "^5.3.1",
+    "react-dom": "^19.0.0",
+    "resend": "^6.17.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
     "@tailwindcss/postcss": "^4.0.0",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^22.10.7",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
     "eslint": "^9.18.0",

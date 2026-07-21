@@ -1,0 +1,421 @@
+
+         /\      Grafana   /ΓÇ╛ΓÇ╛/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ΓÇ╛ΓÇ╛\ 
+  /          \   |   (  |  (ΓÇ╛)  |
+ / __________ \  |_|\_\  \_____/ 
+
+     execution: local
+        script: /scripts/test.js
+        output: -
+
+     scenarios: (100.00%) 1 scenario, 500 max VUs, 55s max duration (incl. graceful stop):
+              * browse: 500 looping VUs for 25s (gracefulStop: 30s)
+
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:42Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+running (00.9s), 500/500 VUs, 66 complete and 0 interrupted iterations
+browse   [   4% ] 500 VUs  00.9s/25s
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:43Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+
+running (01.9s), 500/500 VUs, 211 complete and 0 interrupted iterations
+browse   [   8% ] 500 VUs  01.9s/25s
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies?status=NOW_SHOWING\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/movies\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/cinemas\": dial tcp 192.168.65.254:3000: connect: connection refused"
+time="2026-07-21T12:56:44Z" level=warning msg="Request Failed" error="Get \"http://host.docker.internal:3000/promotions\": dial tcp 192.168.65.254:3000: connect: connection refused"
+
+running (02.9s), 500/500 VUs, 391 complete and 0 interrupted iterations
+browse   [  12% ] 500 VUs  02.9s/25s
+
+running (03.9s), 500/500 VUs, 499 complete and 0 interrupted iterations
+browse   [  16% ] 500 VUs  03.9s/25s
+
+running (04.9s), 500/500 VUs, 576 complete and 0 interrupted iterations
+browse   [  20% ] 500 VUs  04.9s/25s
+
+running (05.9s), 500/500 VUs, 664 complete and 0 interrupted iterations
+browse   [  24% ] 500 VUs  05.9s/25s
+
+running (06.9s), 500/500 VUs, 761 complete and 0 interrupted iterations
+browse   [  28% ] 500 VUs  06.9s/25s
+
+running (07.9s), 500/500 VUs, 852 complete and 0 interrupted iterations
+browse   [  32% ] 500 VUs  07.9s/25s
+
+running (08.9s), 500/500 VUs, 945 complete and 0 interrupted iterations
+browse   [  36% ] 500 VUs  08.9s/25s
+
+running (09.9s), 500/500 VUs, 1036 complete and 0 interrupted iterations
+browse   [  40% ] 500 VUs  09.9s/25s
+
+running (10.9s), 500/500 VUs, 1134 complete and 0 interrupted iterations
+browse   [  44% ] 500 VUs  10.9s/25s
+
+running (11.9s), 500/500 VUs, 1217 complete and 0 interrupted iterations
+browse   [  48% ] 500 VUs  11.9s/25s
+
+running (12.9s), 500/500 VUs, 1301 complete and 0 interrupted iterations
+browse   [  52% ] 500 VUs  12.9s/25s
+
+running (13.9s), 500/500 VUs, 1400 complete and 0 interrupted iterations
+browse   [  56% ] 500 VUs  13.9s/25s
+
+running (14.9s), 500/500 VUs, 1509 complete and 0 interrupted iterations
+browse   [  60% ] 500 VUs  14.9s/25s
+
+running (15.9s), 500/500 VUs, 1611 complete and 0 interrupted iterations
+browse   [  64% ] 500 VUs  15.9s/25s
+
+running (16.9s), 500/500 VUs, 1706 complete and 0 interrupted iterations
+browse   [  68% ] 500 VUs  16.9s/25s
+
+running (17.9s), 500/500 VUs, 1785 complete and 0 interrupted iterations
+browse   [  72% ] 500 VUs  17.9s/25s
+
+running (18.9s), 500/500 VUs, 1863 complete and 0 interrupted iterations
+browse   [  76% ] 500 VUs  18.9s/25s
+
+running (19.9s), 500/500 VUs, 1973 complete and 0 interrupted iterations
+browse   [  80% ] 500 VUs  19.9s/25s
+
+running (20.9s), 500/500 VUs, 2072 complete and 0 interrupted iterations
+browse   [  84% ] 500 VUs  20.9s/25s
+
+running (21.9s), 500/500 VUs, 2177 complete and 0 interrupted iterations
+browse   [  88% ] 500 VUs  21.9s/25s
+
+running (22.9s), 500/500 VUs, 2269 complete and 0 interrupted iterations
+browse   [  92% ] 500 VUs  22.9s/25s
+
+running (23.9s), 500/500 VUs, 2372 complete and 0 interrupted iterations
+browse   [  96% ] 500 VUs  23.9s/25s
+
+running (24.9s), 500/500 VUs, 2475 complete and 0 interrupted iterations
+browse   [ 100% ] 500 VUs  24.9s/25s
+
+running (25.9s), 414/500 VUs, 2571 complete and 0 interrupted iterations
+browse Γåô [ 100% ] 500 VUs  25s
+
+running (26.9s), 338/500 VUs, 2647 complete and 0 interrupted iterations
+browse Γåô [ 100% ] 500 VUs  25s
+
+running (27.9s), 245/500 VUs, 2740 complete and 0 interrupted iterations
+browse Γåô [ 100% ] 500 VUs  25s
+
+running (28.9s), 062/500 VUs, 2923 complete and 0 interrupted iterations
+browse Γåô [ 100% ] 500 VUs  25s
+
+     Γ£ù status 200
+      Γå│  90% ΓÇö Γ£ô 2693 / Γ£ù 292
+
+     checks.........................: 90.21% 2693 out of 2985
+     data_received..................: 171 MB 5.8 MB/s
+     data_sent......................: 270 kB 9.2 kB/s
+   Γ£ù errors.........................: 9.78%  292 out of 2985
+     http_req_blocked...............: avg=12.47ms  min=0s            med=6.2┬╡s  max=172.61ms p(90)=64.85ms p(95)=94.41ms
+     http_req_connecting............: avg=8.28ms   min=0s            med=0s     max=115.41ms p(90)=48.76ms p(95)=61.8ms 
+   Γ£ù http_req_duration..............: avg=3.96s    min=0s            med=4.29s  max=13.34s   p(90)=5.05s   p(95)=7.2s   
+       { expected_response:true }...: avg=4.38s    min=1.23s         med=4.38s  max=13.34s   p(90)=5.09s   p(95)=7.76s  
+   Γ£ù http_req_failed................: 9.78%  292 out of 2985
+     http_req_receiving.............: avg=1.76s    min=-1734632354ns med=2s     max=6.54s    p(90)=2.54s   p(95)=2.72s  
+     http_req_sending...............: avg=926.89┬╡s min=0s            med=19.3┬╡s max=101ms    p(90)=1.68ms  p(95)=6.94ms 
+     http_req_tls_handshaking.......: avg=0s       min=0s            med=0s     max=0s       p(90)=0s      p(95)=0s     
+     http_req_waiting...............: avg=2.19s    min=0s            med=2.22s  max=10.12s   p(90)=2.67s   p(95)=5.83s  
+     http_reqs......................: 2985   101.500065/s
+     iteration_duration.............: avg=4.6s     min=305.31ms      med=4.9s   max=13.01s   p(90)=5.75s   p(95)=7.82s  
+     iterations.....................: 2985   101.500065/s
+     page_duration..................: avg=3.96s    min=0s            med=4.29s  max=13.34s   p(90)=5.05s   p(95)=7.2s   
+     vus............................: 62     min=62           max=500
+     vus_max........................: 500    min=500          max=500
+
+
+running (29.4s), 000/500 VUs, 2985 complete and 0 interrupted iterations
+browse Γ£ô [ 100% ] 500 VUs  25s
+time="2026-07-21T12:57:12Z" level=error msg="thresholds on metrics 'errors, http_req_duration, http_req_failed' have been crossed"

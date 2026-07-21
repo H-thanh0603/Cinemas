@@ -21,9 +21,12 @@ export async function DELETE(
   }
 
   await prisma.$transaction(async (tx) => {
+    // Release seat inventory
+    await tx.showtimeSeatLock.deleteMany({ where: { bookingId: id } });
+
     await tx.booking.update({
       where: { id },
-      data: { status: "CANCELLED" },
+      data: { status: "CANCELLED", expiresAt: null },
     });
 
     if (booking.payment) {

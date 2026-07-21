@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { BookingFlow } from "@/components/booking/booking-flow";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { formatDateTime } from "@/lib/constants";
+import { getLockedSeatIds } from "@/lib/booking-expire";
+import { auth } from "@/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +15,7 @@ export default async function BookingPage({
   params: Promise<{ showtimeId: string }>;
 }) {
   const { showtimeId } = await params;
+  const session = await auth();
 
   const showtime = await prisma.showtime.findUnique({
     where: { id: showtimeId },
@@ -53,18 +56,9 @@ export default async function BookingPage({
     );
   }
 
-  // Seats already taken for this showtime (bookings not cancelled/expired)
-  const bookedSeats = await prisma.bookingSeat.findMany({
-    where: {
-      booking: {
-        showtimeId,
-        status: { in: ["PENDING", "CONFIRMED"] },
-      },
-    },
-    select: { seatId: true },
-  });
-
-  const [ticketTypes, combos] = await Promise.all([
+  // Seats locked via ShowtimeSeatLock (DB unique per showtime+seat)
+  const [lockedSeatIds, ticketTypes, combos] = await Promise.all([
+    getLockedSeatIds(showtimeId),
     prisma.ticketType.findMany({ where: { isActive: true } }),
     prisma.foodCombo.findMany({
       where: { isActive: true },
@@ -110,7 +104,7 @@ export default async function BookingPage({
         type: s.type,
         isActive: s.isActive,
       }))}
-      bookedSeatIds={bookedSeats.map((b) => b.seatId)}
+      bookedSeatIds={lockedSeatIds}
       ticketTypes={ticketTypes.map((t) => ({
         id: t.id,
         code: t.code,
@@ -126,6 +120,10 @@ export default async function BookingPage({
         price: c.price,
         category: c.category,
       }))}
+      prefillContact={{
+        name: session?.user?.name ?? "",
+        email: session?.user?.email ?? "",
+      }}
     />
     </div>
   );

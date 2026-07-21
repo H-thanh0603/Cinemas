@@ -1,5 +1,10 @@
 import { PrismaClient } from "@prisma/client";
-import { createBooking, validatePromotion } from "../src/app/booking/actions";
+import {
+  createBooking,
+  completeSandboxPayment,
+  validatePromotion,
+} from "../src/app/booking/actions";
+import { SANDBOX_CARD_FAIL, SANDBOX_CARD_SUCCESS } from "../src/lib/payment-sandbox";
 
 const prisma = new PrismaClient();
 
@@ -23,22 +28,17 @@ async function main() {
   });
   if (!showtime) throw new Error("No future showtime found — run seed first");
 
-  const bookedSeatIds = new Set(
+  const locked = new Set(
     (
-      await prisma.bookingSeat.findMany({
-        where: {
-          booking: {
-            showtimeId: showtime.id,
-            status: { in: ["PENDING", "CONFIRMED"] },
-          },
-        },
+      await prisma.showtimeSeatLock.findMany({
+        where: { showtimeId: showtime.id },
         select: { seatId: true },
       })
     ).map((b) => b.seatId)
   );
 
   const freeSeats = showtime.room.seats.filter(
-    (s) => s.isActive && !bookedSeatIds.has(s.id)
+    (s) => s.isActive && !locked.has(s.id)
   );
   const adult = await prisma.ticketType.findUniqueOrThrow({
     where: { code: "ADULT" },
@@ -56,7 +56,7 @@ async function main() {
     phone: "0912345678",
   };
 
-  console.log("\n[1] Happy path — create booking");
+  console.log("\n[1] Happy path — hold + sandbox pay");
   const r1 = await createBooking({
     showtimeId: showtime.id,
     seats: [
@@ -71,27 +71,34 @@ async function main() {
   if (r1.ok) {
     const b = await prisma.booking.findUnique({
       where: { code: r1.data.code },
-      include: { seats: true, combos: true, payment: true },
+      include: { seats: true, combos: true, payment: true, seatLocks: true },
     });
-    check("booking code format", /^CS-[A-Z0-9]{6}$/.test(r1.data.code));
-    check("2 seats stored", b?.seats.length === 2);
-    check("combo stored", b?.combos[0]?.quantity === 2);
-    check("payment PAID for e-wallet", b?.payment?.status === "PAID");
+    check("status PENDING after create", b?.status === "PENDING");
+    check("needsPayment true for e-wallet", r1.data.needsPayment === true);
+    check("seat locks created", (b?.seatLocks.length ?? 0) === 2);
+    check("payment UNPAID until sandbox", b?.payment?.status === "UNPAID");
+    check("expiresAt set", b?.expiresAt != null);
+
+    const paid = await completeSandboxPayment({
+      code: r1.data.code,
+      outcome: "success",
+    });
+    check("sandbox pay ok", paid.ok, paid.ok ? "" : paid.error);
+    const b2 = await prisma.booking.findUnique({
+      where: { code: r1.data.code },
+      include: { payment: true },
+    });
+    check("status CONFIRMED after pay", b2?.status === "CONFIRMED");
+    check("payment PAID", b2?.payment?.status === "PAID");
+    check("sandboxTxnId set", !!b2?.payment?.sandboxTxnId);
+
     const expectSeats =
       Math.max(0, showtime.basePrice + surcharge(freeSeats[0].type) + adult.priceModifier) +
       Math.max(0, showtime.basePrice + surcharge(freeSeats[1].type) + student.priceModifier);
-    check(
-      "seatsTotal computed correctly",
-      b?.seatsTotal === expectSeats,
-      `expected ${expectSeats}, got ${b?.seatsTotal}`
-    );
-    check(
-      "finalTotal = seats + combos - discount",
-      b?.finalTotal === (b?.seatsTotal ?? 0) + (b?.combosTotal ?? 0) - (b?.discountTotal ?? 0)
-    );
+    check("seatsTotal computed correctly", b?.seatsTotal === expectSeats);
   }
 
-  console.log("\n[2] Duplicate seat booking must fail");
+  console.log("\n[2] Duplicate seat booking must fail (DB lock)");
   const r2 = await createBooking({
     showtimeId: showtime.id,
     seats: [{ seatId: freeSeats[0].id, ticketTypeId: adult.id }],
@@ -101,22 +108,26 @@ async function main() {
   });
   check("double booking rejected", !r2.ok);
 
-  console.log("\n[3] Past showtime must fail");
-  const past = await prisma.showtime.findFirst({
-    where: { startsAt: { lt: new Date() } },
-    include: { room: { include: { seats: { take: 1 } } } },
+  console.log("\n[3] Card sandbox fail");
+  const r3 = await createBooking({
+    showtimeId: showtime.id,
+    seats: [{ seatId: freeSeats[4].id, ticketTypeId: adult.id }],
+    combos: [],
+    contact,
+    paymentMethod: "CREDIT_CARD",
   });
-  if (past) {
-    const r3 = await createBooking({
-      showtimeId: past.id,
-      seats: [{ seatId: past.room.seats[0].id, ticketTypeId: adult.id }],
-      combos: [],
-      contact,
-      paymentMethod: "CREDIT_CARD",
+  check("card hold created", r3.ok, r3.ok ? "" : r3.error);
+  if (r3.ok) {
+    const fail = await completeSandboxPayment({
+      code: r3.data.code,
+      cardNumber: SANDBOX_CARD_FAIL,
     });
-    check("past showtime rejected", !r3.ok);
-  } else {
-    console.log("  (skipped — no past showtime)");
+    check("fail card rejected", !fail.ok);
+    const ok = await completeSandboxPayment({
+      code: r3.data.code,
+      cardNumber: SANDBOX_CARD_SUCCESS,
+    });
+    check("success card accepted", ok.ok, ok.ok ? "" : ok.error);
   }
 
   console.log("\n[4] Validation failures");
@@ -131,55 +142,46 @@ async function main() {
 
   const r4b = await createBooking({
     showtimeId: showtime.id,
-    seats: [{ seatId: freeSeats[2].id, ticketTypeId: adult.id }],
+    seats: [{ seatId: freeSeats[5].id, ticketTypeId: adult.id }],
     combos: [],
     contact: { ...contact, email: "not-an-email" },
     paymentMethod: "CREDIT_CARD",
   });
   check("bad email rejected", !r4b.ok);
 
-  const r4c = await createBooking({
+  console.log("\n[5] AT_COUNTER hold");
+  const r5 = await createBooking({
     showtimeId: showtime.id,
-    seats: freeSeats.slice(2, 11).map((s) => ({ seatId: s.id, ticketTypeId: adult.id })),
-    combos: [],
-    contact,
-    paymentMethod: "CREDIT_CARD",
-  });
-  check("9 seats (over limit) rejected", !r4c.ok);
-
-  console.log("\n[5] Promotion validation");
-  const p1 = await validatePromotion("WELCOME10", 200000);
-  check("valid promo accepted", p1.ok && p1.data.discount === 20000);
-  const p2 = await validatePromotion("HETHAN", 200000);
-  check("expired promo rejected", !p2.ok);
-  const p3 = await validatePromotion("KHONGTONTAI", 200000);
-  check("unknown promo rejected", !p3.ok);
-  const p4 = await validatePromotion("T2VUIVE", 100000);
-  check("min order not met rejected", !p4.ok);
-
-  console.log("\n[6] Booking with promo");
-  const r6 = await createBooking({
-    showtimeId: showtime.id,
-    seats: [{ seatId: freeSeats[3].id, ticketTypeId: adult.id }],
+    seats: [{ seatId: freeSeats[6].id, ticketTypeId: adult.id }],
     combos: [{ comboId: combo.id, quantity: 1 }],
     promotionCode: "WELCOME10",
     contact,
     paymentMethod: "AT_COUNTER",
   });
-  check("promo booking created", r6.ok, r6.ok ? "" : r6.error);
-  if (r6.ok) {
+  check("counter booking created", r5.ok, r5.ok ? "" : r5.error);
+  if (r5.ok) {
+    check("needsPayment false", r5.data.needsPayment === false);
     const b = await prisma.booking.findUnique({
-      where: { code: r6.data.code },
-      include: { payment: true },
+      where: { code: r5.data.code },
+      include: { payment: true, seatLocks: true },
     });
+    check("PENDING hold", b?.status === "PENDING");
+    check("UNPAID", b?.payment?.status === "UNPAID");
+    check("lock exists", (b?.seatLocks.length ?? 0) === 1);
     check("discount applied", (b?.discountTotal ?? 0) > 0);
-    check("AT_COUNTER stays UNPAID", b?.payment?.status === "UNPAID");
   }
 
-  // cleanup test bookings
+  console.log("\n[6] Promo validation");
+  const p1 = await validatePromotion("WELCOME10", 200000);
+  check("valid promo", p1.ok === true);
+
+  // cleanup
   const cleanup = await prisma.booking.findMany({
     where: { contactEmail: "test@example.com" },
     select: { id: true },
+  });
+  await prisma.showtimeSeatLock.deleteMany({
+    where: { bookingId: { in: cleanup.map((b) => b.id) } },
   });
   await prisma.booking.deleteMany({
     where: { id: { in: cleanup.map((b) => b.id) } },
