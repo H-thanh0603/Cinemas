@@ -7,9 +7,9 @@ import {
 } from "@/app/booking/actions";
 import { SANDBOX_CARD_SUCCESS } from "@/lib/payment-sandbox";
 
-// ponytail: this route is an explicitly opt-in local load-test harness, so its
-// sandbox payment switch is scoped to this request process only.
-process.env.ENABLE_PAYMENT_SANDBOX ??= "true";
+// Loadtest harness — explicitly opt-in via LOADTEST_SECRET header.
+// Do NOT mutate process.env.ENABLE_PAYMENT_SANDBOX here; the createBooking
+// server action already gates sandbox payment on that env var per-request.
 
 function hashCode(s: string): number {
   let h = 0;

@@ -1,0 +1,94 @@
+
+> cinemas@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.5.20
+   - Local:        http://localhost:3000
+   - Network:      http://100.103.30.63:3000
+   - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 3.4s
+ ○ Compiling / ...
+ ✓ Compiled / in 3.1s (1592 modules)
+ GET / 200 in 7692ms
+ ○ Compiling /api/auth/[...nextauth] ...
+ ✓ Compiled /api/auth/[...nextauth] in 1146ms (1733 modules)
+ GET /api/auth/session 200 in 2750ms
+ GET /api/auth/session 200 in 45ms
+ GET / 200 in 2499ms
+ GET / 200 in 4372ms
+ ○ Compiling /movies ...
+ ✓ Compiled /movies in 713ms (1728 modules)
+ ✓ Compiled /cinemas in 461ms (1733 modules)
+ GET /cinemas 200 in 1852ms
+ GET / 200 in 4268ms
+ GET /movies 200 in 2813ms
+ GET /cinemas 200 in 380ms
+ GET /api/auth/session 200 in 127ms
+ GET /api/auth/session 200 in 27ms
+ GET / 200 in 225ms
+ GET /movies 200 in 117ms
+ ✓ Compiled in 1257ms (1607 modules)
+ GET /movies 200 in 285ms
+ ✓ Compiled in 1083ms (1607 modules)
+ GET /movies 200 in 225ms
+ GET /movies 200 in 1521ms
+ ✓ Compiled in 1216ms (1607 modules)
+ ✓ Compiled in 5s (1607 modules)
+ GET /movies 200 in 542ms
+ GET /movies 200 in 216ms
+ ○ Compiling /api/auth/[...nextauth] ...
+ ✓ Compiled /api/auth/[...nextauth] in 949ms (1027 modules)
+ GET /api/auth/session 200 in 1270ms
+ GET /api/auth/session 200 in 188ms
+ GET / 200 in 851ms
+ GET / 200 in 304ms
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 2.1s (1954 modules)
+ GET / 200 in 1201ms
+ GET / 500 in 5897ms
+ GET /movies 200 in 388ms
+ GET / 200 in 692ms
+ GET / 200 in 627ms
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 529ms (176 modules)
+ ✓ Compiled /api/cron/expire-bookings in 282ms (1960 modules)
+ GET /api/cron/expire-bookings 200 in 421ms
+ ✓ Compiled in 1088ms (1858 modules)
+ GET / 200 in 444ms
+ ✓ Compiled in 407ms (872 modules)
+ GET / 200 in 137ms
+ ✓ Compiled in 327ms (872 modules)
+ GET / 200 in 140ms
+ ✓ Compiled in 290ms (872 modules)
+ GET / 200 in 108ms
+ ✓ Compiled in 295ms (872 modules)
+ GET / 200 in 115ms
+ ✓ Compiled in 284ms (872 modules)
+ GET / 200 in 166ms
+ ✓ Compiled in 1087ms (1858 modules)
+ GET / 200 in 271ms
+ ✓ Compiled in 397ms (872 modules)
+ GET / 200 in 98ms
+ ✓ Compiled in 293ms (872 modules)
+ GET / 200 in 105ms
+ ✓ Compiled in 632ms (872 modules)
+ GET / 200 in 258ms
+ ✓ Compiled in 426ms (872 modules)
+ GET / 200 in 115ms
+ ✓ Compiled in 305ms (872 modules)
+ GET / 200 in 88ms
+ ✓ Compiled in 488ms (872 modules)
+ GET / 200 in 212ms
+ ✓ Compiled in 399ms (872 modules)
+ GET / 200 in 107ms
+ ✓ Compiled in 383ms (872 modules)
+ GET / 200 in 152ms
+ ✓ Compiled in 341ms (872 modules)
+ GET / 200 in 135ms
+ ✓ Compiled in 307ms (872 modules)
+ GET / 200 in 179ms
+ ✓ Compiled in 286ms (872 modules)
+ GET / 200 in 103ms
+[?25h

@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { escapeLikePattern } from "@/lib/search-utils";
 import { formatVnd, formatDateTime, BOOKING_STATUS_LABELS, PAYMENT_STATUS_LABELS } from "@/lib/constants";
 import { BookingActions } from "./booking-actions";
 import { AdminSearch, AdminFilter } from "../admin-search";
@@ -15,9 +17,10 @@ export default async function AdminBookingsPage({
   const { q, status, page: pageParam } = await searchParams;
   const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
   const pageSize = 50;
-  const where = {
+  const safeQ = q ? escapeLikePattern(q) : "";
+  const where: Prisma.BookingWhereInput = {
     AND: [
-      q ? { OR: [{ code: { contains: q } }, { contactName: { contains: q } }, { contactEmail: { contains: q } }, { contactPhone: { contains: q } }] } : {},
+      safeQ ? { OR: [{ code: { contains: safeQ, mode: "insensitive" as const } }, { contactName: { contains: safeQ, mode: "insensitive" as const } }, { contactEmail: { contains: safeQ, mode: "insensitive" as const } }, { contactPhone: { contains: safeQ } }] } : {},
       status && status !== "ALL" ? { status } : {},
     ],
   };

@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { escapeLikePattern } from "@/lib/search-utils";
 import { SHOWTIME_FORMAT_LABELS, formatDateTime } from "@/lib/constants";
 import { ShowtimeActions } from "./showtime-actions";
 import { AdminSearch, AdminFilter } from "../admin-search";
@@ -15,9 +17,10 @@ export default async function AdminShowtimesPage({
   const { q, status, page: pageParam } = await searchParams;
   const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
   const pageSize = 50;
-  const where = {
+  const safeQ = q ? escapeLikePattern(q) : "";
+  const where: Prisma.ShowtimeWhereInput = {
     AND: [
-      q ? { OR: [{ movie: { title: { contains: q } } }, { room: { name: { contains: q } } }, { room: { cinema: { name: { contains: q } } } }] } : {},
+      safeQ ? { OR: [{ movie: { title: { contains: safeQ, mode: "insensitive" as const } } }, { room: { name: { contains: safeQ, mode: "insensitive" as const } } }, { room: { cinema: { name: { contains: safeQ, mode: "insensitive" as const } } } }] } : {},
       status && status !== "ALL" ? { status } : {},
     ],
   };

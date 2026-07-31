@@ -15,6 +15,7 @@ import {
 } from "@/lib/constants";
 import { QrTicket } from "@/components/booking/qr-ticket";
 import { HoldCountdown } from "@/components/booking/hold-countdown";
+import { GuestEmailGate } from "@/components/booking/guest-email-gate";
 import { expirePendingBookings } from "@/lib/booking-expire";
 import { auth } from "@/auth";
 
@@ -36,10 +37,13 @@ const paymentColor: Record<string, "success" | "warning" | "danger" | "info"> = 
 
 export default async function ConfirmationPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ code: string }>;
+  searchParams: Promise<{ email?: string }>;
 }) {
   const { code } = await params;
+  const { email: emailParam } = await searchParams;
   await expirePendingBookings();
 
   const booking = await prisma.booking.findUnique({
@@ -58,6 +62,18 @@ export default async function ConfirmationPage({
   if (!booking) notFound();
   const session = await auth();
   if (booking.userId && booking.userId !== session?.user?.id) notFound();
+
+  // Guest booking access control: require email verification
+  if (!booking.userId && !emailParam) {
+    return (
+      <GuestEmailGate code={code} />
+    );
+  }
+  if (!booking.userId && emailParam && emailParam.toLowerCase() !== booking.contactEmail.toLowerCase()) {
+    return (
+      <GuestEmailGate code={code} error="Email không khớp. Vui lòng nhập lại." />
+    );
+  }
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">

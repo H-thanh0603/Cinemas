@@ -1,0 +1,3124 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AETHER — Cửa ngõ vũ trụ</title>
+  <meta name="description" content="Khám phá vũ trụ — hành trình xuyên không gian, từ Trái Đất đến rìa thiên hà." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --void: #03010a;
+      --deep: #07041a;
+      --nebula: #1a0b3a;
+      --plasma: #7c3aed;
+      --plasma-soft: #a78bfa;
+      --cyan: #22d3ee;
+      --cyan-dim: #0891b2;
+      --gold: #f0d080;
+      --gold-soft: #e8c97a;
+      --rose: #f472b6;
+      --text: #f4f0ff;
+      --muted: #9b8ec4;
+      --glass: rgba(255, 255, 255, 0.04);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --font-display: "Cormorant Garamond", Georgia, serif;
+      --font-body: "Outfit", system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--void);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::selection {
+      background: rgba(124, 58, 237, 0.45);
+      color: #fff;
+    }
+
+    /* ── Canvas starfield ── */
+    #stars {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── Atmospheric layers ── */
+    .atmosphere {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% 10%, rgba(124, 58, 237, 0.18), transparent 55%),
+        radial-gradient(ellipse 60% 40% at 85% 20%, rgba(34, 211, 238, 0.1), transparent 50%),
+        radial-gradient(ellipse 70% 50% at 50% 100%, rgba(244, 114, 182, 0.08), transparent 55%),
+        radial-gradient(ellipse 100% 80% at 50% 50%, transparent 30%, rgba(3, 1, 10, 0.7) 100%);
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* ── Layout shell ── */
+    .shell {
+      position: relative;
+      z-index: 10;
+    }
+
+    /* ── Nav ── */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 2rem;
+      transition: background 0.4s, border-color 0.4s, backdrop-filter 0.4s;
+      border-bottom: 1px solid transparent;
+    }
+
+    .nav.scrolled {
+      background: rgba(3, 1, 10, 0.72);
+      backdrop-filter: blur(20px) saturate(1.4);
+      border-bottom-color: var(--glass-border);
+    }
+
+    .logo {
+      font-family: var(--font-display);
+      font-size: 1.65rem;
+      font-weight: 600;
+      letter-spacing: 0.28em;
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .logo-orb {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #fff, var(--cyan) 40%, var(--plasma) 100%);
+      box-shadow: 0 0 16px var(--cyan), 0 0 32px rgba(124, 58, 237, 0.6);
+      animation: pulse-orb 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse-orb {
+      0%, 100% { box-shadow: 0 0 12px var(--cyan), 0 0 24px rgba(124, 58, 237, 0.5); transform: scale(1); }
+      50% { box-shadow: 0 0 20px var(--cyan), 0 0 48px rgba(124, 58, 237, 0.8); transform: scale(1.15); }
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.55rem 1rem;
+      border-radius: 999px;
+      transition: color 0.25s, background 0.25s;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+      background: var(--glass);
+    }
+
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.35rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--void);
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-soft) 50%, #c9a84c 100%);
+      box-shadow: 0 0 24px rgba(240, 208, 128, 0.25);
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+
+    .nav-cta:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 36px rgba(240, 208, 128, 0.4);
+    }
+
+    .menu-btn {
+      display: none;
+      background: none;
+      border: 1px solid var(--glass-border);
+      color: var(--text);
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 7rem 1.5rem 5rem;
+      position: relative;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.45rem 1.1rem;
+      border-radius: 999px;
+      border: 1px solid rgba(34, 211, 238, 0.25);
+      background: rgba(34, 211, 238, 0.06);
+      color: var(--cyan);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: rise 1s ease 0.2s forwards;
+    }
+
+    .hero-eyebrow::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 10px var(--cyan);
+      animation: blink 2s ease infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+    }
+
+    .hero h1 {
+      font-family: var(--font-display);
+      font-weight: 500;
+      font-size: clamp(3.2rem, 10vw, 7.5rem);
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      max-width: 14ch;
+      opacity: 0;
+      animation: rise 1.1s ease 0.35s forwards;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      background: linear-gradient(120deg, var(--cyan) 0%, var(--plasma-soft) 45%, var(--rose) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero-sub {
+      margin-top: 1.75rem;
+      max-width: 36rem;
+      color: var(--muted);
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      font-weight: 300;
+      line-height: 1.75;
+      opacity: 0;
+      animation: rise 1.1s ease 0.55s forwards;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2.75rem;
+      opacity: 0;
+      animation: rise 1.1s ease 0.7s forwards;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 1rem 2rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: #fff;
+      background: linear-gradient(135deg, #6d28d9 0%, #7c3aed 40%, #0891b2 100%);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.12) inset,
+        0 12px 40px rgba(124, 58, 237, 0.35);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.18) inset,
+        0 16px 50px rgba(124, 58, 237, 0.5);
+    }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 1rem 2rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--text);
+      border: 1px solid var(--glass-border);
+      background: var(--glass);
+      backdrop-filter: blur(12px);
+      transition: border-color 0.3s, background 0.3s, transform 0.3s;
+    }
+
+    .btn-ghost:hover {
+      border-color: rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      margin-top: 5rem;
+      width: min(900px, 100%);
+      opacity: 0;
+      animation: rise 1.1s ease 0.9s forwards;
+    }
+
+    .stat {
+      text-align: center;
+      padding: 1.25rem 0.75rem;
+      border-radius: 1rem;
+      border: 1px solid var(--glass-border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+      backdrop-filter: blur(10px);
+    }
+
+    .stat-value {
+      font-family: var(--font-display);
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 600;
+      background: linear-gradient(180deg, #fff 30%, var(--plasma-soft));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      line-height: 1.1;
+    }
+
+    .stat-label {
+      margin-top: 0.35rem;
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--muted);
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: rise 1s ease 1.2s forwards;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--cyan), transparent);
+      animation: scroll-pulse 2s ease infinite;
+    }
+
+    @keyframes scroll-pulse {
+      0% { transform: scaleY(0.4); opacity: 0.4; transform-origin: top; }
+      50% { transform: scaleY(1); opacity: 1; }
+      100% { transform: scaleY(0.4); opacity: 0.4; }
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(28px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Central planet ── */
+    .planet-wrap {
+      position: absolute;
+      width: min(520px, 80vw);
+      height: min(520px, 80vw);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -42%);
+      z-index: -1;
+      opacity: 0.55;
+      pointer-events: none;
+    }
+
+    .planet {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 32% 28%, rgba(255,255,255,0.25), transparent 25%),
+        radial-gradient(circle at 50% 50%, #2d1b69 0%, #0f0628 45%, #03010a 70%);
+      box-shadow:
+        0 0 80px rgba(124, 58, 237, 0.35),
+        0 0 160px rgba(34, 211, 238, 0.12),
+        inset -40px -20px 80px rgba(0,0,0,0.7),
+        inset 20px 10px 40px rgba(167, 139, 250, 0.15);
+      animation: planet-spin 60s linear infinite;
+      position: relative;
+    }
+
+    .planet::after {
+      content: "";
+      position: absolute;
+      inset: -12%;
+      border-radius: 50%;
+      border: 1px solid rgba(167, 139, 250, 0.15);
+      box-shadow: 0 0 40px rgba(124, 58, 237, 0.1);
+      animation: ring-spin 40s linear infinite reverse;
+    }
+
+    .planet::before {
+      content: "";
+      position: absolute;
+      inset: -22%;
+      border-radius: 50%;
+      border: 1px dashed rgba(34, 211, 238, 0.12);
+      animation: ring-spin 50s linear infinite;
+    }
+
+    @keyframes planet-spin {
+      from { filter: hue-rotate(0deg); }
+      to { filter: hue-rotate(15deg); }
+    }
+
+    @keyframes ring-spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* ── Sections common ── */
+    section {
+      position: relative;
+      padding: 7rem 1.5rem;
+    }
+
+    .container {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+    }
+
+    .section-label {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 500;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+      max-width: 16ch;
+    }
+
+    .section-title em {
+      font-style: italic;
+      color: var(--plasma-soft);
+    }
+
+    .section-lead {
+      margin-top: 1.25rem;
+      color: var(--muted);
+      font-size: 1.05rem;
+      font-weight: 300;
+      max-width: 36rem;
+      line-height: 1.75;
+    }
+
+    /* ── Destinations ── */
+    .destinations {
+      padding-top: 4rem;
+    }
+
+    .dest-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      justify-content: space-between;
+      gap: 2rem;
+      margin-bottom: 3.5rem;
+    }
+
+    .dest-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 1.25rem;
+    }
+
+    .dest-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 1.5rem;
+      border: 1px solid var(--glass-border);
+      background: var(--glass);
+      min-height: 280px;
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s, box-shadow 0.45s;
+      cursor: default;
+    }
+
+    .dest-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(167, 139, 250, 0.35);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45), 0 0 40px rgba(124, 58, 237, 0.12);
+    }
+
+    .dest-card.featured {
+      grid-column: span 7;
+      min-height: 380px;
+    }
+
+    .dest-card.tall {
+      grid-column: span 5;
+      min-height: 380px;
+    }
+
+    .dest-card.wide {
+      grid-column: span 4;
+    }
+
+    .dest-card.mid {
+      grid-column: span 4;
+    }
+
+    .dest-card.side {
+      grid-column: span 4;
+    }
+
+    .dest-glow {
+      position: absolute;
+      inset: 0;
+      opacity: 0.7;
+      transition: opacity 0.4s;
+      pointer-events: none;
+    }
+
+    .dest-card:hover .dest-glow { opacity: 1; }
+
+    .glow-mars {
+      background:
+        radial-gradient(ellipse 80% 60% at 70% 20%, rgba(239, 68, 68, 0.35), transparent 55%),
+        radial-gradient(ellipse 50% 40% at 20% 80%, rgba(251, 146, 60, 0.2), transparent 50%);
+    }
+
+    .glow-europa {
+      background:
+        radial-gradient(ellipse 70% 50% at 30% 30%, rgba(34, 211, 238, 0.3), transparent 55%),
+        radial-gradient(ellipse 40% 40% at 80% 70%, rgba(147, 197, 253, 0.2), transparent 50%);
+    }
+
+    .glow-andromeda {
+      background:
+        radial-gradient(ellipse 90% 50% at 50% 40%, rgba(167, 139, 250, 0.35), transparent 55%),
+        radial-gradient(ellipse 50% 40% at 80% 80%, rgba(244, 114, 182, 0.2), transparent 50%);
+    }
+
+    .glow-titan {
+      background:
+        radial-gradient(ellipse 70% 50% at 40% 30%, rgba(251, 191, 36, 0.25), transparent 55%),
+        radial-gradient(ellipse 40% 40% at 70% 80%, rgba(249, 115, 22, 0.15), transparent 50%);
+    }
+
+    .glow-orion {
+      background:
+        radial-gradient(ellipse 80% 50% at 60% 25%, rgba(52, 211, 153, 0.2), transparent 50%),
+        radial-gradient(ellipse 50% 40% at 20% 75%, rgba(34, 211, 238, 0.18), transparent 50%);
+    }
+
+    .dest-orb {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      opacity: 0.9;
+    }
+
+    .orb-mars {
+      background: radial-gradient(circle at 35% 30%, #fca5a5, #dc2626 45%, #7f1d1d 100%);
+      box-shadow: 0 0 30px rgba(239, 68, 68, 0.4);
+    }
+
+    .orb-europa {
+      background: radial-gradient(circle at 35% 30%, #e0f2fe, #38bdf8 40%, #0c4a6e 100%);
+      box-shadow: 0 0 30px rgba(34, 211, 238, 0.4);
+    }
+
+    .orb-andromeda {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background:
+        radial-gradient(ellipse 60% 30% at 50% 50%, rgba(255,255,255,0.5), transparent 40%),
+        radial-gradient(circle at 50% 50%, #c4b5fd, #6d28d9 40%, #1e1b4b 100%);
+      box-shadow: 0 0 40px rgba(124, 58, 237, 0.5);
+      transform: rotate(-25deg) scaleX(1.6);
+    }
+
+    .orb-titan {
+      background: radial-gradient(circle at 35% 30%, #fde68a, #d97706 50%, #78350f 100%);
+      box-shadow: 0 0 30px rgba(251, 191, 36, 0.35);
+    }
+
+    .orb-orion {
+      background: radial-gradient(circle at 40% 35%, #a7f3d0, #059669 40%, #064e3b 100%);
+      box-shadow: 0 0 30px rgba(52, 211, 153, 0.35);
+    }
+
+    .dest-tag {
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+      position: relative;
+    }
+
+    .dest-card h3 {
+      font-family: var(--font-display);
+      font-size: 1.85rem;
+      font-weight: 500;
+      position: relative;
+    }
+
+    .dest-card p {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--muted);
+      font-weight: 300;
+      line-height: 1.6;
+      max-width: 32ch;
+      position: relative;
+    }
+
+    .dest-meta {
+      margin-top: 1rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      position: relative;
+    }
+
+    .dest-meta span {
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      color: var(--plasma-soft);
+      padding: 0.3rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid rgba(167, 139, 250, 0.25);
+      background: rgba(124, 58, 237, 0.1);
+    }
+
+    /* ── Manifesto ── */
+    .manifesto {
+      padding: 8rem 1.5rem;
+    }
+
+    .manifesto-inner {
+      width: min(900px, 100%);
+      margin: 0 auto;
+      text-align: center;
+      position: relative;
+    }
+
+    .manifesto-quote {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 4.5vw, 3.2rem);
+      font-weight: 400;
+      font-style: italic;
+      line-height: 1.35;
+      letter-spacing: -0.01em;
+    }
+
+    .manifesto-quote span {
+      background: linear-gradient(120deg, var(--text) 0%, var(--plasma-soft) 50%, var(--cyan) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .manifesto-attr {
+      margin-top: 2rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── Timeline / Journey ── */
+    .journey-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+      margin-top: 4rem;
+    }
+
+    .journey-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 1.25rem;
+      padding: 1.5rem 0;
+      border-top: 1px solid var(--glass-border);
+      transition: background 0.3s;
+    }
+
+    .step:last-child {
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .step-num {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      color: var(--plasma-soft);
+      line-height: 1;
+      padding-top: 0.15rem;
+    }
+
+    .step h3 {
+      font-size: 1.15rem;
+      font-weight: 500;
+      margin-bottom: 0.4rem;
+    }
+
+    .step p {
+      color: var(--muted);
+      font-size: 0.92rem;
+      font-weight: 300;
+      line-height: 1.65;
+    }
+
+    .journey-panel {
+      position: sticky;
+      top: 6rem;
+      border-radius: 1.75rem;
+      border: 1px solid var(--glass-border);
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(124, 58, 237, 0.2), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      backdrop-filter: blur(16px);
+      padding: 2.5rem;
+      overflow: hidden;
+      min-height: 420px;
+    }
+
+    .panel-ring {
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      border: 1px solid rgba(167, 139, 250, 0.2);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: ring-spin 30s linear infinite;
+    }
+
+    .panel-ring-2 {
+      width: 200px;
+      height: 200px;
+      border-style: dashed;
+      border-color: rgba(34, 211, 238, 0.2);
+      animation-direction: reverse;
+      animation-duration: 22s;
+    }
+
+    .panel-core {
+      position: absolute;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle at 35% 30%, #fff, var(--cyan) 30%, var(--plasma) 70%, #1e1b4b);
+      box-shadow: 0 0 40px rgba(34, 211, 238, 0.5), 0 0 80px rgba(124, 58, 237, 0.4);
+      animation: pulse-orb 4s ease-in-out infinite;
+    }
+
+    .panel-content {
+      position: relative;
+      z-index: 2;
+      margin-top: auto;
+      padding-top: 16rem;
+    }
+
+    .panel-content h3 {
+      font-family: var(--font-display);
+      font-size: 1.75rem;
+      font-weight: 500;
+    }
+
+    .panel-content p {
+      margin-top: 0.6rem;
+      color: var(--muted);
+      font-weight: 300;
+      font-size: 0.95rem;
+    }
+
+    /* ── Facts strip ── */
+    .facts {
+      padding: 5rem 1.5rem;
+      border-top: 1px solid var(--glass-border);
+      border-bottom: 1px solid var(--glass-border);
+      background: linear-gradient(180deg, rgba(124, 58, 237, 0.04), transparent);
+    }
+
+    .facts-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+
+    .fact {
+      padding: 1.5rem;
+    }
+
+    .fact-icon {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      opacity: 0.9;
+    }
+
+    .fact h3 {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 500;
+      margin-bottom: 0.6rem;
+    }
+
+    .fact p {
+      color: var(--muted);
+      font-size: 0.92rem;
+      font-weight: 300;
+      line-height: 1.7;
+    }
+
+    /* ── CTA ── */
+    .cta {
+      padding: 8rem 1.5rem;
+    }
+
+    .cta-box {
+      width: min(1000px, 100%);
+      margin: 0 auto;
+      text-align: center;
+      padding: 5rem 2rem;
+      border-radius: 2rem;
+      border: 1px solid var(--glass-border);
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse 70% 80% at 50% 100%, rgba(124, 58, 237, 0.25), transparent 55%),
+        radial-gradient(ellipse 50% 40% at 20% 20%, rgba(34, 211, 238, 0.1), transparent 50%),
+        radial-gradient(ellipse 40% 40% at 80% 30%, rgba(244, 114, 182, 0.1), transparent 50%),
+        rgba(255, 255, 255, 0.02);
+    }
+
+    .cta-box h2 {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 500;
+      line-height: 1.15;
+      max-width: 14ch;
+      margin: 0 auto;
+    }
+
+    .cta-box p {
+      margin: 1.25rem auto 0;
+      color: var(--muted);
+      font-weight: 300;
+      max-width: 28rem;
+      font-size: 1.05rem;
+    }
+
+    .cta-box .hero-actions {
+      margin-top: 2.25rem;
+      opacity: 1;
+      animation: none;
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--glass-border);
+      padding: 3rem 1.5rem 2.5rem;
+    }
+
+    .footer-inner {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+    }
+
+    .footer-copy {
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 300;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.8rem;
+      letter-spacing: 0.06em;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--text); }
+
+    /* ── Reveal on scroll ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(36px);
+      transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+
+    /* ── Solar System ── */
+    .solar {
+      padding: 6rem 1.5rem 7rem;
+      overflow: hidden;
+    }
+
+    .solar-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      justify-content: space-between;
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .solar-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .solar-controls button,
+    .speed-chip {
+      appearance: none;
+      border: 1px solid var(--glass-border);
+      background: var(--glass);
+      color: var(--muted);
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.65rem 1rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: color 0.25s, border-color 0.25s, background 0.25s, box-shadow 0.25s;
+    }
+
+    .solar-controls button:hover,
+    .speed-chip:hover {
+      color: var(--text);
+      border-color: rgba(167, 139, 250, 0.4);
+    }
+
+    .solar-controls button.active,
+    .speed-chip.active {
+      color: var(--void);
+      background: linear-gradient(135deg, var(--gold), var(--gold-soft));
+      border-color: transparent;
+      box-shadow: 0 0 20px rgba(240, 208, 128, 0.25);
+    }
+
+    .speed-group {
+      display: flex;
+      gap: 0.35rem;
+      padding: 0.25rem;
+      border-radius: 999px;
+      border: 1px solid var(--glass-border);
+      background: rgba(0, 0, 0, 0.25);
+    }
+
+    .speed-chip {
+      border: none;
+      background: transparent;
+      padding: 0.5rem 0.85rem;
+    }
+
+    .solar-stage-wrap {
+      display: grid;
+      grid-template-columns: 1fr minmax(260px, 320px);
+      gap: 1.75rem;
+      align-items: stretch;
+    }
+
+    .solar-stage {
+      position: relative;
+      aspect-ratio: 1.05 / 1;
+      max-height: min(82vh, 820px);
+      width: 100%;
+      margin: 0 auto;
+      border-radius: 1.75rem;
+      border: 1px solid var(--glass-border);
+      background:
+        radial-gradient(circle at 50% 42%, rgba(255, 200, 80, 0.07) 0%, transparent 28%),
+        radial-gradient(ellipse 80% 60% at 50% 50%, rgba(124, 58, 237, 0.1), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.28));
+      overflow: hidden;
+      box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.35);
+      perspective: 1100px;
+      perspective-origin: 50% 45%;
+    }
+
+    .solar-stage {
+      perspective: 1100px;
+      overflow: hidden;
+    }
+
+    .solar-system {
+      position: absolute;
+      inset: 0;
+      --speed: 1;
+      --tilt: 68deg;
+      --yaw: -16deg;
+      transform-style: preserve-3d;
+    }
+
+    .solar-system.paused .orbit,
+    .solar-system.paused .planet-wrap-body,
+    .solar-system.paused .moon-orbit,
+    .solar-system.paused .asteroid-belt,
+    .solar-system.paused .sun-core,
+    .solar-system.paused .sun-corona,
+    .solar-system.paused .p-jupiter,
+    .solar-system.paused .saturn-ring,
+    .solar-system.paused .pluto-plane {
+      animation-play-state: paused;
+    }
+
+    /* 3D ecliptic plane — circles become ellipses via rotateX */
+    .orbit-plane {
+      position: absolute;
+      inset: 8%;
+      top: 12%;
+      bottom: 4%;
+      left: 4%;
+      right: 4%;
+      transform-style: preserve-3d;
+      transform: rotateX(var(--tilt)) rotateZ(var(--yaw));
+    }
+
+    .sun {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 52px;
+      height: 52px;
+      margin: -26px 0 0 -26px;
+      z-index: 40;
+      cursor: pointer;
+      transform: rotateX(calc(-1 * var(--tilt))) rotateZ(calc(-1 * var(--yaw)));
+      transform-style: preserve-3d;
+    }
+
+    .sun-core {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 35% 30%, #fff7d6, #ffd060 35%, #ff8a00 70%, #c2410c 100%);
+      box-shadow:
+        0 0 20px rgba(255, 200, 60, 0.9),
+        0 0 50px rgba(255, 140, 0, 0.55),
+        0 0 100px rgba(255, 100, 0, 0.3);
+      animation: sun-pulse calc(4s / var(--speed)) ease-in-out infinite;
+    }
+
+    .sun-corona {
+      position: absolute;
+      inset: -18px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 200, 80, 0.35), transparent 70%);
+      animation: sun-corona calc(6s / var(--speed)) ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes sun-pulse {
+      0%, 100% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.06); filter: brightness(1.12); }
+    }
+
+    @keyframes sun-corona {
+      0%, 100% { opacity: 0.7; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.12); }
+    }
+
+    .orbit {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      top: 50%;
+      left: 50%;
+      transform-style: preserve-3d;
+      /* slight eccentricity: width ≠ height → true ellipse in plane, then 3D tilt */
+      animation: orbit-spin linear infinite;
+      box-shadow: 0 0 12px rgba(124, 58, 237, 0.04);
+    }
+
+    .orbit:hover,
+    .orbit.active {
+      border-color: rgba(167, 139, 250, 0.45);
+      box-shadow: 0 0 28px rgba(124, 58, 237, 0.18);
+    }
+
+    /* elliptical semi-major / semi-minor (eccentricity exaggerated for drama) */
+    .orbit-mercury { width: 16%;  height: 14.5%; animation-duration: calc(6s / var(--speed));  z-index: 19; }
+    .orbit-venus   { width: 24%;  height: 22%;   animation-duration: calc(10s / var(--speed)); z-index: 18; }
+    .orbit-earth   { width: 33%;  height: 30%;   animation-duration: calc(16s / var(--speed)); z-index: 17; }
+    .orbit-mars    { width: 42%;  height: 37%;   animation-duration: calc(24s / var(--speed)); z-index: 16; }
+    .orbit-jupiter { width: 56%;  height: 49%;   animation-duration: calc(40s / var(--speed)); z-index: 15; }
+    .orbit-saturn  { width: 68%;  height: 58%;   animation-duration: calc(52s / var(--speed)); z-index: 14; }
+    .orbit-uranus  { width: 80%;  height: 68%;   animation-duration: calc(64s / var(--speed)); z-index: 13; }
+    .orbit-neptune { width: 90%;  height: 76%;   animation-duration: calc(76s / var(--speed)); z-index: 12; }
+    .orbit-pluto   { width: 98%;  height: 72%;   animation-duration: calc(96s / var(--speed)); z-index: 11;
+                     border-color: rgba(200, 180, 255, 0.14);
+                     border-style: dashed; }
+
+    @keyframes orbit-spin {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to   { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    /* Pluto: more inclined independent plane */
+    .pluto-plane {
+      position: absolute;
+      inset: 0;
+      transform-style: preserve-3d;
+      transform: rotateX(52deg) rotateZ(28deg);
+      pointer-events: none;
+      z-index: 11;
+    }
+
+    .pluto-plane .orbit {
+      pointer-events: auto;
+    }
+
+    /* asteroid belt between Mars & Jupiter */
+    .asteroid-belt {
+      position: absolute;
+      width: 49%;
+      height: 43%;
+      top: 50%;
+      left: 50%;
+      border-radius: 50%;
+      border: 7px solid transparent;
+      background:
+        repeating-conic-gradient(
+          from 0deg,
+          transparent 0deg 3deg,
+          rgba(200, 190, 170, 0.2) 3deg 3.4deg,
+          transparent 3.4deg 8deg
+        ) border-box;
+      -webkit-mask:
+        radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 7px));
+      mask:
+        radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 7px));
+      animation: orbit-spin calc(90s / var(--speed)) linear infinite;
+      opacity: 0.55;
+      pointer-events: none;
+      z-index: 15;
+      transform: translate(-50%, -50%);
+    }
+
+    .planet-slot {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 0;
+      height: 0;
+      transform-style: preserve-3d;
+    }
+
+    .planet-body {
+      border-radius: 50%;
+      cursor: pointer;
+      transition: box-shadow 0.3s, transform 0.3s;
+      z-index: 2;
+      position: relative;
+    }
+
+    .planet-body::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle at 32% 28%, rgba(255,255,255,0.45), transparent 45%);
+      pointer-events: none;
+    }
+
+    .p-mercury {
+      width: 8px; height: 8px;
+      background: radial-gradient(circle at 35% 30%, #e8dcc8, #9a8b7a 60%, #5c5348);
+      box-shadow: 0 0 8px rgba(200, 180, 150, 0.4);
+    }
+
+    .p-venus {
+      width: 12px; height: 12px;
+      background: radial-gradient(circle at 35% 30%, #fff3c4, #e8b84a 45%, #b8860b 100%);
+      box-shadow: 0 0 10px rgba(232, 184, 74, 0.45);
+    }
+
+    .p-earth {
+      width: 13px; height: 13px;
+      background:
+        radial-gradient(circle at 30% 30%, #7dd3fc, transparent 40%),
+        radial-gradient(circle at 70% 60%, #22c55e 0 20%, transparent 40%),
+        radial-gradient(circle at 40% 70%, #15803d, #0c4a6e 70%);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+    }
+
+    .p-mars {
+      width: 11px; height: 11px;
+      background: radial-gradient(circle at 35% 30%, #fca5a5, #dc2626 50%, #7f1d1d);
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.45);
+    }
+
+    .p-jupiter {
+      width: 26px; height: 26px;
+      background:
+        repeating-linear-gradient(
+          180deg,
+          #d4a574 0px, #d4a574 3px,
+          #c4874a 3px, #c4874a 5px,
+          #e8c9a0 5px, #e8c9a0 7px,
+          #a67c52 7px, #a67c52 9px
+        );
+      box-shadow: 0 0 16px rgba(212, 165, 116, 0.4);
+      animation: jupiter-bands calc(8s / var(--speed)) linear infinite;
+    }
+
+    @keyframes jupiter-bands {
+      from { filter: hue-rotate(0deg); }
+      to { filter: hue-rotate(8deg); }
+    }
+
+    .p-saturn {
+      width: 20px; height: 20px;
+      background: radial-gradient(circle at 35% 30%, #fde68a, #d4a017 55%, #92700c);
+      box-shadow: 0 0 14px rgba(212, 160, 23, 0.4);
+    }
+
+    .saturn-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 40px;
+      height: 11px;
+      transform: translate(-50%, -50%) rotateX(68deg);
+      border-radius: 50%;
+      border: 2px solid rgba(230, 200, 140, 0.55);
+      box-shadow:
+        0 0 0 1px rgba(180, 150, 100, 0.25),
+        inset 0 0 0 3px rgba(0,0,0,0.15);
+      pointer-events: none;
+      animation: saturn-tilt calc(6s / var(--speed)) ease-in-out infinite;
+    }
+
+    @keyframes saturn-tilt {
+      0%, 100% { transform: translate(-50%, -50%) rotateX(68deg) rotateZ(-8deg); }
+      50% { transform: translate(-50%, -50%) rotateX(68deg) rotateZ(8deg); }
+    }
+
+    .p-uranus {
+      width: 15px; height: 15px;
+      background: radial-gradient(circle at 35% 30%, #a5f3fc, #22d3ee 50%, #0e7490);
+      box-shadow: 0 0 12px rgba(34, 211, 238, 0.4);
+    }
+
+    .p-neptune {
+      width: 14px; height: 14px;
+      background: radial-gradient(circle at 35% 30%, #93c5fd, #2563eb 50%, #1e3a8a);
+      box-shadow: 0 0 12px rgba(37, 99, 235, 0.45);
+    }
+
+    .p-pluto {
+      width: 7px; height: 7px;
+      background: radial-gradient(circle at 35% 30%, #f5e6d3, #c4a882 50%, #7a6550);
+      box-shadow: 0 0 10px rgba(220, 190, 160, 0.45);
+    }
+
+    /* Moon around Earth */
+    .moon-orbit {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 28px;
+      height: 28px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      animation: moon-spin calc(3.2s / var(--speed)) linear infinite;
+      pointer-events: none;
+    }
+
+    .moon {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle at 30% 30%, #f1f5f9, #94a3b8);
+      box-shadow: 0 0 4px rgba(255,255,255,0.4);
+    }
+
+    @keyframes moon-spin {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    .planet-label {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.58rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      text-shadow: 0 1px 8px #000;
+    }
+
+    .orbit:hover .planet-label,
+    .orbit.active .planet-label {
+      opacity: 1;
+      color: var(--text);
+    }
+
+    /* Billboard: counter-orbit + un-tilt so planet faces camera */
+    .planet-wrap-body {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform-style: preserve-3d;
+      /* base un-tilt is baked into each counter-spin keyframe via --billboard */
+    }
+
+    .planet-wrap-body .planet-body:hover,
+    .orbit.active .planet-wrap-body .planet-body {
+      transform: scale(1.35);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+    }
+
+    @keyframes counter-spin {
+      from {
+        transform:
+          translate(-50%, -50%)
+          rotate(0deg)
+          rotateZ(calc(-1 * var(--yaw)))
+          rotateX(calc(-1 * var(--tilt)));
+      }
+      to {
+        transform:
+          translate(-50%, -50%)
+          rotate(-360deg)
+          rotateZ(calc(-1 * var(--yaw)))
+          rotateX(calc(-1 * var(--tilt)));
+      }
+    }
+
+    /* Pluto billboard uses its own plane tilt */
+    @keyframes counter-spin-pluto {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg) rotateZ(-28deg) rotateX(-52deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(-360deg) rotateZ(-28deg) rotateX(-52deg);
+      }
+    }
+
+    .orbit-mercury .planet-wrap-body { animation: counter-spin calc(6s / var(--speed)) linear infinite; }
+    .orbit-venus .planet-wrap-body   { animation: counter-spin calc(10s / var(--speed)) linear infinite; }
+    .orbit-earth .planet-wrap-body   { animation: counter-spin calc(16s / var(--speed)) linear infinite; }
+    .orbit-mars .planet-wrap-body    { animation: counter-spin calc(24s / var(--speed)) linear infinite; }
+    .orbit-jupiter .planet-wrap-body { animation: counter-spin calc(40s / var(--speed)) linear infinite; }
+    .orbit-saturn .planet-wrap-body  { animation: counter-spin calc(52s / var(--speed)) linear infinite; }
+    .orbit-uranus .planet-wrap-body  { animation: counter-spin calc(64s / var(--speed)) linear infinite; }
+    .orbit-neptune .planet-wrap-body { animation: counter-spin calc(76s / var(--speed)) linear infinite; }
+    .orbit-pluto .planet-wrap-body   { animation: counter-spin-pluto calc(96s / var(--speed)) linear infinite; }
+
+    .solar-hint {
+      position: absolute;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 50;
+    }
+
+    /* ── Planet zoom modal ── */
+    .zoom-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: grid;
+      place-items: center;
+      padding: 1.5rem;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.45s ease, visibility 0.45s;
+    }
+
+    .zoom-modal.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .zoom-backdrop {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(20, 8, 40, 0.75), rgba(0, 0, 0, 0.92));
+      backdrop-filter: blur(18px);
+      cursor: pointer;
+    }
+
+    .zoom-panel {
+      position: relative;
+      z-index: 2;
+      width: min(920px, 100%);
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 2rem;
+      align-items: center;
+      padding: 2.5rem;
+      border-radius: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: linear-gradient(160deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      box-shadow: 0 40px 100px rgba(0, 0, 0, 0.55);
+      transform: scale(0.72) translateY(40px);
+      transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .zoom-modal.open .zoom-panel {
+      transform: scale(1) translateY(0);
+    }
+
+    .zoom-orb-wrap {
+      position: relative;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+    }
+
+    .zoom-orb {
+      width: min(320px, 55vw);
+      height: min(320px, 55vw);
+      border-radius: 50%;
+      position: relative;
+      animation: zoom-float 6s ease-in-out infinite;
+      transition: background 0.4s, box-shadow 0.4s;
+    }
+
+    .zoom-orb.saturn::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 150%;
+      height: 42%;
+      transform: translate(-50%, -50%) rotateX(72deg);
+      border-radius: 50%;
+      border: 10px solid rgba(230, 200, 140, 0.45);
+      box-shadow: 0 0 0 4px rgba(180, 150, 100, 0.2);
+      pointer-events: none;
+    }
+
+    .zoom-orb::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 28%, rgba(255,255,255,0.4), transparent 42%);
+    }
+
+    .zoom-glow {
+      position: absolute;
+      width: 120%;
+      height: 120%;
+      border-radius: 50%;
+      filter: blur(40px);
+      opacity: 0.55;
+      z-index: -1;
+      animation: zoom-glow-pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes zoom-float {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-12px) scale(1.03); }
+    }
+
+    @keyframes zoom-glow-pulse {
+      0%, 100% { opacity: 0.4; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.08); }
+    }
+
+    .zoom-copy .tag {
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--cyan);
+    }
+
+    .zoom-copy h3 {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      font-weight: 500;
+      margin: 0.5rem 0 1rem;
+      line-height: 1.05;
+    }
+
+    .zoom-copy .desc {
+      color: var(--muted);
+      font-weight: 300;
+      line-height: 1.75;
+      margin-bottom: 1.5rem;
+    }
+
+    .zoom-facts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .zoom-close {
+      position: absolute;
+      top: 1.1rem;
+      right: 1.1rem;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid var(--glass-border);
+      background: rgba(0,0,0,0.35);
+      color: var(--text);
+      font-size: 1.4rem;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: background 0.2s, transform 0.2s;
+      z-index: 3;
+    }
+
+    .zoom-close:hover {
+      background: rgba(255,255,255,0.1);
+      transform: scale(1.06);
+    }
+
+    .zoom-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.4rem;
+      border-radius: 999px;
+      border: 1px solid rgba(167, 139, 250, 0.35);
+      background: rgba(124, 58, 237, 0.15);
+      color: var(--text);
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: background 0.25s;
+    }
+
+    .zoom-cta:hover {
+      background: rgba(124, 58, 237, 0.3);
+    }
+
+    /* ── BLACK HOLE — Grok-style, monumental ── */
+    .singularity {
+      position: relative;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 6rem 1.5rem;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .bh-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .bh-vignette {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 55% 55% at 50% 50%, transparent 20%, rgba(0, 0, 0, 0.55) 70%, rgba(0, 0, 0, 0.92) 100%);
+    }
+
+    .bh-content {
+      position: relative;
+      z-index: 5;
+      text-align: center;
+      max-width: 900px;
+      pointer-events: none;
+    }
+
+    .bh-content .section-label {
+      color: #e8e8ec;
+      text-shadow: 0 0 30px rgba(255,255,255,0.35);
+    }
+
+    .bh-title {
+      font-family: var(--font-display);
+      font-size: clamp(3.5rem, 12vw, 9rem);
+      font-weight: 500;
+      line-height: 0.92;
+      letter-spacing: -0.03em;
+      margin: 1rem 0 1.5rem;
+      background: linear-gradient(180deg, #fff 10%, #a1a1aa 55%, #52525b 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 0 40px rgba(255,255,255,0.15));
+    }
+
+    .bh-title em {
+      font-style: italic;
+      background: linear-gradient(120deg, #fff 0%, #c4b5fd 40%, #67e8f9 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .bh-lead {
+      color: rgba(200, 200, 210, 0.75);
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      font-weight: 300;
+      line-height: 1.75;
+      max-width: 34rem;
+      margin: 0 auto 2.5rem;
+    }
+
+    .bh-stats {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      pointer-events: auto;
+    }
+
+    .bh-stat {
+      padding: 1rem 1.5rem;
+      border-radius: 1rem;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(12px);
+      min-width: 140px;
+    }
+
+    .bh-stat strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .bh-stat span {
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(180, 180, 190, 0.7);
+    }
+
+    .bh-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1.25rem;
+      padding: 0.5rem 1.15rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(0,0,0,0.4);
+      color: rgba(240,240,245,0.9);
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      pointer-events: auto;
+    }
+
+    .bh-badge i {
+      display: block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 12px #fff, 0 0 24px rgba(255,255,255,0.5);
+      animation: blink 1.8s ease infinite;
+    }
+
+    .bh-scroll-fade {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 120px;
+      z-index: 2;
+      background: linear-gradient(to top, var(--void), transparent);
+      pointer-events: none;
+    }
+
+    .planet-info {
+      border-radius: 1.5rem;
+      border: 1px solid var(--glass-border);
+      background:
+        radial-gradient(ellipse 100% 60% at 50% 0%, rgba(124, 58, 237, 0.15), transparent 55%),
+        linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      backdrop-filter: blur(16px);
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+
+    .planet-info-orb {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      margin-bottom: 1.25rem;
+      flex-shrink: 0;
+      position: relative;
+      transition: background 0.4s, box-shadow 0.4s;
+    }
+
+    .planet-info-orb.saturn::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 96px;
+      height: 28px;
+      transform: translate(-50%, -50%) rotateX(68deg);
+      border-radius: 50%;
+      border: 2px solid rgba(230, 200, 140, 0.5);
+      pointer-events: none;
+    }
+
+    .planet-info .tag {
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 0.4rem;
+    }
+
+    .planet-info h3 {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 500;
+      line-height: 1.1;
+      margin-bottom: 0.75rem;
+    }
+
+    .planet-info .desc {
+      color: var(--muted);
+      font-size: 0.92rem;
+      font-weight: 300;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+      flex: 1;
+    }
+
+    .planet-facts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .planet-fact {
+      padding: 0.75rem;
+      border-radius: 0.85rem;
+      border: 1px solid var(--glass-border);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .planet-fact dt {
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .planet-fact dd {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .planet-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 2rem;
+      justify-content: center;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.45rem 0.85rem;
+      border-radius: 999px;
+      border: 1px solid var(--glass-border);
+      background: var(--glass);
+      font-size: 0.72rem;
+      color: var(--muted);
+      cursor: pointer;
+      transition: color 0.25s, border-color 0.25s, background 0.25s;
+    }
+
+    .legend-item:hover,
+    .legend-item.active {
+      color: var(--text);
+      border-color: rgba(167, 139, 250, 0.4);
+      background: rgba(124, 58, 237, 0.12);
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 900px) {
+      .nav-links { display: none; }
+      .nav-cta { display: none; }
+      .menu-btn { display: flex; }
+
+      .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(3, 1, 10, 0.95);
+        backdrop-filter: blur(20px);
+        padding: 1rem;
+        border-bottom: 1px solid var(--glass-border);
+        gap: 0.25rem;
+      }
+
+      .nav-links.open .nav-cta-mobile {
+        display: inline-flex;
+        margin-top: 0.75rem;
+        justify-content: center;
+      }
+
+      .hero-stats { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+
+      .dest-card.featured,
+      .dest-card.tall,
+      .dest-card.wide,
+      .dest-card.mid,
+      .dest-card.side {
+        grid-column: span 12;
+        min-height: 260px;
+      }
+
+      .journey-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .journey-panel { position: relative; top: 0; min-height: 340px; }
+      .panel-content { padding-top: 12rem; }
+
+      .facts-grid { grid-template-columns: 1fr; gap: 0.5rem; }
+
+      .solar-stage-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .solar-stage {
+        max-height: none;
+        aspect-ratio: 1;
+      }
+
+      .sun {
+        width: 40px;
+        height: 40px;
+        margin: -20px 0 0 -20px;
+      }
+
+      .planet-info {
+        min-height: auto;
+      }
+
+      .zoom-panel {
+        grid-template-columns: 1fr;
+        padding: 1.75rem 1.25rem 2rem;
+        gap: 1.25rem;
+        text-align: center;
+      }
+
+      .zoom-orb {
+        width: min(220px, 60vw);
+        height: min(220px, 60vw);
+      }
+
+      .zoom-facts {
+        text-align: left;
+      }
+
+      .bh-title {
+        font-size: clamp(2.8rem, 14vw, 4.5rem);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .nav { padding: 1rem 1.15rem; }
+      section { padding: 5rem 1.15rem; }
+      .cta-box { padding: 3.5rem 1.25rem; }
+
+      .solar-controls {
+        width: 100%;
+      }
+
+      .speed-group {
+        flex: 1;
+        justify-content: space-between;
+      }
+
+      .planet-label {
+        font-size: 0.5rem;
+      }
+
+      .solar-system {
+        --tilt: 72deg;
+      }
+
+      .singularity {
+        min-height: 90vh;
+        padding: 4rem 1rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .orbit,
+      .moon-orbit,
+      .asteroid-belt,
+      .sun-core,
+      .sun-corona,
+      .planet-wrap-body,
+      .saturn-ring,
+      .p-jupiter {
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="stars"></canvas>
+  <div class="atmosphere" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
+
+  <!-- Planet zoom overlay -->
+  <div class="zoom-modal" id="zoomModal" role="dialog" aria-modal="true" aria-labelledby="zoomName" hidden>
+    <div class="zoom-backdrop" id="zoomBackdrop"></div>
+    <div class="zoom-panel">
+      <button type="button" class="zoom-close" id="zoomClose" aria-label="Đóng">×</button>
+      <div class="zoom-orb-wrap">
+        <div class="zoom-glow" id="zoomGlow"></div>
+        <div class="zoom-orb" id="zoomOrb"></div>
+      </div>
+      <div class="zoom-copy">
+        <div class="tag" id="zoomTag">—</div>
+        <h3 id="zoomName">—</h3>
+        <p class="desc" id="zoomDesc">—</p>
+        <dl class="zoom-facts planet-facts">
+          <div class="planet-fact"><dt>Loại</dt><dd id="zoomType">—</dd></div>
+          <div class="planet-fact"><dt>Đường kính</dt><dd id="zoomSize">—</dd></div>
+          <div class="planet-fact"><dt>Nhiệt độ</dt><dd id="zoomTemp">—</dd></div>
+          <div class="planet-fact"><dt>Chu kỳ</dt><dd id="zoomPeriod">—</dd></div>
+        </dl>
+        <a href="#join" class="zoom-cta" id="zoomCta">Đặt chuyến bay tới đây →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="shell">
+    <nav class="nav" id="nav">
+      <a href="#" class="logo">
+        <span class="logo-orb" aria-hidden="true"></span>
+        AETHER
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#solar">Hệ Mặt Trời</a></li>
+        <li><a href="#singularity">Hố đen</a></li>
+        <li><a href="#destinations">Điểm đến</a></li>
+        <li><a href="#journey">Hành trình</a></li>
+        <li><a href="#join" class="nav-cta nav-cta-mobile" style="display:none">Khởi hành</a></li>
+      </ul>
+      <a href="#join" class="nav-cta">Khởi hành</a>
+      <button class="menu-btn" id="menuBtn" aria-label="Mở menu">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path d="M4 7h16M4 12h16M4 17h16"/>
+        </svg>
+      </button>
+    </nav>
+
+    <!-- HERO -->
+    <header class="hero">
+      <div class="planet-wrap" aria-hidden="true">
+        <div class="planet"></div>
+      </div>
+
+      <div class="hero-eyebrow">Nhiệm vụ 2087 · Đang tuyển phi hành đoàn</div>
+      <h1>Vượt khỏi<br /><em>chân trời</em></h1>
+      <p class="hero-sub">
+        AETHER mở cánh cửa tới những thế giới chưa từng đặt chân.
+        Từ bụi sao Sao Hỏa đến vệt sáng Andromeda — vũ trụ không còn là giấc mơ.
+      </p>
+      <div class="hero-actions">
+        <a href="#join" class="btn-primary">
+          Đăng ký chuyến bay
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a href="#solar" class="btn-ghost">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          Hệ Mặt Trời
+        </a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-value">13.8B</div>
+          <div class="stat-label">Năm vũ trụ</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">2T+</div>
+          <div class="stat-label">Thiên hà</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">8.6ly</div>
+          <div class="stat-label">Sao gần nhất</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">∞</div>
+          <div class="stat-label">Khả năng</div>
+        </div>
+      </div>
+
+      <div class="scroll-hint">
+        Cuộn xuống
+        <div class="scroll-line"></div>
+      </div>
+    </header>
+
+    <!-- SOLAR SYSTEM -->
+    <section class="solar" id="solar">
+      <div class="container">
+        <div class="solar-header reveal">
+          <div>
+            <span class="section-label">Mô phỏng quỹ đạo 3D</span>
+            <h2 class="section-title">Hệ <em>Mặt Trời</em></h2>
+            <p class="section-lead">
+              Quỹ đạo ellipse nghiêng trong không gian 3D — từ Thủy đến Diêm Vương.
+              Click hành tinh để zoom cận cảnh.
+            </p>
+          </div>
+          <div class="solar-controls">
+            <button type="button" id="orbitToggle" aria-pressed="false">Tạm dừng</button>
+            <div class="speed-group" role="group" aria-label="Tốc độ quỹ đạo">
+              <button type="button" class="speed-chip" data-speed="0.5">0.5×</button>
+              <button type="button" class="speed-chip active" data-speed="1">1×</button>
+              <button type="button" class="speed-chip" data-speed="2">2×</button>
+              <button type="button" class="speed-chip" data-speed="5">5×</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="solar-stage-wrap reveal">
+          <div class="solar-stage">
+            <div class="solar-system" id="solarSystem" style="--speed: 1">
+              <div class="orbit-plane">
+                <div class="asteroid-belt" aria-hidden="true"></div>
+
+                <div class="sun" data-planet="sun" title="Mặt Trời" role="button" tabindex="0">
+                  <div class="sun-corona"></div>
+                  <div class="sun-core"></div>
+                </div>
+
+                <div class="orbit orbit-mercury" data-planet="mercury">
+                  <div class="planet-slot">
+                    <div class="planet-wrap-body">
+                      <div class="planet-body p-mercury" role="button" tabindex="0" aria-label="Sao Thủy"></div>
+                      <span class="planet-label">Thủy</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="orbit orbit-venus" data-planet="venus">
+                  <div class="planet-slot">
+                    <div class="planet-wrap-body">
+                      <div class="planet-body p-venus" role="button" tabindex="0" aria-label="Sao Kim"></div>
+                      <span class="planet-label">Kim</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="orbit orbit-earth" data-planet="earth">
+                  <div class="planet-slot">
+                    <div class="planet-wrap-body">
+                      <div class="moon-orbit" aria-hidden="true"><div class="moon"></div></div>
+                      <div class="planet-body p-earth" role="button" tabindex="0" aria-label="Trái Đất"></div>
+                      <span class="planet-label">Trái Đất</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="orbit orbit-mars" data-planet="mars">
+                  <div class="planet-slot">
+                    <div class="planet-wrap-body">
+                      <div class="planet-body p-mars" role="button" tabindex="0" aria-label="Sao Hỏa"></div>
+                      <span class="planet-label">Hỏa</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="orbit orbit-jupiter" data-planet="jupiter">
+                  <div class="planet-slot">
+                    <div class="planet-wrap-body">
+                      <div class="planet-body p-jupiter" role="button" tabindex="0" aria-label="Sao Mộc"></div>
+                      <span class="planet-label">Mộc</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="orbit orbit-saturn" data-planet="saturn">
+                  <div class="planet-slot">
+                    <div class="planet-wrap-body">
+                      <div class="planet-body p-saturn" role="button" tabindex="0" aria-label="Sao Thổ">
+                        <span class="saturn-ring" aria-hidden="true"></span>
+                      </div>
+                      <span class="planet-label">Thổ</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="orbit orbit-uranus" data-planet="uranus">
+                  <div class="planet-slot">
+                    <div class="planet-wrap-body">
+                      <div class="planet-body p-uranus" role="button" tabindex="0" aria-label="Sao Thiên Vương"></div>
+                      <span class="planet-label">Thiên Vương</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="orbit orbit-neptune" data-planet="neptune">
+                  <div class="planet-slot">
+                    <div class="planet-wrap-body">
+                      <div class="planet-body p-neptune" role="button" tabindex="0" aria-label="Sao Hải Vương"></div>
+                      <span class="planet-label">Hải Vương</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pluto on a more inclined plane -->
+              <div class="pluto-plane">
+                <div class="orbit orbit-pluto" data-planet="pluto">
+                  <div class="planet-slot">
+                    <div class="planet-wrap-body">
+                      <div class="planet-body p-pluto" role="button" tabindex="0" aria-label="Diêm Vương"></div>
+                      <span class="planet-label">Diêm Vương</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p class="solar-hint">Click để zoom · Quỹ đạo ellipse 3D · Pluto nghiêng riêng</p>
+          </div>
+
+          <aside class="planet-info" id="planetInfo" aria-live="polite">
+            <div class="planet-info-orb" id="infoOrb" style="background: radial-gradient(circle at 35% 30%, #fff7d6, #ff8a00 70%, #c2410c); box-shadow: 0 0 30px rgba(255,140,0,0.5);"></div>
+            <div class="tag" id="infoTag">Ngôi sao trung tâm</div>
+            <h3 id="infoName">Mặt Trời</h3>
+            <p class="desc" id="infoDesc">
+              Quả cầu plasma khổng lồ — nguồn năng lượng cho mọi sự sống trong hệ.
+              Chiếm ~99.8% khối lượng toàn hệ Mặt Trời.
+            </p>
+            <dl class="planet-facts">
+              <div class="planet-fact"><dt>Loại</dt><dd id="infoType">Sao G-type</dd></div>
+              <div class="planet-fact"><dt>Đường kính</dt><dd id="infoSize">1.39M km</dd></div>
+              <div class="planet-fact"><dt>Nhiệt độ</dt><dd id="infoTemp">5.500°C</dd></div>
+              <div class="planet-fact"><dt>Chu kỳ</dt><dd id="infoPeriod">—</dd></div>
+            </dl>
+          </aside>
+        </div>
+
+        <div class="planet-legend reveal" id="planetLegend"></div>
+      </div>
+    </section>
+
+    <!-- BLACK HOLE / SINGULARITY — Grok-style monumental -->
+    <section class="singularity" id="singularity">
+      <canvas class="bh-canvas" id="bhCanvas" aria-hidden="true"></canvas>
+      <div class="bh-vignette"></div>
+      <div class="bh-content reveal">
+        <div class="bh-badge"><i></i> Event Horizon · AETHER Core</div>
+        <h2 class="bh-title">Hố đen<br /><em>vĩnh cửu</em></h2>
+        <p class="bh-lead">
+          Nơi không gian uốn cong, thời gian chậm lại, và ánh sáng không thể thoát.
+          Lấy cảm hứng từ biểu tượng xoáy của Grok — một điểm kỳ dị giữa hư vô.
+        </p>
+        <div class="bh-stats">
+          <div class="bh-stat"><strong>∞</strong><span>Mật độ</span></div>
+          <div class="bh-stat"><strong>c</strong><span>Vận tốc tối đa</span></div>
+          <div class="bh-stat"><strong>Rs</strong><span>Bán kính Schwarzschild</span></div>
+          <div class="bh-stat"><strong>0</strong><span>Lối thoát</span></div>
+        </div>
+      </div>
+      <div class="bh-scroll-fade"></div>
+    </section>
+
+    <!-- DESTINATIONS -->
+    <section class="destinations" id="destinations">
+      <div class="container">
+        <div class="dest-header reveal">
+          <div>
+            <span class="section-label">Bản đồ thiên thể</span>
+            <h2 class="section-title">Những <em>thế giới</em> đang chờ</h2>
+            <p class="section-lead">
+              Mỗi điểm đến là một chương sử thi. Chọn quỹ đạo của bạn —
+              chúng tôi lo phần còn lại của vũ trụ.
+            </p>
+          </div>
+        </div>
+
+        <div class="dest-grid">
+          <article class="dest-card featured reveal">
+            <div class="dest-glow glow-andromeda"></div>
+            <div class="dest-orb orb-andromeda" aria-hidden="true"></div>
+            <div class="dest-tag">Thiên hà · 2.5 triệu năm ánh sáng</div>
+            <h3>Andromeda</h3>
+            <p>Vùng xoắn ốc lân cận — 1 nghìn tỷ ngôi sao, sương mù sao, và ánh sáng cổ xưa hơn cả loài người.</p>
+            <div class="dest-meta">
+              <span>Expedition Class</span>
+              <span>28 ngày hành trình</span>
+            </div>
+          </article>
+
+          <article class="dest-card tall reveal reveal-delay-1">
+            <div class="dest-glow glow-mars"></div>
+            <div class="dest-orb orb-mars" aria-hidden="true"></div>
+            <div class="dest-tag">Hành tinh · 225M km</div>
+            <h3>Sao Hỏa</h3>
+            <p>Hoàng hôn xanh, thung lũng Valles Marineris, và những cơn bão bụi vẽ lại chân trời đỏ.</p>
+            <div class="dest-meta">
+              <span>Popular</span>
+              <span>7 ngày</span>
+            </div>
+          </article>
+
+          <article class="dest-card wide reveal">
+            <div class="dest-glow glow-europa"></div>
+            <div class="dest-orb orb-europa" aria-hidden="true"></div>
+            <div class="dest-tag">Mặt trăng băng · Sao Mộc</div>
+            <h3>Europa</h3>
+            <p>Đại dương ẩn dưới lớp băng — có thể là cái nôi sự sống ngoài Trái Đất.</p>
+            <div class="dest-meta"><span>Research</span></div>
+          </article>
+
+          <article class="dest-card mid reveal reveal-delay-1">
+            <div class="dest-glow glow-titan"></div>
+            <div class="dest-orb orb-titan" aria-hidden="true"></div>
+            <div class="dest-tag">Mặt trăng · Sao Thổ</div>
+            <h3>Titan</h3>
+            <p>Hồ methane, bầu trời cam, và khí quyển dày hơn Trái Đất.</p>
+            <div class="dest-meta"><span>Luxury</span></div>
+          </article>
+
+          <article class="dest-card side reveal reveal-delay-2">
+            <div class="dest-glow glow-orion"></div>
+            <div class="dest-orb orb-orion" aria-hidden="true"></div>
+            <div class="dest-tag">Tinh vân · 1,344 ly</div>
+            <h3>Orion Nebula</h3>
+            <p>Lò rèn ngôi sao — nơi vật chất trở thành ánh sáng.</p>
+            <div class="dest-meta"><span>Scenic</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- MANIFESTO -->
+    <section class="manifesto" id="cosmos">
+      <div class="manifesto-inner reveal">
+        <p class="manifesto-quote">
+          “Chúng ta là <span>cách vũ trụ nhận biết chính mình</span> —
+          một nắm bụi sao biết suy nghĩ, biết mơ, và biết bay.”
+        </p>
+        <p class="manifesto-attr">— Tinh thần AETHER</p>
+      </div>
+    </section>
+
+    <!-- JOURNEY -->
+    <section id="journey">
+      <div class="container">
+        <div class="reveal">
+          <span class="section-label">Quy trình</span>
+          <h2 class="section-title">Từ mặt đất đến <em>không gian</em></h2>
+          <p class="section-lead">
+            Bốn giai — được thiết kế tỉ mỉ như một sứ mệnh NASA, mượt mà như một chuyến bay thương gia.
+          </p>
+        </div>
+
+        <div class="journey-grid">
+          <div class="journey-steps reveal">
+            <div class="step">
+              <div class="step-num">01</div>
+              <div>
+                <h3>Định hướng quỹ đạo</h3>
+                <p>Chọn điểm đến, hạng cabin (Orbit / Deep Space / Expedition) và lịch phóng. AI đồng bộ cửa sổ phóng tối ưu.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">02</div>
+              <div>
+                <h3>Huấn luyện nhẹ</h3>
+                <p>48 giờ tại AETHER Academy: không trọng lực, hệ thống cứu hộ, nghi thức quan sát thiên văn.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">03</div>
+              <div>
+                <h3>Phóng & chuyển tiếp</h3>
+                <p>Khởi hành từ Port Nova. Warp-lane dân sự đưa bạn qua vành đai an toàn đến quỹ đạo đích.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">04</div>
+              <div>
+                <h3>Sống giữa các vì sao</h3>
+                <p>Cabin toàn kính, bữa tối không trọng lực, đài quan sát 360° — và im lặng của vũ trụ.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="journey-panel reveal reveal-delay-2">
+            <div class="panel-ring" aria-hidden="true"></div>
+            <div class="panel-ring panel-ring-2" aria-hidden="true"></div>
+            <div class="panel-core" aria-hidden="true"></div>
+            <div class="panel-content">
+              <h3>Trạm trung chuyển Nova</h3>
+              <p>Cửa ngõ quỹ đạo thấp Trái Đất — nơi mọi hành trình AETHER bắt đầu.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FACTS -->
+    <section class="facts">
+      <div class="container">
+        <div class="facts-grid">
+          <div class="fact reveal">
+            <div class="fact-icon">✦</div>
+            <h3>An toàn tuyệt đối</h3>
+            <p>Hệ thống dư thừa 5 lớp, khiên bức xạ graphene, và đội ứng cứu trong 12 phút trên mọi tuyến phổ biến.</p>
+          </div>
+          <div class="fact reveal reveal-delay-1">
+            <div class="fact-icon">◈</div>
+            <h3>Thiết kế đỉnh cao</h3>
+            <p>Nội thất hợp tác cùng studio không gian châu Âu — vật liệu tái chế từ quỹ đạo, ánh sáng mô phỏng chu kỳ sinh học.</p>
+          </div>
+          <div class="fact reveal reveal-delay-2">
+            <div class="fact-icon">◎</div>
+            <h3>Khoa học mở</h3>
+            <p>Mỗi chuyến bay đóng góp dữ liệu cho mạng lưới quan sát toàn cầu. Bạn không chỉ du lịch — bạn khám phá.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta" id="join">
+      <div class="cta-box reveal">
+        <h2>Sẵn sàng rời khỏi quỹ đạo quen thuộc?</h2>
+        <p>
+          Danh sách chờ mùa phóng 2087 đang mở. 500 suất đầu tiên nhận cabin panorama miễn phí.
+        </p>
+        <div class="hero-actions">
+          <a href="#" class="btn-primary" id="joinBtn">
+            Gia nhập danh sách
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a href="#destinations" class="btn-ghost">Xem điểm đến</a>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-inner">
+        <a href="#" class="logo" style="font-size:1.25rem">
+          <span class="logo-orb" style="width:8px;height:8px" aria-hidden="true"></span>
+          AETHER
+        </a>
+        <p class="footer-copy">© 2087 Aether Voyages · Dự án minh hoạ · Made of stardust</p>
+        <ul class="footer-links">
+          <li><a href="#solar">Hệ Mặt Trời</a></li>
+          <li><a href="#singularity">Hố đen</a></li>
+          <li><a href="#destinations">Điểm đến</a></li>
+          <li><a href="#journey">Hành trình</a></li>
+        </ul>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // ── Starfield ──
+    (function () {
+      const canvas = document.getElementById("stars");
+      const ctx = canvas.getContext("2d");
+      let w, h, stars, shooting = [];
+      const DPR = Math.min(window.devicePixelRatio || 1, 2);
+
+      function resize() {
+        w = window.innerWidth;
+        h = window.innerHeight;
+        canvas.width = w * DPR;
+        canvas.height = h * DPR;
+        canvas.style.width = w + "px";
+        canvas.style.height = h + "px";
+        ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+        initStars();
+      }
+
+      function initStars() {
+        const count = Math.floor((w * h) / 2800);
+        stars = Array.from({ length: count }, () => ({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          r: Math.random() * 1.4 + 0.2,
+          a: Math.random(),
+          s: Math.random() * 0.02 + 0.005,
+          tw: Math.random() * Math.PI * 2,
+        }));
+      }
+
+      function spawnShooting() {
+        if (Math.random() > 0.985) {
+          shooting.push({
+            x: Math.random() * w,
+            y: Math.random() * h * 0.5,
+            len: Math.random() * 80 + 40,
+            speed: Math.random() * 8 + 6,
+            life: 1,
+            angle: Math.PI / 4 + (Math.random() - 0.5) * 0.3,
+          });
+        }
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+
+        // deep void
+        const g = ctx.createRadialGradient(w * 0.5, h * 0.3, 0, w * 0.5, h * 0.5, w * 0.8);
+        g.addColorStop(0, "#0a0420");
+        g.addColorStop(0.5, "#050214");
+        g.addColorStop(1, "#03010a");
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, w, h);
+
+        for (const s of stars) {
+          s.tw += s.s;
+          const alpha = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(s.tw));
+          ctx.beginPath();
+          ctx.fillStyle = `rgba(240, 235, 255, ${alpha * s.a})`;
+          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        spawnShooting();
+        shooting = shooting.filter((sh) => sh.life > 0);
+        for (const sh of shooting) {
+          const dx = Math.cos(sh.angle) * sh.len;
+          const dy = Math.sin(sh.angle) * sh.len;
+          const grad = ctx.createLinearGradient(sh.x, sh.y, sh.x + dx, sh.y + dy);
+          grad.addColorStop(0, `rgba(200, 230, 255, ${sh.life})`);
+          grad.addColorStop(1, "rgba(200, 230, 255, 0)");
+          ctx.beginPath();
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = 1.5;
+          ctx.moveTo(sh.x, sh.y);
+          ctx.lineTo(sh.x + dx, sh.y + dy);
+          ctx.stroke();
+          sh.x += Math.cos(sh.angle) * sh.speed;
+          sh.y += Math.sin(sh.angle) * sh.speed;
+          sh.life -= 0.018;
+        }
+
+        requestAnimationFrame(draw);
+      }
+
+      window.addEventListener("resize", resize);
+      resize();
+      draw();
+    })();
+
+    // ── Nav scroll ──
+    const nav = document.getElementById("nav");
+    window.addEventListener("scroll", () => {
+      nav.classList.toggle("scrolled", window.scrollY > 40);
+    }, { passive: true });
+
+    // ── Mobile menu ──
+    const menuBtn = document.getElementById("menuBtn");
+    const navLinks = document.getElementById("navLinks");
+    menuBtn.addEventListener("click", () => {
+      navLinks.classList.toggle("open");
+      const mobileCta = navLinks.querySelector(".nav-cta-mobile");
+      if (mobileCta) mobileCta.style.display = navLinks.classList.contains("open") ? "inline-flex" : "none";
+    });
+    navLinks.querySelectorAll("a").forEach((a) => {
+      a.addEventListener("click", () => {
+        navLinks.classList.remove("open");
+        const mobileCta = navLinks.querySelector(".nav-cta-mobile");
+        if (mobileCta) mobileCta.style.display = "none";
+      });
+    });
+
+    // ── Reveal on scroll ──
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add("visible");
+            io.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+    );
+    document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+
+    // ── Join CTA micro-interaction ──
+    document.getElementById("joinBtn").addEventListener("click", (e) => {
+      e.preventDefault();
+      const btn = e.currentTarget;
+      const original = btn.innerHTML;
+      btn.innerHTML = "✓ Đã ghi danh · Hẹn gặp trên quỹ đạo";
+      btn.style.pointerEvents = "none";
+      setTimeout(() => {
+        btn.innerHTML = original;
+        btn.style.pointerEvents = "";
+      }, 2800);
+    });
+
+    // ── Subtle parallax on planet ──
+    const planetWrap = document.querySelector(".planet-wrap");
+    if (planetWrap && window.matchMedia("(pointer: fine)").matches) {
+      window.addEventListener("mousemove", (e) => {
+        const x = (e.clientX / window.innerWidth - 0.5) * 18;
+        const y = (e.clientY / window.innerHeight - 0.5) * 12;
+        planetWrap.style.transform = `translate(calc(-50% + ${x}px), calc(-42% + ${y}px))`;
+      }, { passive: true });
+    }
+
+    // ── Solar system data & controls ──
+    const PLANETS = {
+      sun: {
+        name: "Mặt Trời",
+        tag: "Ngôi sao trung tâm",
+        desc: "Quả cầu plasma khổng lồ — nguồn năng lượng cho mọi sự sống trong hệ. Chiếm ~99.8% khối lượng toàn hệ Mặt Trời.",
+        type: "Sao G-type",
+        size: "1.39M km",
+        temp: "5.500°C",
+        period: "—",
+        orb: "radial-gradient(circle at 35% 30%, #fff7d6, #ff8a00 70%, #c2410c)",
+        glow: "0 0 30px rgba(255,140,0,0.5)",
+        color: "#ffb020",
+        saturn: false,
+      },
+      mercury: {
+        name: "Sao Thủy",
+        tag: "Hành tinh đá · Gần nhất",
+        desc: "Hành tinh nhỏ nhất, bề mặt đầy hố va chạm. Ngày dài hơn năm — một năm Thủy chỉ 88 ngày Trái Đất.",
+        type: "Đá (Terrestrial)",
+        size: "4.879 km",
+        temp: "−180 → 430°C",
+        period: "88 ngày",
+        orb: "radial-gradient(circle at 35% 30%, #e8dcc8, #9a8b7a 60%, #5c5348)",
+        glow: "0 0 20px rgba(200,180,150,0.4)",
+        color: "#b8a898",
+        saturn: false,
+      },
+      venus: {
+        name: "Sao Kim",
+        tag: "Hành tinh đá · Chị em Trái Đất",
+        desc: "Bầu khí quyển CO₂ dày đặc, hiệu ứng nhà kính cực đoan. Quay ngược chiều hầu hết hành tinh khác.",
+        type: "Đá (Terrestrial)",
+        size: "12.104 km",
+        temp: "~465°C",
+        period: "225 ngày",
+        orb: "radial-gradient(circle at 35% 30%, #fff3c4, #e8b84a 45%, #b8860b)",
+        glow: "0 0 22px rgba(232,184,74,0.45)",
+        color: "#e8b84a",
+        saturn: false,
+      },
+      earth: {
+        name: "Trái Đất",
+        tag: "Hành tinh đá · Nhà của chúng ta",
+        desc: "Hành tinh duy nhất biết đến sự sống. 71% bề mặt là nước lỏng, có từ quyển bảo vệ và một mặt trăng đồng hành.",
+        type: "Đá (Terrestrial)",
+        size: "12.742 km",
+        temp: "−88 → 58°C",
+        period: "365.25 ngày",
+        orb: "radial-gradient(circle at 30% 30%, #7dd3fc, #22c55e 45%, #0c4a6e)",
+        glow: "0 0 24px rgba(56,189,248,0.5)",
+        color: "#38bdf8",
+        saturn: false,
+      },
+      mars: {
+        name: "Sao Hỏa",
+        tag: "Hành tinh đá · Hành tinh đỏ",
+        desc: "Hoàng hôn xanh, thung lũng Valles Marineris, cực băng khô. Mục tiêu thuộc địa hoá gần nhất của nhân loại.",
+        type: "Đá (Terrestrial)",
+        size: "6.779 km",
+        temp: "−125 → 20°C",
+        period: "687 ngày",
+        orb: "radial-gradient(circle at 35% 30%, #fca5a5, #dc2626 50%, #7f1d1d)",
+        glow: "0 0 22px rgba(239,68,68,0.45)",
+        color: "#ef4444",
+        saturn: false,
+      },
+      jupiter: {
+        name: "Sao Mộc",
+        tag: "Khí khổng lồ · Lớn nhất",
+        desc: "Hành tinh lớn nhất hệ — Vết Đỏ Lớn là cơn bão đã tồn tại hàng thế kỷ. Có hơn 90 mặt trăng, trong đó có Europa.",
+        type: "Khí khổng lồ",
+        size: "139.820 km",
+        temp: "−110°C",
+        period: "12 năm",
+        orb: "repeating-linear-gradient(180deg, #d4a574 0 4px, #c4874a 4px 7px, #e8c9a0 7px 10px, #a67c52 10px 13px)",
+        glow: "0 0 26px rgba(212,165,116,0.4)",
+        color: "#d4a574",
+        saturn: false,
+      },
+      saturn: {
+        name: "Sao Thổ",
+        tag: "Khí khổng lồ · Chúa tể vành đai",
+        desc: "Nổi tiếng với hệ vành đai băng và đá rộng hàng trăm nghìn km. Mật độ thấp đến mức… có thể nổi trên nước.",
+        type: "Khí khổng lồ",
+        size: "116.460 km",
+        temp: "−140°C",
+        period: "29 năm",
+        orb: "radial-gradient(circle at 35% 30%, #fde68a, #d4a017 55%, #92700c)",
+        glow: "0 0 24px rgba(212,160,23,0.4)",
+        color: "#e8c547",
+        saturn: true,
+      },
+      uranus: {
+        name: "Sao Thiên Vương",
+        tag: "Băng khổng lồ · Nằm nghiêng",
+        desc: "Quay nghiêng gần 98° — ‘lăn’ quanh quỹ đạo. Khí quyển methane tạo màu xanh ngọc đặc trưng.",
+        type: "Băng khổng lồ",
+        size: "50.724 km",
+        temp: "−195°C",
+        period: "84 năm",
+        orb: "radial-gradient(circle at 35% 30%, #a5f3fc, #22d3ee 50%, #0e7490)",
+        glow: "0 0 22px rgba(34,211,238,0.4)",
+        color: "#22d3ee",
+        saturn: false,
+      },
+      neptune: {
+        name: "Sao Hải Vương",
+        tag: "Băng khổng lồ · Xa nhất (trong 8 hành tinh)",
+        desc: "Gió siêu thanh tới 2.000 km/h. Màu xanh đậm từ methane, có mặt trăng Triton đi ngược quỹ đạo.",
+        type: "Băng khổng lồ",
+        size: "49.244 km",
+        temp: "−200°C",
+        period: "165 năm",
+        orb: "radial-gradient(circle at 35% 30%, #93c5fd, #2563eb 50%, #1e3a8a)",
+        glow: "0 0 22px rgba(37,99,235,0.45)",
+        color: "#3b82f6",
+        saturn: false,
+      },
+      pluto: {
+        name: "Diêm Vương",
+        tag: "Hành tinh lùn · Quỹ đạo nghiêng",
+        desc: "Từng là hành tinh thứ 9. Quỹ đạo elip cực lệch và nghiêng ~17° so với mặt phẳng hoàng đạo — thế giới băng giá ở rìa hệ.",
+        type: "Hành tinh lùn",
+        size: "2.377 km",
+        temp: "−230°C",
+        period: "248 năm",
+        orb: "radial-gradient(circle at 35% 30%, #f5e6d3, #c4a882 50%, #7a6550)",
+        glow: "0 0 20px rgba(220,190,160,0.45)",
+        color: "#d4b896",
+        saturn: false,
+      },
+    };
+
+    const solarSystem = document.getElementById("solarSystem");
+    const orbitToggle = document.getElementById("orbitToggle");
+    const infoOrb = document.getElementById("infoOrb");
+    const legend = document.getElementById("planetLegend");
+    const zoomModal = document.getElementById("zoomModal");
+    const zoomOrb = document.getElementById("zoomOrb");
+    const zoomGlow = document.getElementById("zoomGlow");
+
+    function fillInfoPanel(id) {
+      const data = PLANETS[id];
+      if (!data) return data;
+      document.getElementById("infoName").textContent = data.name;
+      document.getElementById("infoTag").textContent = data.tag;
+      document.getElementById("infoDesc").textContent = data.desc;
+      document.getElementById("infoType").textContent = data.type;
+      document.getElementById("infoSize").textContent = data.size;
+      document.getElementById("infoTemp").textContent = data.temp;
+      document.getElementById("infoPeriod").textContent = data.period;
+      infoOrb.style.background = data.orb;
+      infoOrb.style.boxShadow = data.glow;
+      infoOrb.classList.toggle("saturn", !!data.saturn);
+      document.querySelectorAll(".orbit").forEach((o) => {
+        o.classList.toggle("active", o.dataset.planet === id);
+      });
+      document.querySelectorAll(".legend-item").forEach((el) => {
+        el.classList.toggle("active", el.dataset.planet === id);
+      });
+      return data;
+    }
+
+    function openZoom(id) {
+      const data = fillInfoPanel(id);
+      if (!data) return;
+
+      document.getElementById("zoomName").textContent = data.name;
+      document.getElementById("zoomTag").textContent = data.tag;
+      document.getElementById("zoomDesc").textContent = data.desc;
+      document.getElementById("zoomType").textContent = data.type;
+      document.getElementById("zoomSize").textContent = data.size;
+      document.getElementById("zoomTemp").textContent = data.temp;
+      document.getElementById("zoomPeriod").textContent = data.period;
+      zoomOrb.style.background = data.orb;
+      zoomOrb.style.boxShadow = data.glow + ", 0 0 80px " + data.color + "55";
+      zoomOrb.classList.toggle("saturn", !!data.saturn);
+      zoomGlow.style.background = data.color;
+
+      zoomModal.hidden = false;
+      // force reflow for transition
+      void zoomModal.offsetWidth;
+      zoomModal.classList.add("open");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeZoom() {
+      zoomModal.classList.remove("open");
+      document.body.style.overflow = "";
+      setTimeout(() => {
+        if (!zoomModal.classList.contains("open")) zoomModal.hidden = true;
+      }, 450);
+    }
+
+    function selectPlanet(id, zoom) {
+      fillInfoPanel(id);
+      if (zoom !== false) openZoom(id);
+    }
+
+    // Legend chips — update panel only (no zoom spam)
+    Object.entries(PLANETS).forEach(([id, data]) => {
+      if (id === "sun") return;
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "legend-item";
+      btn.dataset.planet = id;
+      btn.innerHTML = `<span class="legend-dot" style="background:${data.color}"></span>${data.name}`;
+      btn.addEventListener("click", () => selectPlanet(id, true));
+      legend.appendChild(btn);
+    });
+
+    solarSystem.querySelectorAll("[data-planet]").forEach((el) => {
+      const activate = (e) => {
+        e.stopPropagation();
+        selectPlanet(el.dataset.planet, true);
+      };
+      el.addEventListener("click", activate);
+      el.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          activate(e);
+        }
+      });
+    });
+
+    solarSystem.querySelectorAll(".planet-body").forEach((body) => {
+      body.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const orbit = body.closest("[data-planet]");
+        if (orbit) selectPlanet(orbit.dataset.planet, true);
+      });
+    });
+
+    document.getElementById("zoomClose").addEventListener("click", closeZoom);
+    document.getElementById("zoomBackdrop").addEventListener("click", closeZoom);
+    document.getElementById("zoomCta").addEventListener("click", closeZoom);
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && zoomModal.classList.contains("open")) closeZoom();
+    });
+
+    // Pause / play
+    orbitToggle.addEventListener("click", () => {
+      const paused = solarSystem.classList.toggle("paused");
+      orbitToggle.textContent = paused ? "Tiếp tục" : "Tạm dừng";
+      orbitToggle.setAttribute("aria-pressed", paused ? "true" : "false");
+      orbitToggle.classList.toggle("active", paused);
+    });
+
+    // Speed chips
+    document.querySelectorAll(".speed-chip").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        document.querySelectorAll(".speed-chip").forEach((c) => c.classList.remove("active"));
+        chip.classList.add("active");
+        solarSystem.style.setProperty("--speed", chip.dataset.speed);
+      });
+    });
+
+    // Offset initial angles
+    const offsets = {
+      mercury: 20, venus: 80, earth: 140, mars: 200,
+      jupiter: 40, saturn: 100, uranus: 160, neptune: 220, pluto: 300,
+    };
+    const durationMap = {
+      mercury: 6, venus: 10, earth: 16, mars: 24,
+      jupiter: 40, saturn: 52, uranus: 64, neptune: 76, pluto: 96,
+    };
+    Object.entries(offsets).forEach(([id, deg]) => {
+      const orbit = solarSystem.querySelector(`.orbit-${id}`);
+      if (orbit) {
+        const d = durationMap[id];
+        orbit.style.animationDelay = `${-((deg / 360) * d)}s`;
+        const wrap = orbit.querySelector(".planet-wrap-body");
+        if (wrap) wrap.style.animationDelay = orbit.style.animationDelay;
+      }
+    });
+
+    // ── BLACK HOLE canvas — Grok-style spiral singularity ──
+    (function initBlackHole() {
+      const canvas = document.getElementById("bhCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      const DPR = Math.min(window.devicePixelRatio || 1, 2);
+      let w, h, cx, cy, t = 0, particles = [], running = false;
+
+      function resize() {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        w = rect.width;
+        h = rect.height;
+        canvas.width = w * DPR;
+        canvas.height = h * DPR;
+        canvas.style.width = w + "px";
+        canvas.style.height = h + "px";
+        ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+        cx = w / 2;
+        cy = h / 2;
+        spawnParticles();
+      }
+
+      function spawnParticles() {
+        const count = Math.min(420, Math.floor((w * h) / 3500));
+        particles = Array.from({ length: count }, () => {
+          const angle = Math.random() * Math.PI * 2;
+          const r = 40 + Math.random() * Math.min(w, h) * 0.48;
+          return {
+            angle,
+            r,
+            speed: 0.004 + Math.random() * 0.012,
+            size: 0.6 + Math.random() * 2.2,
+            bright: 0.25 + Math.random() * 0.75,
+            inward: 0.08 + Math.random() * 0.25,
+            arm: Math.floor(Math.random() * 3),
+          };
+        });
+      }
+
+      function draw() {
+        if (!running) return;
+        t += 0.008;
+
+        // deep void
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0, 0, w, h);
+
+        const R = Math.min(w, h);
+
+        // outer ambient glow
+        const amb = ctx.createRadialGradient(cx, cy, R * 0.08, cx, cy, R * 0.55);
+        amb.addColorStop(0, "rgba(40, 20, 60, 0.35)");
+        amb.addColorStop(0.4, "rgba(20, 10, 40, 0.15)");
+        amb.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = amb;
+        ctx.fillRect(0, 0, w, h);
+
+        // accretion disk — multi-arm Grok spiral
+        const arms = 3;
+        for (let arm = 0; arm < arms; arm++) {
+          const armOff = (arm / arms) * Math.PI * 2 + t * 0.35;
+          ctx.beginPath();
+          for (let i = 0; i < 280; i++) {
+            const p = i / 280;
+            const radius = R * 0.06 + p * R * 0.42;
+            const twist = armOff + p * 5.2 - t * (1.1 - p * 0.4);
+            const x = cx + Math.cos(twist) * radius;
+            const y = cy + Math.sin(twist) * radius * 0.42; // foreshortened disk
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          const g = ctx.createLinearGradient(cx - R * 0.3, cy, cx + R * 0.3, cy);
+          g.addColorStop(0, "rgba(255,255,255,0)");
+          g.addColorStop(0.35, `rgba(240,240,255,${0.08 + arm * 0.02})`);
+          g.addColorStop(0.55, `rgba(255,255,255,${0.22 - arm * 0.04})`);
+          g.addColorStop(0.75, `rgba(200,210,255,${0.1})`);
+          g.addColorStop(1, "rgba(255,255,255,0)");
+          ctx.strokeStyle = g;
+          ctx.lineWidth = 14 - arm * 3;
+          ctx.lineCap = "round";
+          ctx.shadowColor = "rgba(255,255,255,0.25)";
+          ctx.shadowBlur = 20;
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+        }
+
+        // bright photon ring
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.scale(1, 0.42);
+        ctx.beginPath();
+        ctx.arc(0, 0, R * 0.11, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(255,255,255,0.85)";
+        ctx.lineWidth = 3.5;
+        ctx.shadowColor = "#fff";
+        ctx.shadowBlur = 28;
+        ctx.stroke();
+
+        // secondary ring
+        ctx.beginPath();
+        ctx.arc(0, 0, R * 0.135, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(200, 210, 255, 0.25)";
+        ctx.lineWidth = 1.5;
+        ctx.shadowBlur = 12;
+        ctx.stroke();
+        ctx.restore();
+
+        // swirling particles falling in
+        for (const p of particles) {
+          p.angle += p.speed * (1 + (80 / Math.max(p.r, 20)));
+          p.r -= p.inward * 0.15;
+          if (p.r < R * 0.07) {
+            p.r = R * 0.12 + Math.random() * R * 0.4;
+            p.angle = Math.random() * Math.PI * 2;
+          }
+          const spiral = p.angle + (R * 0.2 / p.r) * 1.4 + t * 0.5;
+          const x = cx + Math.cos(spiral) * p.r;
+          const y = cy + Math.sin(spiral) * p.r * 0.42;
+          const alpha = p.bright * Math.min(1, (p.r - R * 0.06) / (R * 0.15));
+          ctx.beginPath();
+          ctx.fillStyle = `rgba(255,255,255,${alpha * 0.9})`;
+          ctx.arc(x, y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // event horizon — pure black core (Grok logo heart)
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.scale(1, 0.95);
+        const coreR = R * 0.085;
+        // soft edge
+        const edge = ctx.createRadialGradient(0, 0, coreR * 0.55, 0, 0, coreR * 1.35);
+        edge.addColorStop(0, "#000");
+        edge.addColorStop(0.7, "#000");
+        edge.addColorStop(0.9, "rgba(0,0,0,0.6)");
+        edge.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.beginPath();
+        ctx.fillStyle = edge;
+        ctx.arc(0, 0, coreR * 1.35, 0, Math.PI * 2);
+        ctx.fill();
+
+        // hard black disk
+        ctx.beginPath();
+        ctx.fillStyle = "#000";
+        ctx.arc(0, 0, coreR, 0, Math.PI * 2);
+        ctx.fill();
+
+        // thin white rim highlight (logo edge)
+        ctx.beginPath();
+        ctx.arc(0, 0, coreR * 1.02, -0.6, Math.PI * 0.85);
+        ctx.strokeStyle = "rgba(255,255,255,0.55)";
+        ctx.lineWidth = 1.5;
+        ctx.shadowColor = "#fff";
+        ctx.shadowBlur = 8;
+        ctx.stroke();
+        ctx.restore();
+
+        // lensing streaks
+        for (let i = 0; i < 8; i++) {
+          const a = t * 0.4 + (i / 8) * Math.PI * 2;
+          const r0 = R * 0.14;
+          const r1 = R * 0.22 + Math.sin(t + i) * R * 0.02;
+          ctx.beginPath();
+          ctx.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0 * 0.42);
+          ctx.lineTo(cx + Math.cos(a + 0.15) * r1, cy + Math.sin(a + 0.15) * r1 * 0.42);
+          ctx.strokeStyle = `rgba(255,255,255,${0.04 + 0.04 * Math.sin(t * 2 + i)})`;
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+
+        requestAnimationFrame(draw);
+      }
+
+      // only animate when visible
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              if (!running) {
+                running = true;
+                draw();
+              }
+            } else {
+              running = false;
+            }
+          });
+        },
+        { threshold: 0.05 }
+      );
+      io.observe(canvas.parentElement);
+
+      window.addEventListener("resize", resize);
+      resize();
+      running = true;
+      draw();
+    })();
+  </script>
+</body>
+</html>

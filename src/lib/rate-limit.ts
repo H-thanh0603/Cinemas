@@ -46,9 +46,12 @@ export async function consumeRateLimit(
 }
 
 export function getRequestIp(headers: Headers): string {
-  return (
-    headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    headers.get("x-real-ip")?.trim() ||
-    "unknown"
-  );
+  const forwarded = headers.get("x-forwarded-for");
+  if (forwarded) {
+    // Use the rightmost value — trusted reverse proxies append the real client IP
+    // at the end. The leftmost values can be spoofed by the client.
+    const parts = forwarded.split(",");
+    return parts[parts.length - 1].trim();
+  }
+  return headers.get("x-real-ip")?.trim() || "unknown";
 }

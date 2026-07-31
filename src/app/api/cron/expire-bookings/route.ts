@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { expirePendingBookings } from "@/lib/booking-expire";
+import { expirePendingBookingsBatch } from "@/lib/booking-expire";
 
 /**
  * Cron / manual trigger to expire seat holds.
- * Protect with CRON_SECRET if set: Authorization: Bearer <CRON_SECRET>
+ * Protect with CRON_SECRET if set: Authorization: Bearer ***
  */
 export async function POST(req: NextRequest) {
   const secret = process.env.CRON_SECRET?.trim();
@@ -13,8 +13,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const expired = await expirePendingBookings();
-  return NextResponse.json({ ok: true, expired });
+  const { expiredCount, invalidatedShowtimes } = await expirePendingBookingsBatch();
+  return NextResponse.json({ ok: true, expired: expiredCount, invalidatedShowtimes });
 }
 
 export async function GET(req: NextRequest) {

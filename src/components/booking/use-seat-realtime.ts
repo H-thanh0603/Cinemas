@@ -9,11 +9,7 @@ export function useSeatRealtime(
   showtimeId: string,
   initialBooked: string[]
 ): Set<string> {
-  const [booked, setBooked] = useState(() => new Set(initialBooked));
-
-  useEffect(() => {
-    setBooked(new Set(initialBooked));
-  }, [initialBooked]);
+  const [booked, setBooked] = useState<Set<string>>(new Set(initialBooked));
 
   useEffect(() => {
     let cancelled = false;

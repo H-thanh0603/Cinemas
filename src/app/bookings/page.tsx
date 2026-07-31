@@ -11,7 +11,8 @@ import {
 } from "@/lib/constants";
 import { LookupForm } from "./lookup-form";
 import { auth } from "@/auth";
-import { expirePendingBookings } from "@/lib/booking-expire";
+// expirePendingBookings is handled by cron + server actions, not page loads.
+// import { expirePendingBookings } from "@/lib/booking-expire";
 import { headers } from "next/headers";
 import { consumeRateLimit, getRequestIp, rateLimitKey } from "@/lib/rate-limit";
 
@@ -40,11 +41,15 @@ type BookingWithRelations = Awaited<
 >[number];
 
 function findBookings(
-  where: { userId: string } | { contactEmail: string; code: string }
+  where: { userId: string } | { contactEmail: string; code: string },
+  limit = 50,
+  offset = 0
 ) {
   return prisma.booking.findMany({
     where,
     orderBy: { createdAt: "desc" },
+    take: limit,
+    skip: offset,
     include: {
       showtime: { include: { movie: true, cinema: true, room: true } },
       seats: { include: { seat: true } },
@@ -113,13 +118,13 @@ function BookingCard({ booking }: { booking: BookingWithRelations }) {
 export default async function BookingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ email?: string; code?: string }>;
+  searchParams: Promise<{ email?: string; code?: string; page?: string }>;
 }) {
-  await expirePendingBookings();
   const session = await auth();
-  const { email: emailParam, code: codeParam } = await searchParams;
+  const { email: emailParam, code: codeParam, page: pageParam } = await searchParams;
   const email = emailParam?.trim();
   const code = codeParam?.trim().toUpperCase();
+  const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
   const userId = session?.user?.id;
   let lookupAllowed = true;
   if (!userId && email && code) {
@@ -132,7 +137,7 @@ export default async function BookingsPage({
     lookupAllowed = lookupLimit.allowed;
   }
   const bookings = userId
-    ? await findBookings({ userId })
+    ? await findBookings({ userId }, 100, (page - 1) * 100)
     : lookupAllowed && email && code
       ? await findBookings({ contactEmail: email, code })
       : null;

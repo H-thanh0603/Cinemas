@@ -30,13 +30,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
           const user = await prisma.user.findUnique({ where: { email } });
           if (!user?.passwordHash) {
-            console.warn("[auth] user not found or no password");
+            console.warn("[auth] login failed");
             return null;
           }
-
           const ok = await bcrypt.compare(password, user.passwordHash);
           if (!ok) {
-            console.warn("[auth] bad password");
+            console.warn("[auth] login failed");
             return null;
           }
 

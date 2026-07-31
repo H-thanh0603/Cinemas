@@ -1,6 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { escapeLikePattern } from "@/lib/search-utils";
 import { MOVIE_STATUS_LABELS, formatDate } from "@/lib/constants";
 import { MovieActions } from "./movie-actions";
 import { AdminSearch, AdminFilter } from "../admin-search";
@@ -16,9 +18,10 @@ export default async function AdminMoviesPage({
   const { q, status, page: pageParam } = await searchParams;
   const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
   const pageSize = 25;
-  const where = {
+  const safeQ = q ? escapeLikePattern(q) : "";
+  const where: Prisma.MovieWhereInput = {
     AND: [
-      q ? { OR: [{ title: { contains: q } }, { slug: { contains: q } }, { director: { contains: q } }] } : {},
+      safeQ ? { OR: [{ title: { contains: safeQ, mode: "insensitive" as const } }, { slug: { contains: safeQ, mode: "insensitive" as const } }, { director: { contains: safeQ, mode: "insensitive" as const } }] } : {},
       status && status !== "ALL" ? { status } : {},
     ],
   };

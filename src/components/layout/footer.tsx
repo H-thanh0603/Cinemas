@@ -102,7 +102,10 @@ export function Footer() {
 
         <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-border pt-6 text-xs text-muted-dark sm:flex-row">
           <p>© {new Date().getFullYear()} CineStar. All rights reserved.</p>
-          <p className="text-muted">Đặt vé · Giữ ghế · QR điện tử</p>
+          <p className="text-center text-muted">
+            This product uses TMDB and the TMDB APIs but is not endorsed, certified,
+            or otherwise approved by TMDB.
+          </p>
         </div>
       </div>
     </footer>

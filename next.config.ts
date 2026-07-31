@@ -13,17 +13,22 @@ const nextConfig: NextConfig = {
     const production = process.env.NODE_ENV === "production";
     const csp = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' https://js.stripe.com",
+      // In production, we can remove 'unsafe-inline' since Next.js 15 doesn't
+      // require it for scripts. In dev mode, keep it for HMR.
+      // TODO: Migrate to nonce-based CSP for production (requires custom Document)
+      production
+        ? "script-src 'self' https://js.stripe.com https://accounts.google.com"
+        : "script-src 'self' 'unsafe-inline' https://js.stripe.com",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https://placehold.co https://images.unsplash.com https://image.tmdb.org",
-      "connect-src 'self' https://api.stripe.com",
-      "frame-src 'self' https://js.stripe.com https://hooks.stripe.com",
+      "connect-src 'self' https://api.stripe.com https://accounts.google.com",
+      "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://accounts.google.com",
       "object-src 'none'",
       "base-uri 'self'",
       "form-action 'self'",
       "frame-ancestors 'none'",
       ...(production ? ["upgrade-insecure-requests"] : []),
-    ].join("; ");
+    ].filter(Boolean).join("; ");
     return [
       {
         source: "/(.*)",

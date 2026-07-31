@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
         lt: endsAt,
       },
     },
-    include: { movie: true },
+    select: { startsAt: true, movie: { select: { title: true, durationMin: true } } },
   });
 
   for (const c of conflicts) {

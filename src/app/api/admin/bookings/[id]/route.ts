@@ -20,8 +20,24 @@ export async function DELETE(
     return NextResponse.json({ error: "Không tìm thấy đặt vé" }, { status: 404 });
   }
 
-  if (booking.status === "CANCELLED" || booking.status === "EXPIRED") {
-    return NextResponse.json({ error: "Đặt vé đã bị hủy hoặc hết hạn" }, { status: 400 });
+  const payment = await prisma.payment.findFirst({
+    where: { bookingId: id },
+    select: { id: true, status: true, provider: true, providerPaymentId: true },
+  });
+  if (
+    payment &&
+    payment.status === "PAID" &&
+    payment.provider === "STRIPE" &&
+    payment.providerPaymentId
+  ) {
+    return NextResponse.json(
+      {
+        error:
+          "Đơn đã thanh toán qua Stripe. Dùng endpoint Hoàn tiền trước khi hủy.",
+        refundUrl: `/api/admin/bookings/${id}/refund`,
+      },
+      { status: 409 }
+    );
   }
 
   await prisma.$transaction(async (tx) => {

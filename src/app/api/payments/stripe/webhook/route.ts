@@ -8,7 +8,7 @@ import {
 } from "@/lib/payment-fulfillment";
 import { verifyStripeWebhook } from "@/lib/stripe-payment";
 import { prisma } from "@/lib/prisma";
-import { expirePendingBookings } from "@/lib/booking-expire";
+import { expirePendingBookingsBatch } from "@/lib/booking-expire";
 import { sendBookingConfirmationEmail } from "@/lib/email";
 
 export const runtime = "nodejs";
@@ -89,7 +89,12 @@ export async function POST(request: Request) {
           where: { id: result.bookingId, status: "PENDING" },
           data: { expiresAt: new Date() },
         });
-        await expirePendingBookings();
+        const { invalidatedShowtimes } = await expirePendingBookingsBatch();
+        for (const sid of invalidatedShowtimes) {
+          // Invalidate cache for affected showtimes
+          const { invalidateLockedSeatCache } = await import("@/lib/booking-expire");
+          invalidateLockedSeatCache(sid);
+        }
       }
     } else if (event.type === "refund.updated") {
       const refund = event.data.object as Stripe.Refund;

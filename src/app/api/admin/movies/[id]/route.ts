@@ -2,17 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin-auth";
 import { movieSchema, parseAdminBody } from "@/lib/admin-schemas";
+import { slugify } from "@/lib/slugify";
 import { writeAuditLog } from "@/lib/audit-log";
-
-function slugify(s: string): string {
-  return s
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/đ/g, "d")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
 
 export async function PUT(
   req: NextRequest,
@@ -43,30 +34,32 @@ export async function PUT(
     if (conflict) slug = `${slug}-${Date.now().toString(36)}`;
   }
 
-  // Update genres: delete old, create new
-  if (body.genreIds !== undefined) {
-    await prisma.movieGenre.deleteMany({ where: { movieId: id } });
-  }
-
-  const movie = await prisma.movie.update({
-    where: { id },
-    data: {
-      title: body.title,
-      slug,
-      description: body.description || "",
-      posterUrl: body.posterUrl || "",
-      backdropUrl: body.backdropUrl || null,
-      trailerUrl: body.trailerUrl || null,
-      durationMin: Number(body.durationMin),
-      releaseDate: new Date(body.releaseDate),
-      ageRating: body.ageRating || "T13",
-      status: body.status || existing.status,
-      director: body.director || "",
-      cast: body.cast || "",
-      genres: body.genreIds?.length
-        ? { create: body.genreIds.map((gid: string) => ({ genre: { connect: { id: gid } } })) }
-        : undefined,
-    },
+  // Update genres: delete old, create new — wrapped in transaction so
+  // partial failure doesn't leave movie with zero genres
+  const movie = await prisma.$transaction(async (tx) => {
+    if (body.genreIds !== undefined) {
+      await tx.movieGenre.deleteMany({ where: { movieId: id } });
+    }
+    return tx.movie.update({
+      where: { id },
+      data: {
+        title: body.title,
+        slug,
+        description: body.description || "",
+        posterUrl: body.posterUrl || "",
+        backdropUrl: body.backdropUrl || null,
+        trailerUrl: body.trailerUrl || null,
+        durationMin: Number(body.durationMin),
+        releaseDate: new Date(body.releaseDate),
+        ageRating: body.ageRating || "T13",
+        status: body.status || existing.status,
+        director: body.director || "",
+        cast: body.cast || "",
+        genres: body.genreIds?.length
+          ? { create: body.genreIds.map((gid: string) => ({ genre: { connect: { id: gid } } })) }
+          : undefined,
+      },
+    });
   });
 
   await writeAuditLog({ actorId: guard.session.user.id, action: "UPDATE", entity: "Movie", entityId: id });

@@ -4,8 +4,30 @@ import { getLockedSeatIds } from "@/lib/booking-expire";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+// Simple in-memory connection limiter per showtime.
+// In a multi-instance deployment, use a shared store (Redis) instead.
+const MAX_CONNECTIONS_PER_SHOWTIME = 10;
+const connections = new Map<string, number>();
+
+function acquire(showtimeId: string): boolean {
+  const current = connections.get(showtimeId) ?? 0;
+  if (current >= MAX_CONNECTIONS_PER_SHOWTIME) return false;
+  connections.set(showtimeId, current + 1);
+  return true;
+}
+
+function release(showtimeId: string): void {
+  const next = (connections.get(showtimeId) ?? 1) - 1;
+  if (next <= 0) {
+    connections.delete(showtimeId);
+  } else {
+    connections.set(showtimeId, next);
+  }
+}
+
 /**
  * Server-Sent Events stream of locked seat IDs for a showtime.
+ * Limited to MAX_CONNECTIONS_PER_SHOWTIME concurrent connections per showtime.
  */
 export async function GET(
   req: Request,
@@ -21,6 +43,10 @@ export async function GET(
     return new Response("Not found", { status: 404 });
   }
 
+  if (!acquire(showtimeId)) {
+    return new Response("Too many connections", { status: 429 });
+  }
+
   let lastKey = "";
   let closed = false;
   let interval: ReturnType<typeof setInterval> | undefined;
@@ -29,6 +55,7 @@ export async function GET(
     closed = true;
     if (interval) clearInterval(interval);
     if (timeout) clearTimeout(timeout);
+    release(showtimeId);
   };
 
   const stream = new ReadableStream({
@@ -64,7 +91,7 @@ export async function GET(
       await tick();
       interval = setInterval(() => {
         void tick();
-      }, 3000);
+      }, 5000);
 
       timeout = setTimeout(() => {
         cleanup();

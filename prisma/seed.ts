@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { buildRoomSchedule } from "../src/lib/showtime-schedule";
+import { realMovieCatalogue } from "../src/lib/real-movie-catalogue";
 
 const prisma = new PrismaClient();
 
@@ -92,7 +93,7 @@ async function main() {
   const posterBase = "https://placehold.co/400x600";
   const backdropBase = "https://placehold.co/1280x720";
 
-  const movieData = [
+  const _legacyMovieData = [
     {
       slug: "bao-tap-thanh-pho-chim",
       title: "Bão Tập: Thành Phố Chìm",
@@ -255,6 +256,7 @@ async function main() {
     },
   ];
 
+  const movieData = realMovieCatalogue;
   const movies: { id: string; slug: string; durationMin: number; status: string }[] = [];
   for (const m of movieData) {
     const created = await prisma.movie.create({
@@ -262,8 +264,8 @@ async function main() {
         slug: m.slug,
         title: m.title,
         description: m.description,
-        posterUrl: m.poster,
-        backdropUrl: m.backdrop,
+        posterUrl: m.posterUrl,
+        backdropUrl: null,
         trailerUrl: null,
         durationMin: m.durationMin,
         ageRating: m.ageRating,

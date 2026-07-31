@@ -1,22 +1,38 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
+import { lazy } from "react";
+import type { FC } from "react";
 import { prisma } from "@/lib/prisma";
 import { expirePendingBookings } from "@/lib/booking-expire";
 import { formatVnd, PAYMENT_METHOD_LABELS } from "@/lib/constants";
 import { HoldCountdown } from "@/components/booking/hold-countdown";
-import { SandboxPayForm } from "@/components/booking/sandbox-pay-form";
 import { StripeCheckoutButton } from "@/components/booking/stripe-checkout-button";
+import { GuestEmailGate } from "@/components/booking/guest-email-gate";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { auth } from "@/auth";
+
+// Dynamically import SandboxPayForm so test card constants are never
+// bundled into production client JS. In production, this returns null.
+const SandboxPayFormLoader =
+  process.env.NODE_ENV === "production"
+    ? (() => null) as unknown as FC<{ code: string; method: string; amount: number }>
+    : lazy(() =>
+        import("@/components/booking/sandbox-pay-form").then((mod) => ({
+          default: mod.SandboxPayForm,
+        }))
+      );
 
 export const dynamic = "force-dynamic";
 
 export default async function PaymentPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ code: string }>;
+  searchParams: Promise<{ email?: string }>;
 }) {
   const { code } = await params;
+  const { email: emailParam } = await searchParams;
   await expirePendingBookings();
 
   const booking = await prisma.booking.findUnique({
@@ -32,8 +48,18 @@ export default async function PaymentPage({
   const session = await auth();
   if (booking.userId && booking.userId !== session?.user?.id) notFound();
 
+  // Guest booking access control: require email verification
+  if (!booking.userId && emailParam && emailParam.toLowerCase() !== booking.contactEmail.toLowerCase()) {
+    return (
+      <GuestEmailGate code={code} error="Email không khớp. Vui lòng nhập lại." />
+    );
+  }
+  if (!booking.userId && !emailParam) {
+    return <GuestEmailGate code={code} />;
+  }
+
   if (booking.status === "CONFIRMED") {
-    redirect(`/booking/confirmation/${code}`);
+    redirect(`/booking/confirmation/${code}${emailParam ? `?email=${encodeURIComponent(emailParam)}` : ""}`);
   }
 
   if (booking.status === "EXPIRED" || booking.status === "CANCELLED") {
@@ -122,9 +148,10 @@ export default async function PaymentPage({
 
         {booking.payment?.provider === "STRIPE" ? (
           <StripeCheckoutButton code={booking.code} amount={booking.finalTotal} />
-        ) : process.env.ENABLE_PAYMENT_SANDBOX === "true" &&
-          process.env.NODE_ENV !== "production" ? (
-          <SandboxPayForm code={booking.code} method={method} amount={booking.finalTotal} />
+        ) : process.env.NODE_ENV !== "production" &&
+          process.env.ENABLE_PAYMENT_SANDBOX === "true" &&
+          booking.payment?.provider === "SANDBOX" ? (
+          <SandboxPayFormLoader code={booking.code} method={method} amount={booking.finalTotal} />
         ) : (
           <p className="rounded-lg border border-danger/30 bg-danger/10 px-3 py-2 text-sm text-danger">
             Cổng thanh toán chưa được cấu hình.

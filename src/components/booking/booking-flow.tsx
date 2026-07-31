@@ -158,6 +158,7 @@ export function BookingFlow({
       toast("Vui lòng kiểm tra lại thông tin liên hệ", "error");
       return;
     }
+    const userId = session?.user?.id;
     setSubmitting(true);
     const result = await createBooking({
       showtimeId: showtime.id,
@@ -184,13 +185,13 @@ export function BookingFlow({
           `Đã giữ ghế ${SEAT_HOLD_MINUTES} phút — hoàn tất thanh toán online`,
           "success"
         );
-        router.push(`/booking/pay/${result.data.code}`);
+        router.push(`/booking/pay/${result.data.code}${userId ? "" : `?email=${encodeURIComponent(contact.email.trim().toLowerCase())}`}`);
       } else {
         toast(
           `Giữ ghế ${SEAT_HOLD_MINUTES} phút — thanh toán tại quầy trước khi hết hạn`,
           "success"
         );
-        router.push(`/booking/confirmation/${result.data.code}`);
+        router.push(`/booking/confirmation/${result.data.code}${userId ? "" : `?email=${encodeURIComponent(contact.email.trim().toLowerCase())}`}`);
       }
     } else {
       toast(result.error, "error");

@@ -31,8 +31,8 @@ export async function registerUser(input: {
   if (phone && !PHONE_RE.test(phone)) {
     return { ok: false, error: "Số điện thoại không hợp lệ" };
   }
-  if (password.length < 6) {
-    return { ok: false, error: "Mật khẩu tối thiểu 6 ký tự" };
+  if (password.length < 8) {
+    return { ok: false, error: "Mật khẩu tối thiểu 8 ký tự" };
   }
   const registerLimit = await consumeRateLimit(
     rateLimitKey("register", email),

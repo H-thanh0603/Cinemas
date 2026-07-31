@@ -5,6 +5,7 @@ import { Prisma } from "@prisma/client";
 import { generateBookingCode, seatBasePrice } from "@/lib/booking";
 import { expirePendingBookings } from "@/lib/booking-expire";
 import { sendBookingConfirmationEmail } from "@/lib/email";
+import { expirePendingBookingsBatch, invalidateLockedSeatCache } from "@/lib/booking-expire";
 import { MAX_SEATS_PER_BOOKING, SEAT_HOLD_MINUTES } from "@/lib/constants";
 import { auth } from "@/auth";
 import { consumeRateLimit, rateLimitKey } from "@/lib/rate-limit";
@@ -296,11 +297,15 @@ export async function createBooking(
       }
 
       let code = generateBookingCode();
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 10; i++) {
         const exists = await tx.booking.findUnique({ where: { code } });
         if (!exists) break;
         code = generateBookingCode();
       }
+      // After 10 retries, if still colliding, throw — extremely unlikely
+      // with 32^12 possible codes but handle gracefully.
+      const codeCheck = await tx.booking.findUnique({ where: { code } });
+      if (codeCheck) throw new Error("BOOKING_CODE_EXHAUSTED");
 
       const booking = await tx.booking.create({
         data: {
@@ -402,7 +407,8 @@ export async function completeSandboxPayment(
   ) {
     return { ok: false, error: "Sandbox payment is disabled" };
   }
-  await expirePendingBookings();
+  const { invalidatedShowtimes } = await expirePendingBookingsBatch();
+  for (const sid of invalidatedShowtimes) invalidateLockedSeatCache(sid);
 
   const booking = await prisma.booking.findUnique({
     where: { code: input.code },
@@ -527,4 +533,28 @@ export async function completeSandboxPayment(
   })();
 
   return { ok: true, data: { code: booking.code, status: "CONFIRMED" } };
+}
+
+export async function verifyGuestAccess(
+  code: string,
+  email: string
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const cleanEmail = email?.trim().toLowerCase();
+  if (!cleanEmail || !EMAIL_RE.test(cleanEmail)) {
+    return { ok: false, error: "Email không hợp lệ" };
+  }
+  const booking = await prisma.booking.findUnique({
+    where: { code },
+    select: { contactEmail: true, userId: true },
+  });
+  if (!booking) {
+    return { ok: false, error: "Không tìm thấy đơn đặt vé" };
+  }
+  if (booking.userId !== null) {
+    return { ok: false, error: "Đơn đặt vé đã đăng nhập, dùng tính năng tìm vé của tôi" };
+  }
+  if (booking.contactEmail !== cleanEmail) {
+    return { ok: false, error: "Email không khớp với đơn đặt vé" };
+  }
+  return { ok: true };
 }

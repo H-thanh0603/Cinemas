@@ -1,0 +1,272 @@
+ ⨯ Error [PrismaClientInitializationError]: 
+Invalid `prisma.movie.findMany()` invocation:
+
+
+Can't reach database server at `localhost:5432`
+
+Please make sure your database server is running at `localhost:5432`.
+    at async HomePage (src\app\page.tsx:26:5)
+  24 | export default async function HomePage() {
+  25 |   const [featuredList, nowShowing, comingSoon, cinemas, promotions, genres, stats] =
+> 26 |     await Promise.all([
+     |     ^
+  27 |       prisma.movie.findMany({
+  28 |         where: { status: "NOW_SHOWING" },
+  29 |         orderBy: { popularity: "desc" }, {
+  clientVersion: '6.19.3',
+  errorCode: undefined,
+  retryable: undefined,
+  digest: '1388647451'
+}
+ ⨯ Error [PrismaClientInitializationError]: 
+Invalid `prisma.movie.findMany()` invocation:
+
+
+Can't reach database server at `localhost:5432`
+
+Please make sure your database server is running at `localhost:5432`.
+    at async HomePage (src\app\page.tsx:26:5)
+  24 | export default async function HomePage() {
+  25 |   const [featuredList, nowShowing, comingSoon, cinemas, promotions, genres, stats] =
+> 26 |     await Promise.all([
+     |     ^
+  27 |       prisma.movie.findMany({
+  28 |         where: { status: "NOW_SHOWING" },
+  29 |         orderBy: { popularity: "desc" }, {
+  clientVersion: '6.19.3',
+  errorCode: undefined,
+  retryable: undefined,
+  digest: '1388647451'
+}
+ ⨯ Error [PrismaClientInitializationError]: 
+Invalid `prisma.movie.findMany()` invocation:
+
+
+Can't reach database server at `localhost:5432`
+
+Please make sure your database server is running at `localhost:5432`.
+    at async HomePage (src\app\page.tsx:26:5)
+  24 | export default async function HomePage() {
+  25 |   const [featuredList, nowShowing, comingSoon, cinemas, promotions, genres, stats] =
+> 26 |     await Promise.all([
+     |     ^
+  27 |       prisma.movie.findMany({
+  28 |         where: { status: "NOW_SHOWING" },
+  29 |         orderBy: { popularity: "desc" }, {
+  clientVersion: '6.19.3',
+  errorCode: undefined,
+  retryable: undefined,
+  digest: '1388647451'
+}
+ ⨯ Error [PrismaClientInitializationError]: 
+Invalid `prisma.cinema.findMany()` invocation:
+
+
+Can't reach database server at `localhost:5432`
+
+Please make sure your database server is running at `localhost:5432`.
+    at async CinemasPage (src\app\cinemas\page.tsx:13:19)
+  11 |
+  12 | export default async function CinemasPage() {
+> 13 |   const cinemas = await prisma.cinema.findMany({
+     |                   ^
+  14 |     where: { isActive: true },
+  15 |     include: {
+  16 |       rooms: { where: { isActive: true } }, {
+  clientVersion: '6.19.3',
+  errorCode: undefined,
+  retryable: undefined,
+  digest: '1388279220'
+}
+ ⨯ Error [PrismaClientInitializationError]: 
+Invalid `prisma.movie.findMany()` invocation:
+
+
+Can't reach database server at `localhost:5432`
+
+Please make sure your database server is running at `localhost:5432`.
+    at async HomePage (src\app\page.tsx:26:5)
+  24 | export default async function HomePage() {
+  25 |   const [featuredList, nowShowing, comingSoon, cinemas, promotions, genres, stats] =
+> 26 |     await Promise.all([
+     |     ^
+  27 |       prisma.movie.findMany({
+  28 |         where: { status: "NOW_SHOWING" },
+  29 |         orderBy: { popularity: "desc" }, {
+  clientVersion: '6.19.3',
+  errorCode: undefined,
+  retryable: undefined,
+  digest: '1388647451'
+}
+ ⨯ Error [PrismaClientInitializationError]: 
+Invalid `prisma.movie.findMany()` invocation:
+
+
+Can't reach database server at `localhost:5432`
+
+Please make sure your database server is running at `localhost:5432`.
+    at async MoviesPage (src\app\movies\page.tsx:54:35)
+  52 |   if (params.sort === "release") orderBy = { releaseDate: "desc" };
+  53 |
+> 54 |   const [movies, total, genres] = await Promise.all([
+     |                                   ^
+  55 |     prisma.movie.findMany({
+  56 |       where,
+  57 |       orderBy, {
+  clientVersion: '6.19.3',
+  errorCode: undefined,
+  retryable: undefined,
+  digest: '719718899'
+}
+ ⨯ The requested resource "https://placehold.co/400x600/1b1b1b/8b0000?text=Ti%E1%BA%BFng+G%E1%BB%8Di" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/16213e/e50914?text=B%C3%A3o+T%E1%BA%ADp" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/540b0e/f5f5f7?text=V%C3%B5+C%E1%BB%B1c+%C4%90%E1%BA%A1o" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/1a1a2e/e50914?text=B%C3%A3o+T%E1%BA%ADp" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/1a1a2e/e50914?text=B%C3%A3o+T%E1%BA%ADp" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/2e4057/ffd93b?text=M%C3%B9a+H%C3%A8" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/540b0e/f5f5f7?text=V%C3%B5+C%E1%BB%B1c+%C4%90%E1%BA%A1o" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/1b1b1b/8b0000?text=Ti%E1%BA%BFng+G%E1%BB%8Di" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/2e4057/ffd93b?text=M%C3%B9a+H%C3%A8" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/0f3460/f5c518?text=K%C3%BD+%E1%BB%A8c+S%E1%BB%91+0" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/0f3460/f5c518?text=K%C3%BD+%E1%BB%A8c+S%E1%BB%91+0" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/f4a261/1a1a2e?text=Bi%E1%BB%87t+%C4%90%E1%BB%99i" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/2b2d42/edf2f4?text=Giai+%C4%90i%E1%BB%87u" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/03045e/90e0ef?text=H%C3%A0nh+Tinh+9" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/ff6b9d/ffffff?text=%C4%90%C3%A1m+C%C6%B0%E1%BB%9Bi" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/1b4332/d8f3dc?text=R%E1%BB%ABng+Thi%C3%AAng" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/0f3460/f5c518?text=K%C3%BD+%E1%BB%A8c+S%E1%BB%91+0" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/540b0e/f5f5f7?text=V%C3%B5+C%E1%BB%B1c+%C4%90%E1%BA%A1o" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/1b1b1b/8b0000?text=Ti%E1%BA%BFng+G%E1%BB%8Di" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/2e4057/ffd93b?text=M%C3%B9a+H%C3%A8" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/16213e/e50914?text=B%C3%A3o+T%E1%BA%ADp" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/0f3460/f5c518?text=K%C3%BD+%E1%BB%A8c+S%E1%BB%91+0" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/540b0e/f5f5f7?text=V%C3%B5+C%E1%BB%B1c+%C4%90%E1%BA%A1o" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/1b1b1b/8b0000?text=Ti%E1%BA%BFng+G%E1%BB%8Di" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/2e4057/ffd93b?text=M%C3%B9a+H%C3%A8" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/0f3460/f5c518?text=K%C3%BD+%E1%BB%A8c+S%E1%BB%91+0" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/03045e/90e0ef?text=H%C3%A0nh+Tinh+9" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/2e4057/ffd93b?text=M%C3%B9a+H%C3%A8" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/1b1b1b/8b0000?text=Ti%E1%BA%BFng+G%E1%BB%8Di" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/540b0e/f5f5f7?text=V%C3%B5+C%E1%BB%B1c+%C4%90%E1%BA%A1o" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/1a1a2e/e50914?text=B%C3%A3o+T%E1%BA%ADp" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/f4a261/1a1a2e?text=Bi%E1%BB%87t+%C4%90%E1%BB%99i" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/ff6b9d/ffffff?text=%C4%90%C3%A1m+C%C6%B0%E1%BB%9Bi" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/2b2d42/edf2f4?text=Giai+%C4%90i%E1%BB%87u" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/1b4332/d8f3dc?text=R%E1%BB%ABng+Thi%C3%AAng" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/0f3460/f5c518?text=K%C3%BD+%E1%BB%A8c+S%E1%BB%91+0" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/1a1a2e/e50914?text=B%C3%A3o+T%E1%BA%ADp" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/1b1b1b/8b0000?text=Ti%E1%BA%BFng+G%E1%BB%8Di" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/03045e/90e0ef?text=H%C3%A0nh+Tinh+9" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/540b0e/f5f5f7?text=V%C3%B5+C%E1%BB%B1c+%C4%90%E1%BA%A1o" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/2e4057/ffd93b?text=M%C3%B9a+H%C3%A8" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/1b4332/d8f3dc?text=R%E1%BB%ABng+Thi%C3%AAng" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/f4a261/1a1a2e?text=Bi%E1%BB%87t+%C4%90%E1%BB%99i" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/ff6b9d/ffffff?text=%C4%90%C3%A1m+C%C6%B0%E1%BB%9Bi" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/2b2d42/edf2f4?text=Giai+%C4%90i%E1%BB%87u" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/540b0e/f5f5f7?text=V%C3%B5+C%E1%BB%B1c+%C4%90%E1%BA%A1o" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/2e4057/ffd93b?text=M%C3%B9a+H%C3%A8" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/1a1a2e/e50914?text=B%C3%A3o+T%E1%BA%ADp" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/0f3460/f5c518?text=K%C3%BD+%E1%BB%A8c+S%E1%BB%91+0" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/03045e/90e0ef?text=H%C3%A0nh+Tinh+9" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/1b1b1b/8b0000?text=Ti%E1%BA%BFng+G%E1%BB%8Di" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/f4a261/1a1a2e?text=Bi%E1%BB%87t+%C4%90%E1%BB%99i" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/1b4332/d8f3dc?text=R%E1%BB%ABng+Thi%C3%AAng" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/2b2d42/edf2f4?text=Giai+%C4%90i%E1%BB%87u" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/ff6b9d/ffffff?text=%C4%90%C3%A1m+C%C6%B0%E1%BB%9Bi" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/16213e/e50914?text=B%C3%A3o+T%E1%BA%ADp" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/16213e/e50914?text=B%C3%A3o+T%E1%BA%ADp" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/540b0e/f5f5f7?text=V%C3%B5+C%E1%BB%B1c+%C4%90%E1%BA%A1o" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/0f3460/f5c518?text=K%C3%BD+%E1%BB%A8c+S%E1%BB%91+0" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/2e4057/ffd93b?text=M%C3%B9a+H%C3%A8" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/1a1a2e/e50914?text=B%C3%A3o+T%E1%BA%ADp" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/1b1b1b/8b0000?text=Ti%E1%BA%BFng+G%E1%BB%8Di" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/1a1a2e/e50914?text=B%C3%A3o+T%E1%BA%ADp" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/0f3460/f5c518?text=K%C3%BD+%E1%BB%A8c+S%E1%BB%91+0" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/2e4057/ffd93b?text=M%C3%B9a+H%C3%A8" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/540b0e/f5f5f7?text=V%C3%B5+C%E1%BB%B1c+%C4%90%E1%BA%A1o" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/1b1b1b/8b0000?text=Ti%E1%BA%BFng+G%E1%BB%8Di" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/f4a261/1a1a2e?text=Bi%E1%BB%87t+%C4%90%E1%BB%99i" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/2b2d42/edf2f4?text=Giai+%C4%90i%E1%BB%87u" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/ff6b9d/ffffff?text=%C4%90%C3%A1m+C%C6%B0%E1%BB%9Bi" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/03045e/90e0ef?text=H%C3%A0nh+Tinh+9" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/400x600/1b4332/d8f3dc?text=R%E1%BB%ABng+Thi%C3%AAng" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/0f3460/f5c518?text=K%C3%BD+%E1%BB%A8c+S%E1%BB%91+0" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/540b0e/f5f5f7?text=V%C3%B5+C%E1%BB%B1c+%C4%90%E1%BA%A1o" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/1b1b1b/8b0000?text=Ti%E1%BA%BFng+G%E1%BB%8Di" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/2e4057/ffd93b?text=M%C3%B9a+H%C3%A8" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/16213e/e50914?text=B%C3%A3o+T%E1%BA%ADp" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/0f3460/f5c518?text=K%C3%BD+%E1%BB%A8c+S%E1%BB%91+0" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/540b0e/f5f5f7?text=V%C3%B5+C%E1%BB%B1c+%C4%90%E1%BA%A1o" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/1b1b1b/8b0000?text=Ti%E1%BA%BFng+G%E1%BB%8Di" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/2e4057/ffd93b?text=M%C3%B9a+H%C3%A8" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/16213e/e50914?text=B%C3%A3o+T%E1%BA%ADp" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/0f3460/f5c518?text=K%C3%BD+%E1%BB%A8c+S%E1%BB%91+0" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/540b0e/f5f5f7?text=V%C3%B5+C%E1%BB%B1c+%C4%90%E1%BA%A1o" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/1b1b1b/8b0000?text=Ti%E1%BA%BFng+G%E1%BB%8Di" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/2e4057/ffd93b?text=M%C3%B9a+H%C3%A8" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/16213e/e50914?text=B%C3%A3o+T%E1%BA%ADp" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ The requested resource "https://placehold.co/1280x720/0f3460/f5c518?text=K%C3%BD+%E1%BB%A8c+S%E1%BB%91+0" has type "image/svg+xml" but dangerouslyAllowSVG is disabled. Consider adding the "unoptimized" property to the <Image>.
+ ⨯ Error: Could not find the module "D:\Cinemas\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '4143574589'
+}
+ ⨯ Error: Could not find the module "D:\Cinemas\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>)
+    at stringify (<anonymous>)
+    at stringify (<anonymous>) {
+  digest: '3407775379'
+}
+ ⨯ Error: Could not find the module "D:\Cinemas\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>)
+    at stringify (<anonymous>) {
+  digest: '3565922649'
+}
+ ⨯ Error: Could not find the module "D:\Cinemas\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>)
+    at stringify (<anonymous>) {
+  digest: '3565922649'
+}
+ ⨯ Error: Could not find the module "D:\Cinemas\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>)
+    at stringify (<anonymous>) {
+  digest: '3565922649'
+}
+ ⨯ Error: Could not find the module "D:\Cinemas\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>)
+    at stringify (<anonymous>) {
+  digest: '3565922649'
+}
+ ⨯ Error: Could not find the module "D:\Cinemas\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>)
+    at stringify (<anonymous>) {
+  digest: '3565922649'
+}
+ ⨯ Error: Could not find the module "D:\Cinemas\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>)
+    at stringify (<anonymous>) {
+  digest: '3565922649'
+}
+ ⨯ Error: Could not find the module "D:\Cinemas\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '4143574589'
+}
+ ⨯ Error: Could not find the module "D:\Cinemas\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '4143574589'
+}
+ ⨯ Error: Could not find the module "D:\Cinemas\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '4143574589'
+}
+ ⨯ [TypeError: __webpack_modules__[moduleId] is not a function] {
+  digest: '2070001844'
+}
+ ⨯ Error: Could not find the module "D:\Cinemas\node_modules\next\dist\next-devtools\userspace\app\segment-explorer-node.js#SegmentViewNode" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '4143574589'
+}
+[TypeError: __webpack_modules__[moduleId] is not a function]
+ ⨯ [TypeError: __webpack_modules__[moduleId] is not a function]
+ ⨯ [TypeError: __webpack_modules__[moduleId] is not a function] {
+  page: '/'
+}
