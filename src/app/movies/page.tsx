@@ -51,7 +51,7 @@ export default async function MoviesPage({
   if (params.sort === "newest") orderBy = { createdAt: "desc" };
   if (params.sort === "release") orderBy = { releaseDate: "desc" };
 
-  const [movies, total, genres] = await Promise.all([
+  const [movies, total, genres, movieTitleRows] = await Promise.all([
     prisma.movie.findMany({
       where,
       orderBy,
@@ -61,6 +61,11 @@ export default async function MoviesPage({
     }),
     prisma.movie.count({ where }),
     prisma.genre.findMany({ orderBy: { name: "asc" } }),
+    prisma.movie.findMany({
+      where: { status: { not: "ARCHIVED" } },
+      orderBy: { title: "asc" },
+      select: { title: true },
+    }),
   ]);
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
@@ -73,7 +78,11 @@ export default async function MoviesPage({
       </p>
 
       <div className="mt-6">
-        <MovieFilters genres={genres} current={params} />
+        <MovieFilters
+          genres={genres}
+          current={params}
+          movieTitles={movieTitleRows.map((movie) => movie.title)}
+        />
       </div>
 
       <div className="mt-8">

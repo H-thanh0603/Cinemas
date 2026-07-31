@@ -130,7 +130,7 @@ export default async function HomePage() {
           <div className="mb-9 flex flex-wrap items-end justify-between gap-4">
             <div>
               <div className="mb-2 flex items-center gap-2">
-                <span className="h-6 w-1.5 rounded-full bg-primary shadow-[0_0_12px_rgba(229,9,20,0.7)]" />
+                <span className="h-6 w-1.5 rounded-full bg-primary shadow-[0_0_12px_rgba(180,95,106,0.7)]" />
                 <span className="text-xs font-bold uppercase tracking-wider text-primary">
                   Đang chiếu
                 </span>

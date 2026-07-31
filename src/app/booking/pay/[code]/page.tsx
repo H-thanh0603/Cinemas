@@ -5,7 +5,9 @@ import { expirePendingBookings } from "@/lib/booking-expire";
 import { formatVnd, PAYMENT_METHOD_LABELS } from "@/lib/constants";
 import { HoldCountdown } from "@/components/booking/hold-countdown";
 import { SandboxPayForm } from "@/components/booking/sandbox-pay-form";
+import { StripeCheckoutButton } from "@/components/booking/stripe-checkout-button";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
+import { auth } from "@/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +29,8 @@ export default async function PaymentPage({
   });
 
   if (!booking) notFound();
+  const session = await auth();
+  if (booking.userId && booking.userId !== session?.user?.id) notFound();
 
   if (booking.status === "CONFIRMED") {
     redirect(`/booking/confirmation/${code}`);
@@ -53,7 +57,7 @@ export default async function PaymentPage({
     redirect(`/booking/confirmation/${code}`);
   }
 
-  const method = booking.payment?.method ?? "CREDIT_CARD";
+  const method = booking.payment?.method ?? "STRIPE";
   const seats = booking.seats
     .map((s) => `${s.seat.row}${s.seat.number}`)
     .join(", ");
@@ -116,7 +120,16 @@ export default async function PaymentPage({
           </div>
         </dl>
 
-        <SandboxPayForm code={booking.code} method={method} amount={booking.finalTotal} />
+        {booking.payment?.provider === "STRIPE" ? (
+          <StripeCheckoutButton code={booking.code} amount={booking.finalTotal} />
+        ) : process.env.ENABLE_PAYMENT_SANDBOX === "true" &&
+          process.env.NODE_ENV !== "production" ? (
+          <SandboxPayForm code={booking.code} method={method} amount={booking.finalTotal} />
+        ) : (
+          <p className="rounded-lg border border-danger/30 bg-danger/10 px-3 py-2 text-sm text-danger">
+            Cổng thanh toán chưa được cấu hình.
+          </p>
+        )}
       </div>
     </div>
   );

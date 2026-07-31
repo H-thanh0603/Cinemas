@@ -24,28 +24,16 @@ type CheckoutStepProps = {
 
 const paymentOptions = [
   {
-    value: "CREDIT_CARD",
-    label: "Thẻ tín dụng / ghi nợ",
+    value: "STRIPE",
+    label: "Thanh toán online",
     icon: "💳",
-    note: "Sandbox: thẻ 4242… → OK · 4000…0002 → fail",
-  },
-  {
-    value: "E_WALLET",
-    label: "Ví điện tử",
-    icon: "📱",
-    note: "Sandbox: QR giả + xác nhận đã thanh toán",
-  },
-  {
-    value: "BANK_TRANSFER",
-    label: "Chuyển khoản ngân hàng",
-    icon: "🏦",
-    note: "Sandbox: STK demo + QR CK",
+    note: "Stripe Checkout · xác nhận qua webhook server",
   },
   {
     value: "AT_COUNTER",
     label: "Thanh toán tại quầy",
     icon: "🎫",
-    note: "Giữ ghế 8 phút · thanh toán tại rạp",
+    note: "Giữ ghế 35 phút · thanh toán tại rạp",
   },
 ];
 
@@ -219,9 +207,9 @@ export function CheckoutStep({
       </div>
 
       <p className="mt-4 rounded-lg border border-info/30 bg-info/5 px-4 py-3 text-xs text-info">
-        ℹ️ Sau khi xác nhận, hệ thống <b>giữ ghế 8 phút</b>. Online → cổng
-        sandbox CineStar Pay (không trừ tiền thật). Tại quầy → giữ PENDING đến
-        khi hết giờ hoặc thanh toán tại rạp.
+        ℹ️ Sau khi xác nhận, hệ thống <b>giữ ghế 35 phút</b>. Online → Stripe
+        xác nhận bằng webhook server. Tại quầy → giữ PENDING đến khi hết giờ
+        hoặc thanh toán tại rạp.
       </p>
     </div>
   );

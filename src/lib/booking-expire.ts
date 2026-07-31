@@ -7,29 +7,38 @@ import { prisma } from "@/lib/prisma";
 export async function expirePendingBookings(): Promise<number> {
   const now = new Date();
 
-  const expired = await prisma.booking.findMany({
-    where: {
-      status: "PENDING",
-      expiresAt: { lt: now },
-    },
-    select: { id: true },
+  return prisma.$transaction(async (tx) => {
+    const candidates = await tx.booking.findMany({
+      where: {
+        status: "PENDING",
+        expiresAt: { lt: now },
+      },
+      select: { id: true },
+    });
+
+    let expiredCount = 0;
+    for (const { id } of candidates) {
+      // ponytail: per-row conditional update keeps expiry/payment race-safe;
+      // a bulk UPDATE ... RETURNING can replace this if expiry throughput matters.
+      const expired = await tx.booking.updateMany({
+        where: { id, status: "PENDING", expiresAt: { lt: now } },
+        data: { status: "EXPIRED" },
+      });
+      if (expired.count === 0) continue;
+
+      await tx.showtimeSeatLock.deleteMany({ where: { bookingId: id } });
+      await tx.payment.updateMany({
+        where: {
+          bookingId: id,
+          status: { in: ["UNPAID", "PROCESSING"] },
+        },
+        data: { status: "FAILED", lastError: "booking_expired" },
+      });
+      expiredCount++;
+    }
+
+    return expiredCount;
   });
-
-  if (expired.length === 0) return 0;
-
-  const ids = expired.map((b) => b.id);
-
-  await prisma.$transaction([
-    prisma.showtimeSeatLock.deleteMany({
-      where: { bookingId: { in: ids } },
-    }),
-    prisma.booking.updateMany({
-      where: { id: { in: ids } },
-      data: { status: "EXPIRED" },
-    }),
-  ]);
-
-  return ids.length;
 }
 
 /** Seat IDs currently locked (held or sold) for a showtime. */

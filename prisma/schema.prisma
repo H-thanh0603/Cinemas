@@ -10,14 +10,16 @@ datasource db {
 // ─── Users ────────────────────────────────────────────────────────────────
 
 model User {
-  id           String    @id @default(cuid())
-  email        String    @unique
-  name         String
-  phone        String?
-  passwordHash String?
-  role         String    @default("CUSTOMER") // CUSTOMER | ADMIN
-  createdAt    DateTime  @default(now())
-  bookings     Booking[]
+  id                  String               @id @default(cuid())
+  email               String               @unique
+  name                String
+  phone               String?
+  passwordHash        String?
+  role                String               @default("CUSTOMER") // CUSTOMER | ADMIN
+  createdAt           DateTime             @default(now())
+  bookings            Booking[]
+  passwordResetTokens PasswordResetToken[]
+  auditLogs           AuditLog[]
 }
 
 // ─── Movies ───────────────────────────────────────────────────────────────
@@ -48,6 +50,8 @@ model Movie {
   updatedAt   DateTime     @updatedAt
   genres      MovieGenre[]
   showtimes   Showtime[]
+
+  @@index([createdAt])
 }
 
 model MovieGenre {
@@ -91,13 +95,13 @@ model Room {
 }
 
 model Seat {
-  id           String        @id @default(cuid())
+  id           String             @id @default(cuid())
   roomId       String
   row          String // "A", "B", ...
   number       Int
-  type         String        @default("NORMAL") // NORMAL | VIP | COUPLE
-  isActive     Boolean       @default(true) // false = broken/unavailable seat
-  room         Room              @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  type         String             @default("NORMAL") // NORMAL | VIP | COUPLE
+  isActive     Boolean            @default(true) // false = broken/unavailable seat
+  room         Room               @relation(fields: [roomId], references: [id], onDelete: Cascade)
   bookingSeats BookingSeat[]
   seatLocks    ShowtimeSeatLock[]
 
@@ -107,24 +111,25 @@ model Seat {
 // ─── Showtimes ────────────────────────────────────────────────────────────
 
 model Showtime {
-  id        String    @id @default(cuid())
+  id        String             @id @default(cuid())
   movieId   String
   cinemaId  String
   roomId    String
   startsAt  DateTime
   endsAt    DateTime
   basePrice Int // VND for a NORMAL seat
-  format    String    @default("2D") // 2D | 3D | IMAX
-  status    String    @default("SCHEDULED") // SCHEDULED | CANCELLED
-  createdAt DateTime  @default(now())
-  movie     Movie     @relation(fields: [movieId], references: [id], onDelete: Cascade)
-  cinema    Cinema    @relation(fields: [cinemaId], references: [id], onDelete: Cascade)
-  room      Room      @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  format    String             @default("2D") // 2D | 3D | IMAX
+  status    String             @default("SCHEDULED") // SCHEDULED | CANCELLED | COMPLETED
+  createdAt DateTime           @default(now())
+  movie     Movie              @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  cinema    Cinema             @relation(fields: [cinemaId], references: [id], onDelete: Cascade)
+  room      Room               @relation(fields: [roomId], references: [id], onDelete: Cascade)
   bookings  Booking[]
   seatLocks ShowtimeSeatLock[]
 
   @@index([movieId, startsAt])
   @@index([roomId, startsAt])
+  @@index([status, startsAt])
 }
 
 // ─── Pricing / Products ───────────────────────────────────────────────────
@@ -169,34 +174,35 @@ model Promotion {
 // ─── Bookings ─────────────────────────────────────────────────────────────
 
 model Booking {
-  id             String         @id @default(cuid())
-  code           String         @unique // e.g. CS-XXXXXX
-  showtimeId     String
-  userId         String?
-  contactName    String
-  contactEmail   String
-  contactPhone   String
-  status         String         @default("PENDING") // PENDING | CONFIRMED | CANCELLED | EXPIRED
-  seatsTotal     Int
-  combosTotal    Int
-  discountTotal  Int            @default(0)
-  finalTotal     Int
-  promotionId    String?
-  expiresAt      DateTime? // seat hold deadline for PENDING bookings
-  emailSentAt    DateTime?
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  showtime       Showtime       @relation(fields: [showtimeId], references: [id])
-  user           User?          @relation(fields: [userId], references: [id])
-  promotion      Promotion?     @relation(fields: [promotionId], references: [id])
-  seats          BookingSeat[]
-  combos         BookingCombo[]
-  payment        Payment?
-  seatLocks      ShowtimeSeatLock[]
+  id            String             @id @default(cuid())
+  code          String             @unique // e.g. CS-XXXXXX
+  showtimeId    String
+  userId        String?
+  contactName   String
+  contactEmail  String
+  contactPhone  String
+  status        String             @default("PENDING") // PENDING | CONFIRMED | CANCELLED | EXPIRED
+  seatsTotal    Int
+  combosTotal   Int
+  discountTotal Int                @default(0)
+  finalTotal    Int
+  promotionId   String?
+  expiresAt     DateTime? // seat hold deadline for PENDING bookings
+  emailSentAt   DateTime?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  showtime      Showtime           @relation(fields: [showtimeId], references: [id])
+  user          User?              @relation(fields: [userId], references: [id])
+  promotion     Promotion?         @relation(fields: [promotionId], references: [id])
+  seats         BookingSeat[]
+  combos        BookingCombo[]
+  payment       Payment?
+  seatLocks     ShowtimeSeatLock[]
 
   @@index([showtimeId])
   @@index([contactEmail])
   @@index([status, expiresAt])
+  @@index([createdAt])
 }
 
 /// Hard lock: one seat can only belong to one active booking per showtime.
@@ -241,14 +247,73 @@ model BookingCombo {
 }
 
 model Payment {
+  id                 String    @id @default(cuid())
+  bookingId          String    @unique
+  method             String // STRIPE | AT_COUNTER | SANDBOX
+  status             String    @default("UNPAID") // UNPAID | PROCESSING | PAID | FAILED | REFUND_PENDING | REFUNDED
+  amount             Int
+  provider           String    @default("STRIPE")
+  providerPaymentId  String?   @unique
+  providerCheckoutId String?   @unique
+  idempotencyKey     String?   @unique
+  refundId           String?   @unique
+  paidAt             DateTime?
+  refundedAt         DateTime?
+  lastError          String?
+  sandboxTxnId       String? // development-only gateway transaction id
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  booking            Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([status, updatedAt])
+}
+
+model PaymentEvent {
   id          String    @id @default(cuid())
-  bookingId   String    @unique
-  method      String // CREDIT_CARD | E_WALLET | BANK_TRANSFER | AT_COUNTER
-  status      String    @default("UNPAID") // UNPAID | PAID | FAILED | REFUNDED
-  amount      Int
-  paidAt      DateTime?
-  sandboxTxnId String? // demo gateway transaction id
+  provider    String
+  eventId     String
+  type        String
+  payloadHash String
+  status      String    @default("RECEIVED") // RECEIVED | PROCESSED | FAILED
+  processedAt DateTime?
+  error       String?
   createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  booking     Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, eventId])
+  @@index([status, createdAt])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+}
+
+model RateLimitBucket {
+  key         String   @id
+  count       Int
+  windowStart DateTime
+  expiresAt   DateTime
+
+  @@index([expiresAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  action    String
+  entity    String
+  entityId  String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+  actor     User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([actorId, createdAt])
+  @@index([entity, entityId, createdAt])
 }

@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/admin-auth";
+import { writeAuditLog } from "@/lib/audit-log";
 
 export async function POST(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const guard = await requireAdmin();
+  if (!guard.ok) return NextResponse.json({ error: "Cần tài khoản ADMIN" }, { status: 403 });
   const { id } = await params;
 
   const room = await prisma.room.findUnique({ where: { id } });
@@ -34,5 +38,6 @@ export async function POST(
   }
   await prisma.seat.createMany({ data: seats });
 
+  await writeAuditLog({ actorId: guard.session.user.id, action: "CREATE_SEATS", entity: "Room", entityId: id, metadata: { count: seats.length } });
   return NextResponse.json({ ok: true, count: seats.length });
 }

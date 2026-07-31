@@ -7,6 +7,10 @@ import {
 } from "@/app/booking/actions";
 import { SANDBOX_CARD_SUCCESS } from "@/lib/payment-sandbox";
 
+// ponytail: this route is an explicitly opt-in local load-test harness, so its
+// sandbox payment switch is scoped to this request process only.
+process.env.ENABLE_PAYMENT_SANDBOX ??= "true";
+
 function hashCode(s: string): number {
   let h = 0;
   for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
@@ -104,7 +108,7 @@ export async function POST(req: NextRequest) {
       email: `loadtest+${vuSafe}@example.com`,
       phone: `0${phoneTail}`, // 10 digits
     },
-    paymentMethod: "CREDIT_CARD",
+    paymentMethod: "SANDBOX",
   });
 
   if (!result.ok) {

@@ -8,7 +8,7 @@ export const runtime = "nodejs";
  * Server-Sent Events stream of locked seat IDs for a showtime.
  */
 export async function GET(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id: showtimeId } = await params;
@@ -23,6 +23,13 @@ export async function GET(
 
   let lastKey = "";
   let closed = false;
+  let interval: ReturnType<typeof setInterval> | undefined;
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+  const cleanup = () => {
+    closed = true;
+    if (interval) clearInterval(interval);
+    if (timeout) clearTimeout(timeout);
+  };
 
   const stream = new ReadableStream({
     async start(controller) {
@@ -55,13 +62,12 @@ export async function GET(
       };
 
       await tick();
-      const interval = setInterval(() => {
+      interval = setInterval(() => {
         void tick();
       }, 3000);
 
-      const timeout = setTimeout(() => {
-        closed = true;
-        clearInterval(interval);
+      timeout = setTimeout(() => {
+        cleanup();
         try {
           controller.close();
         } catch {
@@ -69,10 +75,17 @@ export async function GET(
         }
       }, 10 * 60_000);
 
-      void timeout;
+      req.signal.addEventListener("abort", () => {
+        cleanup();
+        try {
+          controller.close();
+        } catch {
+          /* ignore */
+        }
+      }, { once: true });
     },
     cancel() {
-      closed = true;
+      cleanup();
     },
   });
 

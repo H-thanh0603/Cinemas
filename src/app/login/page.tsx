@@ -8,7 +8,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
+  const requestedCallback = searchParams.get("callbackUrl");
+  const callbackUrl =
+    requestedCallback?.startsWith("/") && !requestedCallback.startsWith("//")
+      ? requestedCallback
+      : "/";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -63,10 +67,6 @@ function LoginForm() {
     <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-4 py-12">
       <div className="rounded-2xl border border-border bg-surface-raised p-8 shadow-xl">
         <h1 className="text-center text-2xl font-extrabold">Đăng nhập</h1>
-        <p className="mt-2 text-center text-sm text-muted">
-          Tài khoản demo: <code className="text-accent">khach@example.com</code> /{" "}
-          <code className="text-accent">khach123</code>
-        </p>
 
         <form onSubmit={onSubmit} className="mt-6 space-y-4">
           <div>
@@ -117,6 +117,11 @@ function LoginForm() {
         </form>
 
         <p className="mt-6 text-center text-sm text-muted">
+          <Link href="/forgot-password" className="text-primary hover:underline">
+            Quên mật khẩu?
+          </Link>
+        </p>
+        <p className="mt-2 text-center text-sm text-muted">
           Chưa có tài khoản?{" "}
           <Link href="/register" className="font-semibold text-primary hover:underline">
             Đăng ký

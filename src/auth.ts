@@ -2,9 +2,10 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { consumeRateLimit, rateLimitKey } from "@/lib/rate-limit";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  session: { strategy: "jwt" },
+  session: { strategy: "jwt", maxAge: 60 * 60 },
   pages: {
     signIn: "/login",
   },
@@ -20,16 +21,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const email = credentials?.email?.toString().trim().toLowerCase();
           const password = credentials?.password?.toString() ?? "";
           if (!email || !password) return null;
+          const loginLimit = await consumeRateLimit(
+            rateLimitKey("login", email),
+            10,
+            15 * 60_000
+          );
+          if (!loginLimit.allowed) return null;
 
           const user = await prisma.user.findUnique({ where: { email } });
           if (!user?.passwordHash) {
-            console.warn("[auth] user not found or no password:", email);
+            console.warn("[auth] user not found or no password");
             return null;
           }
 
           const ok = await bcrypt.compare(password, user.passwordHash);
           if (!ok) {
-            console.warn("[auth] bad password for:", email);
+            console.warn("[auth] bad password");
             return null;
           }
 

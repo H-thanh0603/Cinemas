@@ -3,48 +3,46 @@ import { prisma } from "@/lib/prisma";
 import { SHOWTIME_FORMAT_LABELS, formatDateTime } from "@/lib/constants";
 import { ShowtimeActions } from "./showtime-actions";
 import { AdminSearch, AdminFilter } from "../admin-search";
+import { AdminPagination } from "../admin-pagination";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminShowtimesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; status?: string }>;
+  searchParams: Promise<{ q?: string; status?: string; page?: string }>;
 }) {
-  const { q, status } = await searchParams;
+  const { q, status, page: pageParam } = await searchParams;
+  const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
+  const pageSize = 50;
+  const where = {
+    AND: [
+      q ? { OR: [{ movie: { title: { contains: q } } }, { room: { name: { contains: q } } }, { room: { cinema: { name: { contains: q } } } }] } : {},
+      status && status !== "ALL" ? { status } : {},
+    ],
+  };
 
-  const showtimes = await prisma.showtime.findMany({
-    where: {
-      AND: [
-        q
-          ? {
-              OR: [
-                { movie: { title: { contains: q } } },
-                { room: { name: { contains: q } } },
-                { room: { cinema: { name: { contains: q } } } },
-              ],
-            }
-          : {},
-        status && status !== "ALL"
-          ? { status }
-          : {},
-      ],
-    },
+  const [showtimes, total] = await Promise.all([
+    prisma.showtime.findMany({
+    where,
     orderBy: { startsAt: "desc" },
-    take: 100,
+    skip: (page - 1) * pageSize,
+    take: pageSize,
     include: {
       movie: true,
       room: { include: { cinema: true } },
       _count: { select: { bookings: true } },
     },
-  });
+    }),
+    prisma.showtime.count({ where }),
+  ]);
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Quản lý suất chiếu</h1>
-          <p className="text-sm text-muted">{showtimes.length} suất chiếu</p>
+          <p className="text-sm text-muted">{total} suất chiếu</p>
         </div>
         <Link
           href="/admin/showtimes/new"
@@ -53,6 +51,7 @@ export default async function AdminShowtimesPage({
           + Thêm suất chiếu
         </Link>
       </div>
+      <AdminPagination page={page} totalPages={Math.max(1, Math.ceil(total / pageSize))} query={{ q, status }} />
 
       {/* Search & filter */}
       <div className="flex flex-wrap items-center gap-3">

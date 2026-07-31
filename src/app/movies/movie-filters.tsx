@@ -30,9 +30,11 @@ const sortOptions = [
 export function MovieFilters({
   genres,
   current,
+  movieTitles,
 }: {
   genres: Genre[];
   current: Current;
+  movieTitles: string[];
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -66,11 +68,17 @@ export function MovieFilters({
       >
         <input
           type="search"
+          list="movie-title-suggestions"
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Tìm phim theo tên..."
           className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm outline-none placeholder:text-muted-dark focus:border-primary"
         />
+        <datalist id="movie-title-suggestions">
+          {movieTitles.map((title) => (
+            <option key={title} value={title} />
+          ))}
+        </datalist>
         <button
           type="submit"
           className="shrink-0 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"

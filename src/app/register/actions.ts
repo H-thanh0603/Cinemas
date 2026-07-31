@@ -2,6 +2,7 @@
 
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { consumeRateLimit, rateLimitKey } from "@/lib/rate-limit";
 
 export type RegisterResult =
   | { ok: true }
@@ -32,6 +33,14 @@ export async function registerUser(input: {
   }
   if (password.length < 6) {
     return { ok: false, error: "Mật khẩu tối thiểu 6 ký tự" };
+  }
+  const registerLimit = await consumeRateLimit(
+    rateLimitKey("register", email),
+    5,
+    60 * 60_000
+  );
+  if (!registerLimit.allowed) {
+    return { ok: false, error: "Vui lòng thử lại sau" };
   }
 
   const existing = await prisma.user.findUnique({ where: { email } });

@@ -7,12 +7,10 @@ import { expirePendingBookings } from "@/lib/booking-expire";
  * Protect with CRON_SECRET if set: Authorization: Bearer <CRON_SECRET>
  */
 export async function POST(req: NextRequest) {
-  const secret = process.env.CRON_SECRET;
-  if (secret) {
-    const auth = req.headers.get("authorization");
-    if (auth !== `Bearer ${secret}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  const secret = process.env.CRON_SECRET?.trim();
+  const authorization = req.headers.get("authorization");
+  if (!secret || authorization !== `Bearer ${secret}`) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const expired = await expirePendingBookings();

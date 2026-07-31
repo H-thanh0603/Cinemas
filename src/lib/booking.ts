@@ -6,9 +6,10 @@ export function seatBasePrice(basePrice: number, seatType: string): number {
 
 export function generateBookingCode(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const random = crypto.getRandomValues(new Uint32Array(10));
   let code = "";
-  for (let i = 0; i < 6; i++) {
-    code += chars[Math.floor(Math.random() * chars.length)];
+  for (let i = 0; i < 10; i++) {
+    code += chars[random[i] % chars.length];
   }
   return `CS-${code}`;
 }

@@ -62,7 +62,7 @@ export function BookingFlow({
     email: prefillContact?.email || session?.user?.email || "",
     phone: prefillContact?.phone || "",
   });
-  const [paymentMethod, setPaymentMethod] = useState("CREDIT_CARD");
+  const [paymentMethod, setPaymentMethod] = useState("STRIPE");
   const [promo, setPromo] = useState<PromoState>(null);
   const [fieldErrors, setFieldErrors] = useState<
     Partial<Record<keyof ContactInfo, string>>
@@ -181,7 +181,7 @@ export function BookingFlow({
     if (result.ok) {
       if (result.data.needsPayment) {
         toast(
-          `Đã giữ ghế ${SEAT_HOLD_MINUTES} phút — hoàn tất thanh toán sandbox`,
+          `Đã giữ ghế ${SEAT_HOLD_MINUTES} phút — hoàn tất thanh toán online`,
           "success"
         );
         router.push(`/booking/pay/${result.data.code}`);

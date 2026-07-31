@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/admin-auth";
+import { parseAdminBody, promotionSchema } from "@/lib/admin-schemas";
+import { writeAuditLog } from "@/lib/audit-log";
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
+  const guard = await requireAdmin();
+  if (!guard.ok) return NextResponse.json({ error: "Cần tài khoản ADMIN" }, { status: 403 });
+  const parsed = parseAdminBody(promotionSchema, await req.json());
+  if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: 400 });
+  const body = parsed.data;
 
   if (!body.code || !body.description || !body.discountType || !body.discountValue || !body.startsAt || !body.expiresAt) {
     return NextResponse.json({ error: "Thiếu trường bắt buộc" }, { status: 400 });
@@ -33,5 +40,6 @@ export async function POST(req: NextRequest) {
     },
   });
 
+  await writeAuditLog({ actorId: guard.session.user.id, action: "CREATE", entity: "Promotion", entityId: promo.id });
   return NextResponse.json(promo, { status: 201 });
 }

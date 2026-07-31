@@ -68,7 +68,7 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/55 to-background/15" />
           <div className="absolute inset-0 bg-gradient-to-r from-background via-background/40 to-transparent" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_40%,rgba(229,9,20,0.18),transparent_55%)] animate-spotlight" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_40%,rgba(180,95,106,0.18),transparent_55%)] animate-spotlight" />
         </motion.div>
       </AnimatePresence>
 

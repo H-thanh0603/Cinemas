@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/admin-auth";
+import { movieSchema, parseAdminBody } from "@/lib/admin-schemas";
+import { writeAuditLog } from "@/lib/audit-log";
 
 function slugify(s: string): string {
   return s
@@ -12,7 +15,11 @@ function slugify(s: string): string {
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
+  const guard = await requireAdmin();
+  if (!guard.ok) return NextResponse.json({ error: "Cần tài khoản ADMIN" }, { status: 403 });
+  const parsed = parseAdminBody(movieSchema, await req.json());
+  if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: 400 });
+  const body = parsed.data;
 
   if (!body.title || !body.durationMin || !body.releaseDate) {
     return NextResponse.json(
@@ -45,5 +52,6 @@ export async function POST(req: NextRequest) {
     },
   });
 
+  await writeAuditLog({ actorId: guard.session.user.id, action: "CREATE", entity: "Movie", entityId: movie.id });
   return NextResponse.json(movie, { status: 201 });
 }

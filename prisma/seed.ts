@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { buildRoomSchedule } from "../src/lib/showtime-schedule";
 
 const prisma = new PrismaClient();
 
@@ -10,15 +11,24 @@ function daysFromNow(days: number, hour: number, minute = 0) {
   return d;
 }
 
-function addMinutes(date: Date, minutes: number) {
-  return new Date(date.getTime() + minutes * 60_000);
-}
-
 function bookingCode(i: number) {
   return `CS-SEED${String(i).padStart(4, "0")}`;
 }
 
 async function main() {
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? "admin123";
+  const customerPassword = process.env.SEED_CUSTOMER_PASSWORD ?? "khach123";
+  if (
+    process.env.NODE_ENV === "production" &&
+    (process.env.ALLOW_PRODUCTION_SEED !== "true" ||
+      adminPassword === "admin123" ||
+      customerPassword === "khach123")
+  ) {
+    throw new Error(
+      "Production seed requires ALLOW_PRODUCTION_SEED=true and non-default SEED_*_PASSWORD values."
+    );
+  }
+
   console.log("🧹 Clearing existing data...");
   await prisma.payment.deleteMany();
   await prisma.bookingCombo.deleteMany();
@@ -38,8 +48,8 @@ async function main() {
 
   // ── Users ────────────────────────────────────────────────────────────
   console.log("👤 Seeding users...");
-  const adminHash = await bcrypt.hash("admin123", 10);
-  const customerHash = await bcrypt.hash("khach123", 10);
+  const adminHash = await bcrypt.hash(adminPassword, 10);
+  const customerHash = await bcrypt.hash(customerPassword, 10);
   const admin = await prisma.user.create({
     data: {
       email: "admin@cinestar.vn",
@@ -546,7 +556,6 @@ async function main() {
   // ── Showtimes ────────────────────────────────────────────────────────
   console.log("🕐 Seeding showtimes...");
   const nowShowing = movies.filter((m) => m.status === "NOW_SHOWING");
-  const showtimeSlots = [10, 13, 16, 19, 21];
   const basePrices: Record<string, number> = { "2D": 75000, "3D": 95000, IMAX: 130000 };
 
   const showtimes: { id: string; roomId: string; startsAt: Date }[] = [];
@@ -555,25 +564,27 @@ async function main() {
   for (let day = -2; day <= 6; day++) {
     for (let roomIdx = 0; roomIdx < allRooms.length; roomIdx++) {
       const room = allRooms[roomIdx];
-      // rotate movies per room per day
-      for (let slotIdx = 0; slotIdx < showtimeSlots.length; slotIdx++) {
-        const movie =
-          nowShowing[(day + roomIdx + slotIdx + 100) % nowShowing.length];
-        const startsAt = daysFromNow(day, showtimeSlots[slotIdx]);
-        const endsAt = addMinutes(startsAt, movie.durationMin + 15);
+      const schedule = buildRoomSchedule(daysFromNow(day, 0), nowShowing, {
+        openingHour: 10,
+        closingHour: 24,
+        cleanupMinutes: 15,
+        rotation: day + roomIdx + 100,
+      });
+      for (let slotIdx = 0; slotIdx < schedule.length; slotIdx++) {
+        const slot = schedule[slotIdx];
         const format = roomIdx % 5 === 2 ? "IMAX" : slotIdx % 2 === 0 ? "2D" : "3D";
         const st = await prisma.showtime.create({
           data: {
-            movieId: movie.id,
+            movieId: slot.movieId,
             cinemaId: room.cinemaId,
             roomId: room.id,
-            startsAt,
-            endsAt,
+            startsAt: slot.startsAt,
+            endsAt: slot.endsAt,
             basePrice: basePrices[format],
             format,
           },
         });
-        showtimes.push({ id: st.id, roomId: room.id, startsAt });
+        showtimes.push({ id: st.id, roomId: room.id, startsAt: slot.startsAt });
       }
     }
   }
@@ -660,8 +671,8 @@ async function main() {
   }
 
   console.log("✅ Seed hoàn tất!");
-  console.log(`   Customer: ${customer.email} / khach123`);
-  console.log(`   Admin:    ${admin.email} / admin123  → /admin/login`);
+  console.log(`   Customer: ${customer.email}`);
+  console.log(`   Admin:    ${admin.email} → /admin/login`);
 }
 
 main()

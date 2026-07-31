@@ -109,7 +109,7 @@ export function Header() {
                 <Icon className="h-4 w-4 opacity-80" />
                 {link.label}
                 {active && (
-                  <span className="absolute bottom-0.5 left-1/2 h-0.5 w-6 -translate-x-1/2 rounded-full bg-primary shadow-[0_0_8px_rgba(229,9,20,0.8)]" />
+                  <span className="absolute bottom-0.5 left-1/2 h-0.5 w-6 -translate-x-1/2 rounded-full bg-primary shadow-[0_0_8px_rgba(180,95,106,0.8)]" />
                 )}
               </Link>
             );

@@ -12,6 +12,8 @@ import {
 import { LookupForm } from "./lookup-form";
 import { auth } from "@/auth";
 import { expirePendingBookings } from "@/lib/booking-expire";
+import { headers } from "next/headers";
+import { consumeRateLimit, getRequestIp, rateLimitKey } from "@/lib/rate-limit";
 
 export const metadata: Metadata = {
   title: "Vé của tôi",
@@ -37,9 +39,11 @@ type BookingWithRelations = Awaited<
   ReturnType<typeof findBookings>
 >[number];
 
-function findBookings(email: string) {
+function findBookings(
+  where: { userId: string } | { contactEmail: string; code: string }
+) {
   return prisma.booking.findMany({
-    where: { contactEmail: email },
+    where,
     orderBy: { createdAt: "desc" },
     include: {
       showtime: { include: { movie: true, cinema: true, room: true } },
@@ -109,38 +113,29 @@ function BookingCard({ booking }: { booking: BookingWithRelations }) {
 export default async function BookingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ email?: string }>;
+  searchParams: Promise<{ email?: string; code?: string }>;
 }) {
   await expirePendingBookings();
   const session = await auth();
-  const { email: emailParam } = await searchParams;
-  const email =
-    emailParam?.trim() ||
-    session?.user?.email?.trim() ||
-    undefined;
-
-  let bookings = email ? await findBookings(email) : null;
-
-  // Also include bookings linked to the logged-in user id
-  if (session?.user?.id) {
-    const byUser = await prisma.booking.findMany({
-      where: { userId: session.user.id },
-      orderBy: { createdAt: "desc" },
-      include: {
-        showtime: { include: { movie: true, cinema: true, room: true } },
-        seats: { include: { seat: true } },
-        payment: true,
-      },
-    });
-    if (!bookings) {
-      bookings = byUser;
-    } else {
-      const seen = new Set(bookings.map((b) => b.id));
-      for (const b of byUser) {
-        if (!seen.has(b.id)) bookings.push(b);
-      }
-    }
+  const { email: emailParam, code: codeParam } = await searchParams;
+  const email = emailParam?.trim();
+  const code = codeParam?.trim().toUpperCase();
+  const userId = session?.user?.id;
+  let lookupAllowed = true;
+  if (!userId && email && code) {
+    const requestHeaders = await headers();
+    const lookupLimit = await consumeRateLimit(
+      rateLimitKey("lookup", `${getRequestIp(requestHeaders)}:${email}:${code}`),
+      10,
+      10 * 60_000
+    );
+    lookupAllowed = lookupLimit.allowed;
   }
+  const bookings = userId
+    ? await findBookings({ userId })
+    : lookupAllowed && email && code
+      ? await findBookings({ contactEmail: email, code })
+      : null;
 
   const now = new Date();
   const upcoming =
@@ -167,20 +162,26 @@ export default async function BookingsPage({
       <p className="mt-1 text-sm text-muted">
         {session?.user
           ? `Xin chào ${session.user.name || session.user.email} — lịch sử đặt vé của bạn`
-          : "Nhập email đã dùng khi đặt vé, hoặc đăng nhập để xem lịch sử"}
+          : "Nhập email và mã đặt vé, hoặc đăng nhập để xem toàn bộ lịch sử"}
       </p>
 
-      <div className="mt-6">
-        <LookupForm initialEmail={email ?? ""} />
-      </div>
+      {!userId && (
+        <div className="mt-6">
+          <LookupForm initialEmail={email ?? ""} initialCode={code ?? ""} />
+        </div>
+      )}
 
-      {email && bookings && (
+      {bookings && (
         <div className="mt-10 space-y-10">
           {bookings.length === 0 ? (
             <EmptyState
               icon="🎫"
               title="Không tìm thấy vé nào"
-              description={`Không có đơn đặt vé nào cho email "${email}". Kiểm tra lại email hoặc đặt vé ngay.`}
+              description={
+                userId
+                  ? "Tài khoản này chưa có đơn đặt vé nào."
+                  : "Email hoặc mã đặt vé không đúng."
+              }
               actionHref="/movies?status=NOW_SHOWING"
               actionLabel="Đặt vé ngay"
             />
@@ -250,12 +251,12 @@ export default async function BookingsPage({
         </div>
       )}
 
-      {!email && (
+      {!bookings && (
         <div className="mt-10">
           <EmptyState
             icon="🔍"
             title="Tra cứu vé đã đặt"
-            description="Nhập email phía trên để xem toàn bộ vé sắp tới, vé đã xem và vé đã hủy của bạn."
+            description="Nhập đúng email và mã đặt vé để xem đơn. Đăng nhập để xem toàn bộ lịch sử."
           />
         </div>
       )}

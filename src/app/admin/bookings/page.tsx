@@ -3,49 +3,47 @@ import { prisma } from "@/lib/prisma";
 import { formatVnd, formatDateTime, BOOKING_STATUS_LABELS, PAYMENT_STATUS_LABELS } from "@/lib/constants";
 import { BookingActions } from "./booking-actions";
 import { AdminSearch, AdminFilter } from "../admin-search";
+import { AdminPagination } from "../admin-pagination";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminBookingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; status?: string }>;
+  searchParams: Promise<{ q?: string; status?: string; page?: string }>;
 }) {
-  const { q, status } = await searchParams;
+  const { q, status, page: pageParam } = await searchParams;
+  const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
+  const pageSize = 50;
+  const where = {
+    AND: [
+      q ? { OR: [{ code: { contains: q } }, { contactName: { contains: q } }, { contactEmail: { contains: q } }, { contactPhone: { contains: q } }] } : {},
+      status && status !== "ALL" ? { status } : {},
+    ],
+  };
 
-  const bookings = await prisma.booking.findMany({
-    where: {
-      AND: [
-        q
-          ? {
-              OR: [
-                { code: { contains: q } },
-                { contactName: { contains: q } },
-                { contactEmail: { contains: q } },
-                { contactPhone: { contains: q } },
-              ],
-            }
-          : {},
-        status && status !== "ALL"
-          ? { status }
-          : {},
-      ],
-    },
+  const [bookings, total] = await Promise.all([
+    prisma.booking.findMany({
+    where,
     orderBy: { createdAt: "desc" },
-    take: 100,
+    skip: (page - 1) * pageSize,
+    take: pageSize,
     include: {
       showtime: { include: { movie: true, room: { include: { cinema: true } } } },
       payment: true,
       _count: { select: { seats: true } },
     },
-  });
+    }),
+    prisma.booking.count({ where }),
+  ]);
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Quản lý đặt vé</h1>
-        <p className="text-sm text-muted">{bookings.length} đặt vé</p>
+        <p className="text-sm text-muted">{total} đặt vé</p>
       </div>
+      <AdminPagination page={page} totalPages={Math.max(1, Math.ceil(total / pageSize))} query={{ q, status }} />
 
       {/* Search & filter */}
       <div className="flex flex-wrap items-center gap-3">

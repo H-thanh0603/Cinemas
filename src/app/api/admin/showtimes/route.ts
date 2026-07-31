@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/admin-auth";
+import { parseAdminBody, showtimeSchema } from "@/lib/admin-schemas";
+import { writeAuditLog } from "@/lib/audit-log";
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
+  const guard = await requireAdmin();
+  if (!guard.ok) return NextResponse.json({ error: "Cần tài khoản ADMIN" }, { status: 403 });
+  const parsed = parseAdminBody(showtimeSchema, await req.json());
+  if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: 400 });
+  const body = parsed.data;
 
   if (!body.movieId || !body.roomId || !body.startTime || !body.basePrice || !body.format) {
     return NextResponse.json({ error: "Thiếu trường bắt buộc" }, { status: 400 });
@@ -62,5 +69,6 @@ export async function POST(req: NextRequest) {
     },
   });
 
+  await writeAuditLog({ actorId: guard.session.user.id, action: "CREATE", entity: "Showtime", entityId: showtime.id });
   return NextResponse.json(showtime, { status: 201 });
 }

@@ -13,7 +13,7 @@ export const SEAT_TYPE_LABELS: Record<string, string> = {
 export const MAX_SEATS_PER_BOOKING = 8;
 
 /** Seat hold duration for PENDING bookings (minutes). */
-export const SEAT_HOLD_MINUTES = 8;
+export const SEAT_HOLD_MINUTES = 35;
 
 export const AGE_RATING_LABELS: Record<string, string> = {
   P: "P - Mọi lứa tuổi",
@@ -44,6 +44,8 @@ export const PAYMENT_STATUS_LABELS: Record<string, string> = {
 };
 
 export const PAYMENT_METHOD_LABELS: Record<string, string> = {
+  STRIPE: "Thanh toán online (Stripe)",
+  SANDBOX: "Sandbox (chỉ development)",
   CREDIT_CARD: "Thẻ tín dụng / ghi nợ",
   E_WALLET: "Ví điện tử",
   BANK_TRANSFER: "Chuyển khoản ngân hàng",

@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/admin-auth";
+import { cinemaSchema, parseAdminBody } from "@/lib/admin-schemas";
+import { writeAuditLog } from "@/lib/audit-log";
 
 function slugify(s: string): string {
   return s
@@ -15,8 +18,12 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const guard = await requireAdmin();
+  if (!guard.ok) return NextResponse.json({ error: "Cần tài khoản ADMIN" }, { status: 403 });
   const { id } = await params;
-  const body = await req.json();
+  const parsed = parseAdminBody(cinemaSchema, await req.json());
+  if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: 400 });
+  const body = parsed.data;
 
   if (!body.name || !body.address || !body.city) {
     return NextResponse.json({ error: "Thiếu trường bắt buộc" }, { status: 400 });
@@ -47,6 +54,7 @@ export async function PUT(
     },
   });
 
+  await writeAuditLog({ actorId: guard.session.user.id, action: "UPDATE", entity: "Cinema", entityId: id });
   return NextResponse.json(cinema);
 }
 
@@ -54,6 +62,8 @@ export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const guard = await requireAdmin();
+  if (!guard.ok) return NextResponse.json({ error: "Cần tài khoản ADMIN" }, { status: 403 });
   const { id } = await params;
 
   const roomCount = await prisma.room.count({ where: { cinemaId: id } });
@@ -65,5 +75,6 @@ export async function DELETE(
   }
 
   await prisma.cinema.delete({ where: { id } });
+  await writeAuditLog({ actorId: guard.session.user.id, action: "DELETE", entity: "Cinema", entityId: id });
   return NextResponse.json({ ok: true });
 }

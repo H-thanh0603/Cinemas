@@ -1,11 +1,13 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { generateBookingCode, seatBasePrice } from "@/lib/booking";
 import { expirePendingBookings } from "@/lib/booking-expire";
 import { sendBookingConfirmationEmail } from "@/lib/email";
 import { MAX_SEATS_PER_BOOKING, SEAT_HOLD_MINUTES } from "@/lib/constants";
 import { auth } from "@/auth";
+import { consumeRateLimit, rateLimitKey } from "@/lib/rate-limit";
 
 export type CreateBookingInput = {
   showtimeId: string;
@@ -21,10 +23,9 @@ export type ActionResult<T> =
   | { ok: false; error: string };
 
 const PAYMENT_METHODS = [
-  "CREDIT_CARD",
-  "E_WALLET",
-  "BANK_TRANSFER",
+  "STRIPE",
   "AT_COUNTER",
+  "SANDBOX",
 ];
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -109,8 +110,23 @@ export async function createBooking(
       error: "Vui lòng nhập số điện thoại hợp lệ (bắt đầu bằng 0, 10-11 số)",
     };
   }
+  const bookingLimit = await consumeRateLimit(
+    rateLimitKey("booking", email),
+    30,
+    60_000
+  );
+  if (!bookingLimit.allowed) {
+    return { ok: false, error: "Bạn thao tác quá nhanh. Vui lòng thử lại sau." };
+  }
   if (!PAYMENT_METHODS.includes(input.paymentMethod)) {
     return { ok: false, error: "Phương thức thanh toán không hợp lệ" };
+  }
+  if (
+    input.paymentMethod === "SANDBOX" &&
+    (process.env.NODE_ENV === "production" ||
+      process.env.ENABLE_PAYMENT_SANDBOX !== "true")
+  ) {
+    return { ok: false, error: "Sandbox payment is disabled" };
   }
 
   if (!input.seats || input.seats.length === 0) {
@@ -263,10 +279,20 @@ export async function createBooking(
       }
 
       if (promotionId) {
-        await tx.promotion.update({
-          where: { id: promotionId },
-          data: { usedCount: { increment: 1 } },
-        });
+        const promotionNow = new Date();
+        const claimed = await tx.$queryRaw<{ id: string }[]>(Prisma.sql`
+          UPDATE "Promotion"
+          SET "usedCount" = "usedCount" + 1
+          WHERE "id" = ${promotionId}
+            AND "isActive" = true
+            AND "startsAt" <= ${promotionNow}
+            AND "expiresAt" >= ${promotionNow}
+            AND ("usageLimit" IS NULL OR "usedCount" < "usageLimit")
+          RETURNING "id"
+        `);
+        if (claimed.length === 0) {
+          throw new Error("PROMO_TAKEN");
+        }
       }
 
       let code = generateBookingCode();
@@ -296,6 +322,12 @@ export async function createBooking(
           payment: {
             create: {
               method: input.paymentMethod,
+              provider:
+                input.paymentMethod === "STRIPE"
+                  ? "STRIPE"
+                  : input.paymentMethod === "AT_COUNTER"
+                    ? "COUNTER"
+                    : "SANDBOX",
               status: "UNPAID",
               amount: finalTotal,
               paidAt: null,
@@ -340,6 +372,12 @@ export async function createBooking(
         error: `Ghế ${names} vừa được người khác đặt. Vui lòng chọn ghế khác.`,
       };
     }
+    if (e instanceof Error && e.message === "PROMO_TAKEN") {
+      return {
+        ok: false,
+        error: "Mã ưu đãi vừa hết lượt sử dụng. Vui lòng thử mã khác.",
+      };
+    }
     console.error("createBooking failed:", e);
     return {
       ok: false,
@@ -354,10 +392,16 @@ export type CompletePaymentInput = {
   outcome?: "success" | "fail";
 };
 
-/** Complete sandbox payment for a PENDING online booking. */
+/** Development-only sandbox payment for a PENDING booking. */
 export async function completeSandboxPayment(
   input: CompletePaymentInput
 ): Promise<ActionResult<{ code: string; status: string }>> {
+  if (
+    process.env.NODE_ENV === "production" ||
+    process.env.ENABLE_PAYMENT_SANDBOX !== "true"
+  ) {
+    return { ok: false, error: "Sandbox payment is disabled" };
+  }
   await expirePendingBookings();
 
   const booking = await prisma.booking.findUnique({
@@ -372,6 +416,16 @@ export async function completeSandboxPayment(
   if (!booking) {
     return { ok: false, error: "Không tìm thấy đơn đặt vé" };
   }
+  let session = null;
+  try {
+    session = await auth();
+  } catch {
+    // Outside request scope (scripts/tests) — guest booking
+    session = null;
+  }
+  if (booking.userId && session?.user?.id !== booking.userId) {
+    return { ok: false, error: "Bạn không có quyền thanh toán đơn này" };
+  }
   if (booking.status === "EXPIRED") {
     return { ok: false, error: "Đơn đã hết hạn giữ ghế. Vui lòng đặt lại." };
   }
@@ -381,10 +435,13 @@ export async function completeSandboxPayment(
   if (booking.status !== "PENDING" || !booking.payment) {
     return { ok: false, error: "Đơn không thể thanh toán" };
   }
-  if (booking.payment.method === "AT_COUNTER") {
+  if (
+    booking.payment.method === "AT_COUNTER" ||
+    booking.payment.provider !== "SANDBOX"
+  ) {
     return {
       ok: false,
-      error: "Đơn thanh toán tại quầy — không qua cổng online",
+      error: "Đơn này không dùng sandbox payment",
     };
   }
   if (booking.expiresAt && booking.expiresAt < new Date()) {
@@ -394,33 +451,59 @@ export async function completeSandboxPayment(
 
   const { runSandboxPayment } = await import("@/lib/payment-sandbox");
   const pay = runSandboxPayment({
-    method: booking.payment.method,
+    method: "E_WALLET",
     cardNumber: input.cardNumber,
     outcome: input.outcome ?? "success",
   });
 
   if (!pay.ok) {
-    await prisma.payment.update({
-      where: { id: booking.payment.id },
+    await prisma.payment.updateMany({
+      where: {
+        id: booking.payment.id,
+        bookingId: booking.id,
+        status: "UNPAID",
+      },
       data: { status: "FAILED" },
     });
     return { ok: false, error: pay.error };
   }
 
-  await prisma.$transaction([
-    prisma.booking.update({
-      where: { id: booking.id },
-      data: { status: "CONFIRMED", expiresAt: null },
-    }),
-    prisma.payment.update({
-      where: { id: booking.payment.id },
-      data: {
-        status: "PAID",
-        paidAt: new Date(),
-        sandboxTxnId: pay.txnId,
+  const paidAt = new Date();
+  const claimed = await prisma.$transaction(async (tx) => {
+    const bookingClaim = await tx.booking.updateMany({
+      where: {
+        id: booking.id,
+        status: "PENDING",
+        expiresAt: { gt: paidAt },
       },
-    }),
-  ]);
+      data: { status: "CONFIRMED", expiresAt: null },
+    });
+    if (bookingClaim.count !== 1) return false;
+
+    const paymentUpdate = await tx.payment.updateMany({
+      where: {
+        id: booking.payment!.id,
+        bookingId: booking.id,
+        status: "UNPAID",
+      },
+      data: { status: "PAID", paidAt, sandboxTxnId: pay.txnId },
+    });
+    if (paymentUpdate.count !== 1) {
+      throw new Error("PAYMENT_STATE_CHANGED");
+    }
+    return true;
+  });
+
+  if (!claimed) {
+    const current = await prisma.booking.findUnique({
+      where: { id: booking.id },
+      select: { status: true },
+    });
+    if (current?.status === "CONFIRMED") {
+      return { ok: true, data: { code: booking.code, status: "CONFIRMED" } };
+    }
+    return { ok: false, error: "Đơn đã hết hạn hoặc đã được xử lý" };
+  }
 
   void (async () => {
     const mail = await sendBookingConfirmationEmail({

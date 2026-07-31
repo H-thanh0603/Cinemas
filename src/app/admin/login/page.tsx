@@ -12,7 +12,7 @@ function AdminLoginForm() {
   const notAdmin = searchParams.get("reason") === "not_admin";
   const { data: session } = useSession();
 
-  const [email, setEmail] = useState("admin@cinestar.vn");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(
     notAdmin
@@ -79,10 +79,6 @@ function AdminLoginForm() {
           </h1>
           <p className="mt-2 text-sm text-muted">
             Đăng nhập bằng tài khoản có role <b className="text-foreground">ADMIN</b>
-          </p>
-          <p className="mt-1 text-xs text-muted">
-            Demo: <code className="text-accent">admin@cinestar.vn</code> /{" "}
-            <code className="text-accent">admin123</code>
           </p>
         </div>
 

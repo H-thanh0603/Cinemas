@@ -7,6 +7,7 @@ import {
 import { SANDBOX_CARD_FAIL, SANDBOX_CARD_SUCCESS } from "../src/lib/payment-sandbox";
 
 const prisma = new PrismaClient();
+process.env.ENABLE_PAYMENT_SANDBOX = "true";
 
 let passed = 0;
 let failed = 0;
@@ -65,7 +66,7 @@ async function main() {
     ],
     combos: [{ comboId: combo.id, quantity: 2 }],
     contact,
-    paymentMethod: "E_WALLET",
+    paymentMethod: "SANDBOX",
   });
   check("booking created", r1.ok, r1.ok ? "" : r1.error);
   if (r1.ok) {
@@ -74,7 +75,7 @@ async function main() {
       include: { seats: true, combos: true, payment: true, seatLocks: true },
     });
     check("status PENDING after create", b?.status === "PENDING");
-    check("needsPayment true for e-wallet", r1.data.needsPayment === true);
+    check("needsPayment true for sandbox", r1.data.needsPayment === true);
     check("seat locks created", (b?.seatLocks.length ?? 0) === 2);
     check("payment UNPAID until sandbox", b?.payment?.status === "UNPAID");
     check("expiresAt set", b?.expiresAt != null);
@@ -104,7 +105,7 @@ async function main() {
     seats: [{ seatId: freeSeats[0].id, ticketTypeId: adult.id }],
     combos: [],
     contact,
-    paymentMethod: "CREDIT_CARD",
+    paymentMethod: "SANDBOX",
   });
   check("double booking rejected", !r2.ok);
 
@@ -114,7 +115,7 @@ async function main() {
     seats: [{ seatId: freeSeats[4].id, ticketTypeId: adult.id }],
     combos: [],
     contact,
-    paymentMethod: "CREDIT_CARD",
+    paymentMethod: "SANDBOX",
   });
   check("card hold created", r3.ok, r3.ok ? "" : r3.error);
   if (r3.ok) {
@@ -136,7 +137,7 @@ async function main() {
     seats: [],
     combos: [],
     contact,
-    paymentMethod: "CREDIT_CARD",
+    paymentMethod: "SANDBOX",
   });
   check("empty seats rejected", !r4a.ok);
 
@@ -145,7 +146,7 @@ async function main() {
     seats: [{ seatId: freeSeats[5].id, ticketTypeId: adult.id }],
     combos: [],
     contact: { ...contact, email: "not-an-email" },
-    paymentMethod: "CREDIT_CARD",
+    paymentMethod: "SANDBOX",
   });
   check("bad email rejected", !r4b.ok);
 

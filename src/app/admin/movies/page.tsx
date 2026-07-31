@@ -1,45 +1,45 @@
 import Link from "next/link";
+import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { MOVIE_STATUS_LABELS, formatDate } from "@/lib/constants";
 import { MovieActions } from "./movie-actions";
 import { AdminSearch, AdminFilter } from "../admin-search";
+import { AdminPagination } from "../admin-pagination";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminMoviesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; status?: string }>;
+  searchParams: Promise<{ q?: string; status?: string; page?: string }>;
 }) {
-  const { q, status } = await searchParams;
+  const { q, status, page: pageParam } = await searchParams;
+  const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
+  const pageSize = 25;
+  const where = {
+    AND: [
+      q ? { OR: [{ title: { contains: q } }, { slug: { contains: q } }, { director: { contains: q } }] } : {},
+      status && status !== "ALL" ? { status } : {},
+    ],
+  };
 
-  const movies = await prisma.movie.findMany({
-    where: {
-      AND: [
-        q
-          ? {
-              OR: [
-                { title: { contains: q } },
-                { slug: { contains: q } },
-                { director: { contains: q } },
-              ],
-            }
-          : {},
-        status && status !== "ALL"
-          ? { status }
-          : {},
-      ],
-    },
+  const [movies, total] = await Promise.all([
+    prisma.movie.findMany({
+    where,
     orderBy: { createdAt: "desc" },
+    skip: (page - 1) * pageSize,
+    take: pageSize,
     include: { genres: { include: { genre: true } }, _count: { select: { showtimes: true } } },
-  });
+    }),
+    prisma.movie.count({ where }),
+  ]);
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Quản lý phim</h1>
-          <p className="text-sm text-muted">{movies.length} phim</p>
+          <p className="text-sm text-muted">{total} phim</p>
         </div>
         <Link
           href="/admin/movies/new"
@@ -48,6 +48,7 @@ export default async function AdminMoviesPage({
           + Thêm phim
         </Link>
       </div>
+      <AdminPagination page={page} totalPages={Math.max(1, Math.ceil(total / pageSize))} query={{ q, status }} />
 
       {/* Search & filter */}
       <div className="flex flex-wrap items-center gap-3">
@@ -89,9 +90,11 @@ export default async function AdminMoviesPage({
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       {m.posterUrl && (
-                        <img
+                        <Image
                           src={m.posterUrl}
                           alt={m.title}
+                          width={40}
+                          height={56}
                           className="h-14 w-10 shrink-0 rounded-lg object-cover"
                         />
                       )}
