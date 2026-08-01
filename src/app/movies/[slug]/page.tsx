@@ -1,14 +1,12 @@
-import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/ui";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
+import { PosterImage } from "@/components/ui/poster-image";
+import { ShowtimeSection } from "@/components/movies/showtime-section";
 import {
   AGE_RATING_LABELS,
   formatDate,
-  formatTime,
-  formatVnd,
 } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
@@ -37,20 +35,6 @@ export default async function MovieDetailPage({
 
   if (!movie) notFound();
 
-  // group showtimes: date -> cinema -> showtimes
-  const byDate = new Map<
-    string,
-    Map<string, { cinemaName: string; items: typeof movie.showtimes }>
-  >();
-  for (const st of movie.showtimes) {
-    const dateKey = formatDate(st.startsAt);
-    if (!byDate.has(dateKey)) byDate.set(dateKey, new Map());
-    const cinemaMap = byDate.get(dateKey)!;
-    if (!cinemaMap.has(st.cinemaId)) {
-      cinemaMap.set(st.cinemaId, { cinemaName: st.cinema.name, items: [] });
-    }
-    cinemaMap.get(st.cinemaId)!.items.push(st);
-  }
 
   return (
     <div>
@@ -64,37 +48,28 @@ export default async function MovieDetailPage({
       </div>
       {/* Backdrop hero */}
       <section className="relative overflow-hidden border-b border-border">
-        <div className="absolute inset-0">
-          <Image
+        <div className="absolute inset-0 pointer-events-none">
+          <PosterImage
             src={movie.backdropUrl ?? movie.posterUrl}
-            alt=""
+            alt={movie.title}
             fill
             priority
-            className="object-cover opacity-25"
+            quality={95}
+            className="opacity-30"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/50" />
         </div>
-        <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6">
-          <nav className="text-xs text-muted">
-            <Link href="/" className="hover:text-foreground">
-              Trang chủ
-            </Link>{" "}
-            /{" "}
-            <Link href="/movies" className="hover:text-foreground">
-              Phim
-            </Link>{" "}
-            / <span className="text-foreground">{movie.title}</span>
-          </nav>
 
-          <div className="mt-6 flex flex-col gap-8 md:flex-row">
+        <div className="relative mx-auto max-w-7xl px-4 py-10 sm:px-6">
+          <div className="mt-2 flex flex-col gap-8 md:flex-row">
             <div className="relative mx-auto aspect-[2/3] w-52 shrink-0 overflow-hidden rounded-2xl border border-border shadow-2xl md:mx-0 md:w-72">
-              <Image
+              <PosterImage
                 src={movie.posterUrl}
                 alt={movie.title}
                 fill
                 priority
-                sizes="288px"
-                className="object-cover"
+                sizes="(max-width: 768px) 208px, 288px"
+                quality={95}
               />
             </div>
 
@@ -195,60 +170,18 @@ export default async function MovieDetailPage({
       </section>
 
       {/* Showtimes */}
-      <section id="showtimes" className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
+      <section id="showtimes" className="mx-auto max-w-7xl px-4 pb-20 sm:px-6">
         <h2 className="text-xl font-bold">Lịch chiếu</h2>
-        {byDate.size === 0 ? (
-          <div className="mt-4 rounded-2xl border border-dashed border-border bg-surface px-6 py-12 text-center">
-            <span className="text-4xl">📅</span>
-            <p className="mt-3 font-medium">
-              {movie.status === "COMING_SOON"
-                ? "Phim chưa mở bán vé"
-                : "Hiện chưa có suất chiếu nào"}
-            </p>
-            <p className="mt-1 text-sm text-muted">
-              {movie.status === "COMING_SOON"
-                ? `Phim dự kiến khởi chiếu ngày ${formatDate(movie.releaseDate)}. Hãy quay lại sau!`
-                : "Vui lòng quay lại sau hoặc chọn phim khác."}
-            </p>
-          </div>
-        ) : (
-          <div className="mt-6 space-y-8">
-            {[...byDate.entries()].map(([dateKey, cinemaMap]) => (
-              <div key={dateKey}>
-                <h3 className="sticky top-16 z-10 -mx-4 border-y border-border bg-background/95 px-4 py-2.5 text-sm font-bold uppercase tracking-wider text-accent backdrop-blur sm:mx-0 sm:rounded-lg sm:border">
-                  📅 {dateKey}
-                </h3>
-                <div className="mt-4 space-y-5">
-                  {[...cinemaMap.values()].map((group) => (
-                    <div
-                      key={group.cinemaName}
-                      className="rounded-2xl border border-border bg-surface p-5"
-                    >
-                      <h4 className="font-semibold">{group.cinemaName}</h4>
-                      <div className="mt-3 flex flex-wrap gap-2.5">
-                        {group.items.map((st) => (
-                          <Link
-                            key={st.id}
-                            href={`/booking/${st.id}`}
-                            className="group rounded-xl border border-border-light bg-surface-raised px-4 py-2.5 text-center transition-all hover:border-primary hover:bg-primary/10"
-                          >
-                            <span className="block text-sm font-bold group-hover:text-primary">
-                              {formatTime(st.startsAt)}
-                            </span>
-                            <span className="mt-0.5 block text-[11px] text-muted">
-                              {st.format} · {st.room.name} ·{" "}
-                              {formatVnd(st.basePrice)}
-                            </span>
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        <div className="mt-5">
+          <ShowtimeSection
+            showtimes={movie.showtimes.map((st) => ({
+              ...st,
+              startsAt: st.startsAt.toISOString(),
+            }))}
+            status={movie.status}
+            releaseDate={movie.releaseDate.toISOString()}
+          />
+        </div>
       </section>
     </div>
   );

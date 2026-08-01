@@ -8,17 +8,26 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "image.tmdb.org" },
     ],
+    // placehold.co serves SVG placeholders; SVG is blocked by default in the
+    // image optimizer as an XSS precaution. Mitigate with a strict CSP for
+    // optimized images and force downloads instead of inline rendering.
+    dangerouslyAllowSVG: true,
+    contentDispositionType: "attachment",
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   async headers() {
     const production = process.env.NODE_ENV === "production";
     const csp = [
       "default-src 'self'",
       // In production, we can remove 'unsafe-inline' since Next.js 15 doesn't
-      // require it for scripts. In dev mode, keep it for HMR.
+      // require it for scripts. In dev mode, keep 'unsafe-inline' AND
+      // 'unsafe-eval' - Next.js Fast Refresh/HMR uses eval() for its webpack
+      // runtime, so without 'unsafe-eval' the client bundle throws EvalError
+      // and React never hydrates (pages silently render as if data were empty).
       // TODO: Migrate to nonce-based CSP for production (requires custom Document)
       production
         ? "script-src 'self' https://js.stripe.com https://accounts.google.com"
-        : "script-src 'self' 'unsafe-inline' https://js.stripe.com",
+        : "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https://placehold.co https://images.unsplash.com https://image.tmdb.org",
       "connect-src 'self' https://api.stripe.com https://accounts.google.com",

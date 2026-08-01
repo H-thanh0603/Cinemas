@@ -86,3 +86,5 @@ export function SectionHeading({
     </div>
   );
 }
+
+export { PosterImage } from "./poster-image";
