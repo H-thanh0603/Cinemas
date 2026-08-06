@@ -3,7 +3,6 @@ import Link from "next/link";
 import { lazy } from "react";
 import type { FC } from "react";
 import { prisma } from "@/lib/prisma";
-import { expirePendingBookings } from "@/lib/booking-expire";
 import { formatVnd, PAYMENT_METHOD_LABELS } from "@/lib/constants";
 import { HoldCountdown } from "@/components/booking/hold-countdown";
 import { StripeCheckoutButton } from "@/components/booking/stripe-checkout-button";
@@ -33,7 +32,6 @@ export default async function PaymentPage({
 }) {
   const { code } = await params;
   const { email: emailParam } = await searchParams;
-  await expirePendingBookings();
 
   const booking = await prisma.booking.findUnique({
     where: { code },

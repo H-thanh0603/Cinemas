@@ -16,7 +16,6 @@ import {
 import { QrTicket } from "@/components/booking/qr-ticket";
 import { HoldCountdown } from "@/components/booking/hold-countdown";
 import { GuestEmailGate } from "@/components/booking/guest-email-gate";
-import { expirePendingBookings } from "@/lib/booking-expire";
 import { auth } from "@/auth";
 
 export const dynamic = "force-dynamic";
@@ -44,7 +43,6 @@ export default async function ConfirmationPage({
 }) {
   const { code } = await params;
   const { email: emailParam } = await searchParams;
-  await expirePendingBookings();
 
   const booking = await prisma.booking.findUnique({
     where: { code },

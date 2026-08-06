@@ -3,9 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { generateBookingCode } from "@/lib/booking";
-import { expirePendingBookings } from "@/lib/booking-expire";
 import { sendBookingConfirmationEmail } from "@/lib/email";
-import { expirePendingBookingsBatch } from "@/lib/booking-expire";
 import {
   EMAIL_RE,
   buildComboPricing,
@@ -85,8 +83,6 @@ export async function createBooking(
     needsPayment: boolean;
   }>
 > {
-  await expirePendingBookings();
-
   const contactError = validateContact({
     name: input.contact.name ?? "",
     email: input.contact.email ?? "",
@@ -373,7 +369,6 @@ export async function completeSandboxPayment(
   ) {
     return { ok: false, error: "Sandbox payment is disabled" };
   }
-  await expirePendingBookingsBatch();
 
   const booking = await prisma.booking.findUnique({
     where: { code: input.code },
@@ -416,7 +411,6 @@ export async function completeSandboxPayment(
     };
   }
   if (booking.expiresAt && booking.expiresAt < new Date()) {
-    await expirePendingBookings();
     return { ok: false, error: "Hết thời gian giữ ghế" };
   }
 

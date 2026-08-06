@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { validatePromotion } from "@/app/booking/actions";
-import { formatVnd } from "@/lib/constants";
+import { formatVnd, SEAT_HOLD_MINUTES } from "@/lib/constants";
 
 export type ContactInfo = { name: string; email: string; phone: string };
 export type PromoState = {
@@ -33,7 +33,7 @@ const paymentOptions = [
     value: "AT_COUNTER",
     label: "Thanh toán tại quầy",
     icon: "🎫",
-    note: "Giữ ghế 35 phút · thanh toán tại rạp",
+    note: `Giữ ghế ${SEAT_HOLD_MINUTES} phút · thanh toán tại rạp`,
   },
 ];
 
@@ -207,7 +207,7 @@ export function CheckoutStep({
       </div>
 
       <p className="mt-4 rounded-lg border border-info/30 bg-info/5 px-4 py-3 text-xs text-info">
-        ℹ️ Sau khi xác nhận, hệ thống <b>giữ ghế 35 phút</b>. Online → Stripe
+        ℹ️ Sau khi xác nhận, hệ thống <b>giữ ghế {SEAT_HOLD_MINUTES} phút</b>. Online → Stripe
         xác nhận bằng webhook server. Tại quầy → giữ PENDING đến khi hết giờ
         hoặc thanh toán tại rạp.
       </p>

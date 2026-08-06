@@ -9,7 +9,6 @@ import {
   Star,
   Heart,
   Eye,
-  Info,
 } from "lucide-react";
 import type { SeatDto } from "./types";
 import { formatVnd, SEAT_TYPE_LABELS } from "@/lib/constants";
