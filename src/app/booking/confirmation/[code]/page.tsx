@@ -115,7 +115,7 @@ export default async function ConfirmationPage({
               booking.payment?.status === "UNPAID" && (
                 <Link
                   href={`/booking/pay/${booking.code}`}
-                  className="mt-3 inline-flex w-full items-center justify-center rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white"
+                  className="mt-3 inline-flex w-full items-center justify-center rounded-xl bg-primary px-4 py-3 text-sm font-bold text-on-primary"
                 >
                   Tiếp tục thanh toán online →
                 </Link>
@@ -274,7 +274,7 @@ export default async function ConfirmationPage({
         </Link>
         <Link
           href="/movies"
-          className="rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
+          className="rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-on-primary transition-colors hover:bg-primary-hover"
         >
           Đặt vé phim khác
         </Link>

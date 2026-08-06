@@ -116,7 +116,7 @@ export function SandboxPayForm({
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-white shadow-lg shadow-primary/25 transition hover:brightness-110 disabled:opacity-50"
+          className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-on-primary shadow-lg shadow-primary/25 transition hover:brightness-110 disabled:opacity-50"
         >
           {loading ? "Đang xử lý cổng thanh toán…" : `Thanh toán ${formatVnd(amount)}`}
         </button>
@@ -165,7 +165,7 @@ export function SandboxPayForm({
         type="button"
         disabled={loading}
         onClick={() => void pay("success")}
-        className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-white shadow-lg shadow-primary/25 disabled:opacity-50"
+        className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-on-primary shadow-lg shadow-primary/25 disabled:opacity-50"
       >
         {loading ? "Đang xác nhận…" : `Tôi đã thanh toán ${formatVnd(amount)}`}
       </button>

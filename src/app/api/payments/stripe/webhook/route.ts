@@ -89,12 +89,7 @@ export async function POST(request: Request) {
           where: { id: result.bookingId, status: "PENDING" },
           data: { expiresAt: new Date() },
         });
-        const { invalidatedShowtimes } = await expirePendingBookingsBatch();
-        for (const sid of invalidatedShowtimes) {
-          // Invalidate cache for affected showtimes
-          const { invalidateLockedSeatCache } = await import("@/lib/booking-expire");
-          invalidateLockedSeatCache(sid);
-        }
+        await expirePendingBookingsBatch();
       }
     } else if (event.type === "refund.updated") {
       const refund = event.data.object as Stripe.Refund;

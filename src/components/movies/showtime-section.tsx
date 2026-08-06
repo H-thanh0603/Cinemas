@@ -134,7 +134,7 @@ export function ShowtimeSection({ showtimes, status, releaseDate }: Props) {
               }}
               className={`shrink-0 rounded-xl px-4 py-2.5 text-xs font-semibold transition-all duration-300 ${
                 selectedDate === d.key
-                  ? "bg-gradient-to-r from-primary to-primary-dark text-white shadow-md shadow-primary/20"
+                  ? "bg-gradient-to-r from-primary to-primary-dark text-on-primary shadow-md shadow-primary/20"
                   : "border border-border/50 bg-surface text-muted hover:border-primary/30 hover:bg-primary/8 hover:text-foreground"
               }`}
             >

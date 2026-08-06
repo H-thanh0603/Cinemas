@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-import { consumeRateLimit, rateLimitKey } from "@/lib/rate-limit";
+import { consumeRateLimit, getRequestIp, rateLimitKey } from "@/lib/rate-limit";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt", maxAge: 60 * 60 },
@@ -16,7 +16,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
         try {
           const email = credentials?.email?.toString().trim().toLowerCase();
           const password = credentials?.password?.toString() ?? "";
@@ -27,6 +27,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             15 * 60_000
           );
           if (!loginLimit.allowed) return null;
+
+          // Chống quét nhiều tài khoản từ 1 IP. getRequestIp lấy rightmost
+          // của x-forwarded-for — chỉ đáng tin khi deploy sau reverse proxy
+          // (Vercel/nginx tự ghi đè header). Không xác định được IP thì bỏ qua.
+          const ip = request ? getRequestIp(request.headers) : "unknown";
+          if (ip !== "unknown") {
+            const ipLimit = await consumeRateLimit(
+              rateLimitKey("login-ip", ip),
+              50,
+              15 * 60_000
+            );
+            if (!ipLimit.allowed) return null;
+          }
 
           const user = await prisma.user.findUnique({ where: { email } });
           if (!user?.passwordHash) {

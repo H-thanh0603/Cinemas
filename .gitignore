@@ -37,6 +37,9 @@ prisma/dev.db-journal
 .mimocode/
 .playwright-mcp/
 .superpowers/
+.hermes/
+.stitch/
+prompt-master/
 tools/
 config/
 ~/

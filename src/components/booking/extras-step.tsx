@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore, useState } from "react";
 import { createPortal } from "react-dom";
 import { SEAT_TYPE_LABELS, formatVnd } from "@/lib/constants";
 import { seatBasePrice } from "@/lib/booking";
@@ -49,8 +49,6 @@ export function ExtrasStep({
 }: ExtrasStepProps) {
   const categories = [...new Set(combos.map((c) => c.category))];
   const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
-  const [popcornFlavors, setPopcornFlavors] = useState<Record<string, string>>({});
-  const [flavorModalComboId, setFlavorModalComboId] = useState<string | null>(null);
   const [flyingParticles, setFlyingParticles] = useState<Particle[]>([]);
 
   const filteredCategories = selectedCategory === "ALL" ? categories : categories.filter(c => c === selectedCategory);
@@ -82,10 +80,11 @@ export function ExtrasStep({
     setFlyingParticles((prev) => [...prev, ...newParticles]);
   }
 
-  const flavorOptions = ["50% Phô mai 🧀 + 50% Caramel 🍯", "50% Bơ Tỏi 🧄 + 50% Phô mai 🧀", "100% Phô mai 🧀", "100% Caramel 🍯"];
-
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   return (
     <div className="space-y-10">
@@ -146,7 +145,7 @@ export function ExtrasStep({
                         }`}
                       >
                         {active && (
-                          <span className="absolute top-2.5 right-2.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-white">
+                          <span className="absolute top-2.5 right-2.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-on-primary">
                             <Check className="h-3 w-3 stroke-[3]" />
                           </span>
                         )}
@@ -295,7 +294,7 @@ export function ExtrasStep({
                                   onComboChange(combo.id, Math.min(10, qty + 1));
                                 }}
                                 disabled={qty >= 10}
-                                className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg bg-primary text-white font-bold transition-all hover:bg-primary-hover shadow-sm disabled:opacity-30"
+                                className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg bg-primary text-on-primary font-bold transition-all hover:bg-primary-hover shadow-sm disabled:opacity-30"
                                 aria-label={`Tăng số lượng ${combo.name}`}
                               >
                                 <Plus className="h-4 w-4" />

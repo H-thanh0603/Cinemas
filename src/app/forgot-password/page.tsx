@@ -27,7 +27,7 @@ export default function ForgotPasswordPage() {
           <form onSubmit={submit} className="mt-6 space-y-4">
             <label className="block text-sm font-medium" htmlFor="reset-email">Email</label>
             <input id="reset-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none ring-primary/40 focus:ring-2" />
-            <button disabled={loading} className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50">{loading ? "Đang gửi..." : "Gửi liên kết"}</button>
+            <button disabled={loading} className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-on-primary disabled:opacity-50">{loading ? "Đang gửi..." : "Gửi liên kết"}</button>
           </form>
         )}
         <p className="mt-6 text-center text-sm text-muted"><Link href="/login" className="text-primary hover:underline">Quay lại đăng nhập</Link></p>

@@ -71,7 +71,7 @@ export default async function PaymentPage({
         </p>
         <Link
           href="/movies?status=NOW_SHOWING"
-          className="mt-6 inline-block rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white"
+          className="mt-6 inline-block rounded-xl bg-primary px-6 py-3 text-sm font-bold text-on-primary"
         >
           Đặt vé lại
         </Link>

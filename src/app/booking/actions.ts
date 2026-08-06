@@ -2,10 +2,19 @@
 
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
-import { generateBookingCode, seatBasePrice } from "@/lib/booking";
+import { generateBookingCode } from "@/lib/booking";
 import { expirePendingBookings } from "@/lib/booking-expire";
 import { sendBookingConfirmationEmail } from "@/lib/email";
-import { expirePendingBookingsBatch, invalidateLockedSeatCache } from "@/lib/booking-expire";
+import { expirePendingBookingsBatch } from "@/lib/booking-expire";
+import {
+  EMAIL_RE,
+  buildComboPricing,
+  buildSeatPricing,
+  computeDiscount,
+  validateComboInputs,
+  validateContact,
+  validateSeatSelection,
+} from "@/lib/booking-pricing";
 import { MAX_SEATS_PER_BOOKING, SEAT_HOLD_MINUTES } from "@/lib/constants";
 import { auth } from "@/auth";
 import { consumeRateLimit, rateLimitKey } from "@/lib/rate-limit";
@@ -28,9 +37,6 @@ const PAYMENT_METHODS = [
   "AT_COUNTER",
   "SANDBOX",
 ];
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_RE = /^0\d{9,10}$/;
 
 export async function validatePromotion(
   code: string,
@@ -69,20 +75,6 @@ export async function validatePromotion(
   return { ok: true, data: { discount, description: promo.description } };
 }
 
-function computeDiscount(
-  type: string,
-  value: number,
-  maxDiscount: number | null,
-  orderValue: number
-): number {
-  let discount =
-    type === "PERCENT" ? Math.floor((orderValue * value) / 100) : value;
-  if (type === "PERCENT" && maxDiscount !== null) {
-    discount = Math.min(discount, maxDiscount);
-  }
-  return Math.min(discount, orderValue);
-}
-
 export async function createBooking(
   input: CreateBookingInput
 ): Promise<
@@ -95,22 +87,15 @@ export async function createBooking(
 > {
   await expirePendingBookings();
 
-  const name = input.contact.name?.trim();
-  const email = input.contact.email?.trim().toLowerCase();
-  const phone = input.contact.phone?.trim();
-
-  if (!name || name.length < 2) {
-    return { ok: false, error: "Vui lòng nhập họ tên hợp lệ" };
+  const contactError = validateContact({
+    name: input.contact.name ?? "",
+    email: input.contact.email ?? "",
+    phone: input.contact.phone ?? "",
+  });
+  if (contactError) {
+    return { ok: false, error: contactError };
   }
-  if (!email || !EMAIL_RE.test(email)) {
-    return { ok: false, error: "Vui lòng nhập email hợp lệ" };
-  }
-  if (!phone || !PHONE_RE.test(phone)) {
-    return {
-      ok: false,
-      error: "Vui lòng nhập số điện thoại hợp lệ (bắt đầu bằng 0, 10-11 số)",
-    };
-  }
+  const email = input.contact.email?.trim().toLowerCase() ?? "";
   const bookingLimit = await consumeRateLimit(
     rateLimitKey("booking", email),
     30,
@@ -130,18 +115,10 @@ export async function createBooking(
     return { ok: false, error: "Sandbox payment is disabled" };
   }
 
-  if (!input.seats || input.seats.length === 0) {
-    return { ok: false, error: "Vui lòng chọn ít nhất 1 ghế" };
-  }
-  if (input.seats.length > MAX_SEATS_PER_BOOKING) {
-    return {
-      ok: false,
-      error: `Chỉ được đặt tối đa ${MAX_SEATS_PER_BOOKING} ghế mỗi lần`,
-    };
-  }
   const seatIds = input.seats.map((s) => s.seatId);
-  if (new Set(seatIds).size !== seatIds.length) {
-    return { ok: false, error: "Danh sách ghế bị trùng lặp" };
+  const seatError = validateSeatSelection(seatIds, MAX_SEATS_PER_BOOKING);
+  if (seatError) {
+    return { ok: false, error: seatError };
   }
 
   const showtime = await prisma.showtime.findUnique({
@@ -176,13 +153,11 @@ export async function createBooking(
   const seatById = new Map(seats.map((s) => [s.id, s]));
 
   const comboInputs = (input.combos ?? []).filter((c) => c.quantity > 0);
+  const comboError = validateComboInputs(comboInputs);
+  if (comboError) {
+    return { ok: false, error: comboError };
+  }
   const comboIds = comboInputs.map((c) => c.comboId);
-  if (new Set(comboIds).size !== comboIds.length) {
-    return { ok: false, error: "Danh sách combo bị trùng lặp" };
-  }
-  if (comboInputs.some((c) => c.quantity > 10)) {
-    return { ok: false, error: "Tối đa 10 phần cho mỗi loại combo" };
-  }
   const combosDb = await prisma.foodCombo.findMany({
     where: { id: { in: comboIds }, isActive: true },
   });
@@ -191,29 +166,20 @@ export async function createBooking(
   }
   const comboById = new Map(combosDb.map((c) => [c.id, c]));
 
-  const seatLines = input.seats.map((s) => {
-    const seat = seatById.get(s.seatId)!;
-    const tt = ticketTypeById.get(s.ticketTypeId)!;
-    const price = Math.max(
-      0,
-      seatBasePrice(showtime.basePrice, seat.type) + tt.priceModifier
-    );
-    return { seatId: s.seatId, ticketTypeId: s.ticketTypeId, price };
+  const { seatLines, seatsTotal } = buildSeatPricing({
+    basePrice: showtime.basePrice,
+    seats: input.seats.map((s) => ({
+      seatId: s.seatId,
+      ticketTypeId: s.ticketTypeId,
+      seatType: seatById.get(s.seatId)!.type,
+    })),
+    ticketTypeById,
   });
-  const seatsTotal = seatLines.reduce((sum, l) => sum + l.price, 0);
 
-  const comboLines = comboInputs.map((c) => {
-    const combo = comboById.get(c.comboId)!;
-    return {
-      comboId: c.comboId,
-      quantity: c.quantity,
-      unitPrice: combo.price,
-    };
+  const { comboLines, combosTotal } = buildComboPricing({
+    comboInputs,
+    comboById,
   });
-  const combosTotal = comboLines.reduce(
-    (sum, l) => sum + l.unitPrice * l.quantity,
-    0
-  );
 
   const orderValue = seatsTotal + combosTotal;
 
@@ -312,9 +278,9 @@ export async function createBooking(
           code,
           showtimeId: showtime.id,
           userId,
-          contactName: name,
+          contactName: input.contact.name?.trim() ?? "",
           contactEmail: email,
-          contactPhone: phone,
+          contactPhone: input.contact.phone?.trim() ?? "",
           status: "PENDING",
           seatsTotal,
           combosTotal,
@@ -407,8 +373,7 @@ export async function completeSandboxPayment(
   ) {
     return { ok: false, error: "Sandbox payment is disabled" };
   }
-  const { invalidatedShowtimes } = await expirePendingBookingsBatch();
-  for (const sid of invalidatedShowtimes) invalidateLockedSeatCache(sid);
+  await expirePendingBookingsBatch();
 
   const booking = await prisma.booking.findUnique({
     where: { code: input.code },

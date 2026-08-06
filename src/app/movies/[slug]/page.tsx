@@ -135,7 +135,7 @@ export default async function MovieDetailPage({
               {movie.status === "NOW_SHOWING" && movie.showtimes.length > 0 && (
                 <a
                   href="#showtimes"
-                  className="mt-8 inline-block rounded-xl bg-primary px-8 py-3.5 font-semibold text-white shadow-lg shadow-primary/25 transition-colors hover:bg-primary-hover"
+                  className="mt-8 inline-block rounded-xl bg-primary px-8 py-3.5 font-semibold text-on-primary shadow-lg shadow-primary/25 transition-colors hover:bg-primary-hover"
                 >
                   Xem lịch chiếu ↓
                 </a>

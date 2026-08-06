@@ -13,8 +13,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { expiredCount, invalidatedShowtimes } = await expirePendingBookingsBatch();
-  return NextResponse.json({ ok: true, expired: expiredCount, invalidatedShowtimes });
+  const { expiredCount } = await expirePendingBookingsBatch();
+  return NextResponse.json({ ok: true, expired: expiredCount });
 }
 
 export async function GET(req: NextRequest) {

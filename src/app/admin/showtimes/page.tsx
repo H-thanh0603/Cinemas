@@ -49,7 +49,7 @@ export default async function AdminShowtimesPage({
         </div>
         <Link
           href="/admin/showtimes/new"
-          className="rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all hover:bg-primary-hover"
+          className="rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-on-primary shadow-lg shadow-primary/20 transition-all hover:bg-primary-hover"
         >
           + Thêm suất chiếu
         </Link>

@@ -165,7 +165,7 @@ export default function LandingPage() {
       <nav className="fixed top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
           <Link href="/landing" className="flex items-center gap-2">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-lg font-black text-white">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-lg font-black text-on-primary">
               C
             </span>
             <span className="text-xl font-extrabold tracking-tight">
@@ -194,7 +194,7 @@ export default function LandingPage() {
             </Link>
             <Link
               href="#pricing"
-              className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
+              className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary transition-colors hover:bg-primary-hover"
             >
               Dùng thử miễn phí
             </Link>
@@ -230,7 +230,7 @@ export default function LandingPage() {
             <Link
               href="#pricing"
               onClick={() => setMenuOpen(false)}
-              className="mt-2 block rounded-lg bg-primary px-4 py-3 text-center text-sm font-semibold text-white"
+              className="mt-2 block rounded-lg bg-primary px-4 py-3 text-center text-sm font-semibold text-on-primary"
             >
               Dùng thử miễn phí
             </Link>
@@ -264,7 +264,7 @@ export default function LandingPage() {
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
                 href="#pricing"
-                className="group flex items-center gap-2 rounded-xl bg-primary px-8 py-4 text-base font-semibold text-white shadow-xl shadow-primary/25 transition-all hover:bg-primary-hover hover:shadow-primary/40"
+                className="group flex items-center gap-2 rounded-xl bg-primary px-8 py-4 text-base font-semibold text-on-primary shadow-xl shadow-primary/25 transition-all hover:bg-primary-hover hover:shadow-primary/40"
               >
                 Bắt đầu dùng thử
                 <svg className="h-5 w-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -360,11 +360,11 @@ export default function LandingPage() {
                     </span>
                   </div>
                   <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black via-black/60 to-transparent" />
-                  <span className="absolute left-2 top-2 rounded-md bg-primary px-2 py-0.5 text-[10px] font-bold text-white">
+                  <span className="absolute left-2 top-2 rounded-md bg-primary px-2 py-0.5 text-[10px] font-bold text-on-primary">
                     {movie.badge}
                   </span>
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/90 text-white shadow-lg">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/90 text-on-primary shadow-lg">
                       <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z" />
                       </svg>
@@ -445,7 +445,7 @@ export default function LandingPage() {
                 }`}
               >
                 {plan.highlight && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 text-xs font-bold uppercase tracking-wider text-white">
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 text-xs font-bold uppercase tracking-wider text-on-primary">
                     Phổ biến nhất
                   </span>
                 )}
@@ -475,7 +475,7 @@ export default function LandingPage() {
                   href="#"
                   className={`mt-8 block rounded-xl py-3.5 text-center text-sm font-semibold transition-colors ${
                     plan.highlight
-                      ? "bg-primary text-white hover:bg-primary-hover"
+                      ? "bg-primary text-on-primary hover:bg-primary-hover"
                       : "border border-border-light bg-surface-raised text-foreground hover:bg-surface-hover"
                   }`}
                 >
@@ -586,7 +586,7 @@ export default function LandingPage() {
             </p>
             <Link
               href="#pricing"
-              className="mt-8 inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-4 text-base font-semibold text-white shadow-xl shadow-primary/25 transition-all hover:bg-primary-hover hover:shadow-primary/40"
+              className="mt-8 inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-4 text-base font-semibold text-on-primary shadow-xl shadow-primary/25 transition-all hover:bg-primary-hover hover:shadow-primary/40"
             >
               Dùng thử miễn phí ngay
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -603,7 +603,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-2 gap-8 lg:grid-cols-4">
             <div className="col-span-2 lg:col-span-1">
               <div className="flex items-center gap-2">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-base font-black text-white">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-base font-black text-on-primary">
                   C
                 </span>
                 <span className="text-lg font-extrabold">

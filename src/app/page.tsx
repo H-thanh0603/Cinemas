@@ -130,7 +130,7 @@ export default async function HomePage() {
           <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
             <div>
               <div className="mb-3 flex items-center gap-2.5">
-                <span className="h-7 w-1.5 rounded-full bg-gradient-to-b from-primary to-primary-dark shadow-[0_0_12px_rgba(232,99,122,0.5)]" />
+                <span className="h-7 w-1.5 rounded-full bg-gradient-to-b from-primary to-primary-dark shadow-[0_0_12px_rgba(0,255,135,0.5)]" />
                 <span className="text-xs font-bold uppercase tracking-widest text-primary">
                   Đang chiếu
                 </span>
@@ -172,7 +172,7 @@ export default async function HomePage() {
             <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
               <div>
                 <div className="mb-3 flex items-center gap-2.5">
-                  <span className="h-7 w-1.5 rounded-full bg-gradient-to-b from-accent to-amber-600" />
+                  <span className="h-7 w-1.5 rounded-full bg-gradient-to-b from-accent to-primary-dark" />
                   <span className="text-xs font-bold uppercase tracking-widest text-accent">
                     Sắp chiếu
                   </span>
@@ -270,7 +270,7 @@ export default async function HomePage() {
             <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
               <div>
                 <div className="mb-3 flex items-center gap-2.5">
-                  <span className="h-7 w-1.5 rounded-full bg-gradient-to-b from-accent to-amber-600" />
+                  <span className="h-7 w-1.5 rounded-full bg-gradient-to-b from-accent to-primary-dark" />
                   <span className="text-xs font-bold uppercase tracking-widest text-accent">
                     Ưu đãi
                   </span>
@@ -374,7 +374,7 @@ export default async function HomePage() {
               </div>
               <Link
                 href="/movies?status=NOW_SHOWING"
-                className="mt-12 inline-flex items-center gap-2.5 rounded-2xl bg-gradient-to-r from-primary to-primary-dark px-9 py-4 font-bold text-white shadow-xl shadow-primary/20 transition-all duration-300 hover:shadow-primary/35 hover:scale-[1.02]"
+                className="btn-sheen mt-12 inline-flex items-center gap-2.5 rounded-2xl bg-gradient-to-r from-primary to-primary-dark px-9 py-4 font-bold text-on-primary shadow-xl shadow-primary/20 transition-all duration-300 hover:shadow-primary/35 hover:scale-[1.02]"
               >
                 Bắt đầu đặt vé
                 <ArrowRight className="h-4 w-4" />

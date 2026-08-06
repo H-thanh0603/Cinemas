@@ -22,7 +22,7 @@ export function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-dark text-lg font-black text-white shadow-lg shadow-primary/20">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-dark text-lg font-black text-on-primary shadow-lg shadow-primary/20">
                 C
               </span>
               <span className="font-display text-xl font-extrabold">

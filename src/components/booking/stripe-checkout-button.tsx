@@ -37,7 +37,7 @@ export function StripeCheckoutButton({
         type="button"
         onClick={() => void startCheckout()}
         disabled={loading}
-        className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-white shadow-lg shadow-primary/25 disabled:opacity-50"
+        className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-on-primary shadow-lg shadow-primary/25 disabled:opacity-50"
       >
         {loading ? "Đang mở cổng thanh toán…" : `Thanh toán ${formatVnd(amount)}`}
       </button>

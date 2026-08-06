@@ -1,41 +1,50 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════════════════════════
-   CineStar Premium — "Luxury Cinema Lounge" Design System
-   Palette: warm darks · soft rose primary · amber gold accent
-   Feel: sophisticated, calm, inviting — like a premium VIP lounge
+   CineStar Premium — "Soft Mint Cinema" Design System
+   Palette: deep green-black · mint green primary · mint light accent
+   Feel: soft, calm, professional — inspired by Cinema Hub
    ═══════════════════════════════════════════════════════════════ */
 
 @theme {
-  /* ── Background Layers ── */
-  --color-background: #0d0f14;
-  --color-surface: #151721;
-  --color-surface-raised: #1c1f2e;
-  --color-surface-hover: #252839;
-  --color-border: #2a2e42;
-  --color-border-light: #3a3f5a;
+  /* ── Background Layers (deep green-black, Cinema Hub inspired) ── */
+  --color-background: #010a04;
+  --color-background-deep: #000502;
+  --color-surface: #04120a;
+  --color-surface-raised: #081a10;
+  --color-surface-hover: #0d2417;
+  --color-border: #163024;
+  --color-border-light: #224533;
 
-  /* ── Primary: Warm Rose (softer than pure red, more inviting) ── */
-  --color-primary: #e8637a;
-  --color-primary-hover: #d4526a;
-  --color-primary-dark: #b84058;
-  --color-primary-light: #f089a0;
+  /* ── Primary: Mint Green (soft, professional — CTA chính) ── */
+  --color-primary: #00ff87;
+  --color-primary-hover: #00d972;
+  --color-primary-dark: #00b868;
+  --color-primary-light: #5cffb0;
+  --color-primary-jewel: #00e87a;
 
-  /* ── Accent: Warm Gold (cinema luxury feel) ── */
-  --color-accent: #f5c518;
-  --color-accent-hover: #ffd74d;
-  --color-accent-soft: #f5c51820;
+  /* ── Accent: Mint Light (điểm nhấn VIP / ưu đãi) ── */
+  --color-accent: #5cffb0;
+  --color-accent-hover: #8affc7;
+  --color-accent-soft: #00ff8714;
+  --color-gold-deep: #00875a;
+  --color-gold-soft: #00ff8714;
 
   /* ── Text ── */
-  --color-foreground: #f1f3f8;
-  --color-muted: #8e95b0;
-  --color-muted-dark: #5d6480;
+  --color-foreground: #f2f7f4;
+  --color-muted: #8fa89b;
+  --color-muted-dark: #5d6f66;
+  --color-on-primary: #022c22;
 
   /* ── Semantic ── */
   --color-success: #34d399;
   --color-warning: #fbbf24;
   --color-danger: #f87171;
   --color-info: #60a5fa;
+
+  /* ── Focus / Selection ── */
+  --color-ring: rgba(0, 255, 135, 0.55);
+  --color-selection: rgba(0, 255, 135, 0.25);
 
   /* ── Typography ── */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
@@ -71,6 +80,70 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow-x: clip;
   line-height: 1.6;
+  text-rendering: optimizeLegibility;
+}
+
+/* ── Focus visible (gold ring — accessibility + thẩm mỹ) ── */
+:where(a, button, input, select, textarea, summary, [role="button"], [tabindex]):focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ── Text selection (rose) ── */
+::selection {
+  background: var(--color-selection);
+  color: var(--color-foreground);
+}
+
+/* ── Ambient Aurora (fixed, ultra-subtle) ── */
+.aurora-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(42rem 34rem at 12% -8%, rgba(0, 255, 135, 0.08), transparent 62%),
+    radial-gradient(50rem 40rem at 105% 8%, rgba(0, 255, 135, 0.06), transparent 60%),
+    radial-gradient(40rem 36rem at 50% 118%, rgba(0, 255, 135, 0.05), transparent 62%);
+}
+
+/* ── Button sheen sweep (premium CTA) ── */
+.btn-sheen {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.btn-sheen::after {
+  content: "";
+  position: absolute;
+  top: -40%;
+  bottom: -40%;
+  left: -30%;
+  width: 34%;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.28) 50%,
+    transparent 100%
+  );
+  transform: translateX(-140%) rotate(8deg);
+  transition: transform 0.7s var(--ease-out-expo);
+  pointer-events: none;
+}
+.btn-sheen:hover::after {
+  transform: translateX(460%) rotate(8deg);
+}
+
+/* ── 3D Tilt card (desktop only; reduced-motion sẽ tắt qua media query) ── */
+.tilt-wrap {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* ── Text balance cho heading ── */
+.text-balance {
+  text-wrap: balance;
 }
 
 .font-display {
@@ -87,16 +160,16 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-border-light); }
 
-/* ── Text Gradient (warm rose → gold) ── */
+/* ── Text Gradient (mint → light mint) ── */
 .text-gradient {
-  background: linear-gradient(135deg, #e8637a 0%, #f5c518 100%);
+  background: linear-gradient(135deg, #00ff87 0%, #5cffb0 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
 .text-gradient-soft {
-  background: linear-gradient(135deg, #f089a0 0%, #ffd74d 100%);
+  background: linear-gradient(135deg, #8affc7 0%, #5cffb0 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -104,7 +177,7 @@ body {
 
 /* ── Screen Glow (subtle, warm) ── */
 .screen-glow {
-  box-shadow: 0 0 80px 15px rgba(232, 99, 122, 0.12);
+  box-shadow: 0 0 80px 15px rgba(0, 255, 135, 0.12);
 }
 
 /* ── Film Grain (ultra-subtle texture) ── */
@@ -154,8 +227,8 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(232, 99, 122, 0.2); }
-  50% { box-shadow: 0 0 0 12px rgba(232, 99, 122, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 255, 135, 0.2); }
+  50% { box-shadow: 0 0 0 12px rgba(0, 255, 135, 0); }
 }
 @keyframes shimmer {
   0% { background-position: -200% 0; }
@@ -215,17 +288,17 @@ body {
   0% {
     transform: translate(0, 0) scale(1.8) rotate(0deg);
     opacity: 1;
-    filter: drop-shadow(0 0 15px #f5c518);
+    filter: drop-shadow(0 0 15px #5cffb0);
   }
   30% {
     transform: translate(calc(var(--delta-x, 0px) * 0.3 + var(--offset-x, 0px)), -150px) scale(2.2) rotate(120deg);
     opacity: 1;
-    filter: drop-shadow(0 0 25px #e8637a);
+    filter: drop-shadow(0 0 25px #00ff87);
   }
   75% {
     transform: translate(calc(var(--delta-x, 0px) * 0.85), calc(var(--delta-y, 250px) * 0.85)) scale(1.4) rotate(270deg);
     opacity: 0.9;
-    filter: drop-shadow(0 0 20px #f5c518);
+    filter: drop-shadow(0 0 20px #5cffb0);
   }
   100% {
     transform: translate(var(--delta-x, 0px), var(--delta-y, 250px)) scale(0.4) rotate(360deg);
@@ -291,6 +364,27 @@ body {
   animation: shimmer 1.8s infinite;
 }
 
+/* ── Poster skeleton (khung chờ ảnh) ── */
+.skeleton-card {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+.skeleton-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.06) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%);
+  animation: shimmer-line 1.6s var(--ease-out) infinite;
+}
+
 /* ── Card Overlay (smooth fade) ── */
 .card-overlay {
   opacity: 0;
@@ -311,8 +405,8 @@ body {
   background: linear-gradient(
     120deg,
     transparent 20%,
-    rgba(245, 197, 24, 0.4) 45%,
-    rgba(232, 99, 122, 0.4) 55%,
+    rgba(0, 255, 135, 0.4) 45%,
+    rgba(0, 255, 135, 0.4) 55%,
     transparent 80%
   );
   background-size: 200% 100%;
@@ -340,14 +434,14 @@ body {
   background: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0.95) 0%,
-    rgba(245, 197, 24, 0.85) 20%,
-    rgba(232, 99, 122, 0.7) 60%,
-    rgba(232, 99, 122, 0.08) 100%
+    rgba(0, 255, 135, 0.85) 20%,
+    rgba(0, 255, 135, 0.7) 60%,
+    rgba(0, 255, 135, 0.08) 100%
   );
   box-shadow:
-    0 12px 40px 6px rgba(232, 99, 122, 0.35),
-    0 2px 20px 2px rgba(245, 197, 24, 0.25),
-    0 0 80px 20px rgba(232, 99, 122, 0.18);
+    0 12px 40px 6px rgba(0, 255, 135, 0.35),
+    0 2px 20px 2px rgba(0, 255, 135, 0.25),
+    0 0 80px 20px rgba(0, 255, 135, 0.18);
   border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
@@ -355,9 +449,9 @@ body {
   background: conic-gradient(
     from 145deg at 50% 0%,
     transparent 0deg,
-    rgba(232, 99, 122, 0.1) 35deg,
-    rgba(245, 197, 24, 0.12) 45deg,
-    rgba(232, 99, 122, 0.1) 55deg,
+    rgba(0, 255, 135, 0.1) 35deg,
+    rgba(0, 255, 135, 0.12) 45deg,
+    rgba(0, 255, 135, 0.1) 55deg,
     transparent 90deg
   );
   pointer-events: none;
@@ -389,7 +483,7 @@ body {
 }
 
 .seat-sweet-spot {
-  box-shadow: 0 0 18px 3px rgba(245, 197, 24, 0.2);
+  box-shadow: 0 0 18px 3px rgba(0, 255, 135, 0.2);
 }
 
 /* ── Modal Backdrop ── */
@@ -421,7 +515,7 @@ body {
 }
 .hover-lift:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(232, 99, 122, 0.1);
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 255, 135, 0.1);
 }
 
 /* Soft glow on hover */
@@ -429,7 +523,7 @@ body {
   transition: box-shadow 0.35s var(--ease-out);
 }
 .hover-glow:hover {
-  box-shadow: 0 0 30px -5px rgba(232, 99, 122, 0.15);
+  box-shadow: 0 0 30px -5px rgba(0, 255, 135, 0.15);
 }
 
 /* ═══════════════════════════════════════

@@ -42,7 +42,7 @@ export function PosterImage({
         className={`relative flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-surface-raised via-surface to-background p-4 text-center select-none ${className}`}
         style={fill ? undefined : { width, height }}
       >
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(180,95,106,0.12),transparent_70%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,255,135,0.12),transparent_70%)]" />
         <Film className="h-10 w-10 text-muted-dark opacity-60 transition-transform duration-300 group-hover:scale-110" />
         <span className="mt-2 line-clamp-2 text-xs font-semibold text-muted">
           {alt || "Phim CineStar"}

@@ -74,7 +74,7 @@ export function LookupForm({
         <button
           type="submit"
           disabled={isPending}
-          className="shrink-0 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:opacity-60"
+          className="shrink-0 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-on-primary transition-colors hover:bg-primary-hover disabled:opacity-60"
         >
           {isPending ? "Đang tìm..." : "Tra cứu"}
         </button>

@@ -50,7 +50,7 @@ export function AdminSidebar({ navItems }: { navItems: NavItem[] }) {
       >
         {/* Logo header */}
         <div className="flex h-16 items-center gap-2 border-b border-border px-5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-lg font-black text-white shadow-lg shadow-primary/20">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-lg font-black text-on-primary shadow-lg shadow-primary/20">
             C
           </span>
           <div className="min-w-0 flex-1">

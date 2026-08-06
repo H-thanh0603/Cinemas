@@ -14,7 +14,7 @@ Nền tảng đặt vé xem phim hoàn chỉnh, xây dựng với **Next.js 15**
   1. **Chọn ghế**: Sơ đồ ghế realtime (SSE + polling fallback), giới hạn số ghế
   2. **Chọn vé & combo**: Loại vé (người lớn / học sinh / trẻ em), combo bắp nước
   3. **Thanh toán**: Thông tin liên hệ, mã khuyến mãi, phương thức thanh toán
-- **Giữ ghế**: Mọi đơn bắt đầu `PENDING` + **lock DB** `(showtime, seat)` · countdown **8 phút**
+- **Giữ ghế**: Mọi đơn bắt đầu `PENDING` + **lock DB** `(showtime, seat)` · countdown **35 phút**
 - **Thanh toán sandbox**: `/booking/pay/[code]` — thẻ test `4242…` / fail `4000…0002`, QR ví/CK demo
 - **Xác nhận đặt vé**: Mã vé, **QR code thật**, email Resend (nếu cấu hình), hướng dẫn đến rạp
 - **Tra cứu vé**: Đăng nhập hoặc nhập email để xem vé sắp tới / đã xem / đã hủy

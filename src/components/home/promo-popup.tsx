@@ -70,7 +70,7 @@ export function PromoPopup({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="relative h-36 bg-gradient-to-br from-primary via-primary-dark to-black">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(245,197,24,0.35),transparent_55%)]" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(0,255,135,0.35),transparent_55%)]" />
               <div className="absolute -bottom-8 left-1/2 flex h-16 w-16 -translate-x-1/2 items-center justify-center rounded-2xl border border-accent/40 bg-surface text-accent shadow-xl">
                 <Gift className="h-8 w-8" />
               </div>
@@ -113,7 +113,7 @@ export function PromoPopup({
                 <Link
                   href="/movies?status=NOW_SHOWING"
                   onClick={close}
-                  className="rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white shadow-lg shadow-primary/30 transition hover:bg-primary-hover"
+                  className="rounded-xl bg-primary px-6 py-3 text-sm font-bold text-on-primary shadow-lg shadow-primary/30 transition hover:bg-primary-hover"
                 >
                   Đặt vé ngay
                 </Link>

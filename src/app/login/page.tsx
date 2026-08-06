@@ -110,7 +110,7 @@ function LoginForm() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-white transition hover:brightness-110 disabled:opacity-50"
+            className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-on-primary transition hover:brightness-110 disabled:opacity-50"
           >
             {loading ? "Đang đăng nhập…" : "Đăng nhập"}
           </button>

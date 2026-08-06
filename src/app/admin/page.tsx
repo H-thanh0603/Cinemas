@@ -120,7 +120,7 @@ export default async function AdminOverviewPage() {
           <div className="flex gap-3">
             <Link
               href="/admin/movies/new"
-              className="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary/20 transition-all hover:bg-primary-hover hover:shadow-primary/30"
+              className="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary shadow-lg shadow-primary/20 transition-all hover:bg-primary-hover hover:shadow-primary/30"
             >
               + Thêm phim
             </Link>

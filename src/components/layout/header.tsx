@@ -33,10 +33,16 @@ export function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [progress, setProgress] = useState(0);
   const { data: session, status } = useSession();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 12);
+      const doc = document.documentElement;
+      const max = doc.scrollHeight - doc.clientHeight;
+      setProgress(max > 0 ? Math.min(1, window.scrollY / max) : 0);
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -83,7 +89,7 @@ export function Header() {
       {/* Main nav */}
       <div className="mx-auto flex h-[68px] max-w-7xl items-center justify-between px-4 sm:px-6">
         <Link href="/" className="group flex items-center gap-3" onClick={() => setOpen(false)}>
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-dark text-xl font-black text-white shadow-lg shadow-primary/25 transition-all duration-300 group-hover:shadow-primary/40 group-hover:scale-105">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-dark text-xl font-black text-on-primary shadow-lg shadow-primary/25 transition-all duration-300 group-hover:shadow-primary/40 group-hover:scale-105">
             C
           </span>
           <span className="font-display text-xl font-extrabold tracking-tight">
@@ -111,7 +117,7 @@ export function Header() {
                 <Icon className="h-4 w-4 opacity-70" />
                 {link.label}
                 {active && (
-                  <span className="absolute bottom-1 left-1/2 h-0.5 w-7 -translate-x-1/2 rounded-full bg-gradient-to-r from-primary to-primary-light shadow-[0_0_10px_rgba(232,99,122,0.5)]" />
+                  <span className="absolute bottom-1 left-1/2 h-0.5 w-7 -translate-x-1/2 rounded-full bg-gradient-to-r from-primary to-primary-light shadow-[0_0_10px_rgba(0,255,135,0.5)]" />
                 )}
               </Link>
             );
@@ -153,7 +159,7 @@ export function Header() {
           )}
           <Link
             href="/movies?status=NOW_SHOWING"
-            className="hidden items-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-dark px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all duration-300 hover:shadow-primary/35 hover:scale-[1.02] sm:inline-flex"
+            className="btn-sheen hidden items-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-dark px-5 py-2.5 text-sm font-bold text-on-primary shadow-lg shadow-primary/20 transition-all duration-300 hover:shadow-primary/35 hover:scale-[1.02] sm:inline-flex"
           >
             <Ticket className="h-4 w-4" />
             Đặt vé
@@ -231,7 +237,7 @@ export function Header() {
             <Link
               href="/movies?status=NOW_SHOWING"
               onClick={() => setOpen(false)}
-              className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-dark px-4 py-3.5 text-center text-sm font-bold text-white shadow-lg shadow-primary/20"
+              className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-dark px-4 py-3.5 text-center text-sm font-bold text-on-primary shadow-lg shadow-primary/20"
             >
               <Ticket className="h-4 w-4" />
               Đặt vé ngay
@@ -239,6 +245,14 @@ export function Header() {
           </div>
         </nav>
       )}
+
+      {/* Scroll progress (gold → rose, mỏng dưới header) */}
+      <div className="absolute inset-x-0 bottom-0 h-[2px] -translate-y-px bg-transparent">
+        <div
+          className="h-full bg-gradient-to-r from-accent via-primary to-primary-jewel shadow-[0_0_8px_rgba(0,255,135,0.5)] transition-[width] duration-100 ease-out"
+          style={{ width: `${progress * 100}%` }}
+        />
+      </div>
     </header>
   );
 }

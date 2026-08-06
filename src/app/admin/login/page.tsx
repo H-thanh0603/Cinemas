@@ -71,7 +71,7 @@ function AdminLoginForm() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-md rounded-2xl border border-border bg-surface-raised p-8 shadow-xl">
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-xl font-black text-white shadow-lg shadow-primary/30">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-xl font-black text-on-primary shadow-lg shadow-primary/30">
             C
           </div>
           <h1 className="text-2xl font-extrabold tracking-tight">
@@ -131,7 +131,7 @@ function AdminLoginForm() {
           <button
             type="submit"
             disabled={loading || !password || !email}
-            className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-white transition hover:brightness-110 disabled:opacity-50"
+            className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-on-primary transition hover:brightness-110 disabled:opacity-50"
           >
             {loading ? "Đang đăng nhập…" : "Đăng nhập quản trị"}
           </button>

@@ -118,7 +118,7 @@ export default async function MoviesPage({
                 href={`/movies?${sp.toString()}`}
                 className={`flex h-10 w-10 items-center justify-center rounded-lg border text-sm font-semibold transition-colors ${
                   p === page
-                    ? "border-primary bg-primary text-white"
+                    ? "border-primary bg-primary text-on-primary"
                     : "border-border bg-surface text-muted hover:border-border-light hover:text-foreground"
                 }`}
               >

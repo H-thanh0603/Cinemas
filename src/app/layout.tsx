@@ -34,8 +34,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" className={`${inter.variable} ${outfit.variable}`}>
+    <html lang="vi" suppressHydrationWarning className={`${inter.variable} ${outfit.variable}`}>
       <body className="flex min-h-screen flex-col font-sans">
+        <div className="aurora-bg" aria-hidden />
         <div className="film-grain" aria-hidden />
         <AuthSessionProvider>
           <ToastProvider>

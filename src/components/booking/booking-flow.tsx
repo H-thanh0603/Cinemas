@@ -223,9 +223,12 @@ export function BookingFlow({
 
   useEffect(() => {
     if (finalTotal > 0) {
-      setIsCartBouncing(true);
-      const timer = setTimeout(() => setIsCartBouncing(false), 450);
-      return () => clearTimeout(timer);
+      const timer = setTimeout(() => setIsCartBouncing(true), 0);
+      const reset = setTimeout(() => setIsCartBouncing(false), 450);
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(reset);
+      };
     }
   }, [finalTotal]);
 
@@ -306,7 +309,7 @@ export function BookingFlow({
                     type="button"
                     disabled={continueDisabled}
                     onClick={handleContinue}
-                    className="rounded-2xl bg-primary px-8 py-4 text-sm font-bold text-white shadow-xl shadow-primary/30 transition-all hover:bg-primary-hover hover:scale-105 disabled:cursor-not-allowed disabled:bg-surface-raised disabled:text-muted-dark disabled:shadow-none"
+                    className="rounded-2xl bg-primary px-8 py-4 text-sm font-bold text-on-primary shadow-xl shadow-primary/30 transition-all hover:bg-primary-hover hover:scale-105 disabled:cursor-not-allowed disabled:bg-surface-raised disabled:text-muted-dark disabled:shadow-none"
                   >
                     Tiếp tục bắp nước →
                   </button>
@@ -491,7 +494,7 @@ export function BookingFlow({
                 type="button"
                 disabled={continueDisabled}
                 onClick={handleContinue}
-                className="mt-5 w-full rounded-xl bg-primary py-3.5 font-semibold text-white shadow-lg shadow-primary/25 transition-all hover:bg-primary-hover disabled:cursor-not-allowed disabled:bg-surface-raised disabled:text-muted-dark disabled:shadow-none"
+                className="mt-5 w-full rounded-xl bg-primary py-3.5 font-semibold text-on-primary shadow-lg shadow-primary/25 transition-all hover:bg-primary-hover disabled:cursor-not-allowed disabled:bg-surface-raised disabled:text-muted-dark disabled:shadow-none"
               >
                 {continueLabel[step]}
               </button>

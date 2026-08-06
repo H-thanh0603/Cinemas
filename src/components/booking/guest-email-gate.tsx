@@ -57,7 +57,7 @@ export function GuestEmailGate({
         <button
           disabled={verifying}
           type="submit"
-          className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-white disabled:opacity-50"
+          className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-on-primary disabled:opacity-50"
         >
           {verifying ? "Đang xác minh..." : "Xác minh"}
         </button>

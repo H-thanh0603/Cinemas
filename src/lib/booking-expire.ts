@@ -39,40 +39,22 @@ export async function expirePendingBookings(): Promise<number> {
   });
 }
 
-/** In-memory cache for locked seat IDs per showtime. TTL = 3 seconds. */
-const lockedSeatCache = new Map<
-  string,
-  { ids: string[]; expiresAt: number }
->();
-
-const CACHE_TTL_MS = 3_000;
-
-/** Seat IDs currently locked (held or sold) for a showtime. */
+/**
+ * Seat IDs currently locked (held or sold) for a showtime.
+ * Query trực tiếp DB — không cache in-memory để đúng trên mọi topology
+ * (multi-instance/serverless). Đã có index trên ShowtimeSeatLock.showtimeId.
+ */
 export async function getLockedSeatIds(showtimeId: string): Promise<string[]> {
-  const cached = lockedSeatCache.get(showtimeId);
-  if (cached && Date.now() < cached.expiresAt) {
-    return cached.ids;
-  }
-
   const locks = await prisma.showtimeSeatLock.findMany({
     where: { showtimeId },
     select: { seatId: true },
   });
-  const ids = locks.map((l) => l.seatId);
-
-  lockedSeatCache.set(showtimeId, { ids, expiresAt: Date.now() + CACHE_TTL_MS });
-  return ids;
+  return locks.map((l) => l.seatId);
 }
 
-/** Invalidate cache for a showtime (call after seat lock changes). */
-export function invalidateLockedSeatCache(showtimeId: string): void {
-  lockedSeatCache.delete(showtimeId);
-}
-
-/** Cron-friendly batch expiry + cache invalidation. */
+/** Cron-friendly batch expiry. */
 export async function expirePendingBookingsBatch(): Promise<{
   expiredCount: number;
-  invalidatedShowtimes: string[];
 }> {
   const now = new Date();
 
@@ -82,13 +64,11 @@ export async function expirePendingBookingsBatch(): Promise<{
         status: "PENDING",
         expiresAt: { lt: now },
       },
-      select: { id: true, showtimeId: true },
+      select: { id: true },
     });
 
     let expiredCount = 0;
-    const invalidatedShowtimes = new Set<string>();
-
-    for (const { id, showtimeId } of candidates) {
+    for (const { id } of candidates) {
       const expired = await tx.booking.updateMany({
         where: { id, status: "PENDING", expiresAt: { lt: now } },
         data: { status: "EXPIRED" },
@@ -104,13 +84,8 @@ export async function expirePendingBookingsBatch(): Promise<{
         data: { status: "FAILED", lastError: "booking_expired" },
       });
       expiredCount++;
-      invalidatedShowtimes.add(showtimeId);
     }
 
-    for (const sid of invalidatedShowtimes) {
-      lockedSeatCache.delete(sid);
-    }
-
-    return { expiredCount, invalidatedShowtimes: [...invalidatedShowtimes] };
+    return { expiredCount };
   });
 }

@@ -14,7 +14,7 @@ const items = [
 export function PromoTicker() {
   const line = [...items, ...items];
   return (
-    <div className="relative z-[60] overflow-hidden border-b border-primary/20 bg-gradient-to-r from-primary-dark via-primary to-primary-dark text-white">
+    <div className="relative z-[60] overflow-hidden border-b border-primary/20 bg-gradient-to-r from-primary-dark via-primary to-primary-dark text-on-primary">
       <div className="absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-primary-dark to-transparent" />
       <div className="absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-primary-dark to-transparent" />
       <div className="flex animate-ticker whitespace-nowrap py-2.5 text-xs font-medium tracking-wide sm:text-sm">

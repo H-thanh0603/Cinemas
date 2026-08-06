@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ZoomIn,
   ZoomOut,
@@ -52,6 +52,7 @@ export function SeatMap({
   const screenRef = useRef<HTMLDivElement>(null);
 
   const [zoomLevel, setZoomLevel] = useState(1);
+  const [mapWidth, setMapWidth] = useState(0);
   const [highlightSweetSpot, setHighlightSweetSpot] = useState(false);
   const [coupleMode, setCoupleMode] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
@@ -59,6 +60,17 @@ export function SeatMap({
   const [hoveredSeatPos, setHoveredSeatPos] = useState<{ x: number; y: number } | null>(null);
   const [povSeat, setPovSeat] = useState<SeatDto | null>(null);
   const [showGoldenTicket, setShowGoldenTicket] = useState(false);
+
+  // Theo dõi width map trong effect (không đọc ref lúc render — fix react-hooks/refs)
+  useEffect(() => {
+    const el = seatMapRef.current;
+    if (!el) return;
+    const update = () => setMapWidth(el.clientWidth);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   function handleSeatMouseEnter(seat: SeatDto, e: React.MouseEvent<HTMLButtonElement>) {
     setHoveredSeat(seat);
@@ -290,9 +302,9 @@ export function SeatMap({
               <svg className="w-full h-full overflow-visible">
                 <defs>
                   <linearGradient id="dynamicLaserGrad" x1="0%" y1="100%" x2="0%" y2="0%">
-                    <stop offset="0%" stopColor="#e8637a" stopOpacity="0.9" />
-                    <stop offset="50%" stopColor="#f5c518" stopOpacity="1" />
-                    <stop offset="100%" stopColor="#e8637a" stopOpacity="0.85" />
+                    <stop offset="0%" stopColor="#00ff87" stopOpacity="0.9" />
+                    <stop offset="50%" stopColor="#5cffb0" stopOpacity="1" />
+                    <stop offset="100%" stopColor="#00ff87" stopOpacity="0.85" />
                   </linearGradient>
                   <filter id="dynamicLaserGlow">
                     <feGaussianBlur stdDeviation="2.5" result="blur" />
@@ -305,7 +317,7 @@ export function SeatMap({
 
                 {/* Laser Cone to Screen Edges */}
                 <polygon
-                  points={`${hoveredSeatPos.x},${hoveredSeatPos.y} ${seatMapRef.current ? seatMapRef.current.clientWidth * 0.05 : 50},35 ${seatMapRef.current ? seatMapRef.current.clientWidth * 0.95 : 950},35`}
+                  points={`${hoveredSeatPos.x},${hoveredSeatPos.y} ${mapWidth ? mapWidth * 0.05 : 50},35 ${mapWidth ? mapWidth * 0.95 : 950},35`}
                   fill="url(#dynamicLaserGrad)"
                   fillOpacity="0.08"
                 />
@@ -314,7 +326,7 @@ export function SeatMap({
                 <line
                   x1={hoveredSeatPos.x}
                   y1={hoveredSeatPos.y}
-                  x2={seatMapRef.current ? seatMapRef.current.clientWidth * 0.05 : 50}
+                  x2={mapWidth ? mapWidth * 0.05 : 50}
                   y2="35"
                   stroke="url(#dynamicLaserGrad)"
                   strokeWidth="2.5"
@@ -327,7 +339,7 @@ export function SeatMap({
                 <line
                   x1={hoveredSeatPos.x}
                   y1={hoveredSeatPos.y}
-                  x2={seatMapRef.current ? seatMapRef.current.clientWidth * 0.5 : 500}
+                  x2={mapWidth ? mapWidth * 0.5 : 500}
                   y2="35"
                   stroke="url(#dynamicLaserGrad)"
                   strokeWidth="3.5"
@@ -340,7 +352,7 @@ export function SeatMap({
                 <line
                   x1={hoveredSeatPos.x}
                   y1={hoveredSeatPos.y}
-                  x2={seatMapRef.current ? seatMapRef.current.clientWidth * 0.95 : 950}
+                  x2={mapWidth ? mapWidth * 0.95 : 950}
                   y2="35"
                   stroke="url(#dynamicLaserGrad)"
                   strokeWidth="2.5"
@@ -355,7 +367,7 @@ export function SeatMap({
                   cy={hoveredSeatPos.y}
                   r="8"
                   fill="none"
-                  stroke="#f5c518"
+                  stroke="#00ff87"
                   strokeWidth="2"
                   className="animate-ping"
                 />
@@ -465,7 +477,7 @@ export function SeatMap({
 
                     if (state === "selected") {
                       styleClass +=
-                        " bg-gradient-to-t from-primary-dark via-primary to-primary-hover text-white shadow-lg shadow-primary/60 scale-110 border-2 border-white z-10 animate-pulse-glow";
+                        " bg-gradient-to-t from-primary-dark via-primary to-primary-hover text-on-primary shadow-lg shadow-primary/60 scale-110 border-2 border-white z-10 animate-pulse-glow";
                     } else if (state === "booked") {
                       styleClass +=
                         " cursor-not-allowed bg-surface/50 border border-border/40 text-muted-dark opacity-40 line-through";
@@ -545,7 +557,7 @@ export function SeatMap({
               Ghế Đôi Couple
             </span>
             <span className="flex items-center gap-2">
-              <span className="seat-base h-6 w-6 bg-primary text-white text-[10px] shadow-sm shadow-primary" />
+              <span className="seat-base h-6 w-6 bg-primary text-on-primary text-[10px] shadow-sm shadow-primary" />
               Đang chọn
             </span>
             <span className="flex items-center gap-2">
@@ -593,7 +605,7 @@ export function SeatMap({
             <button
               type="button"
               onClick={() => setPovSeat(hoveredSeat)}
-              className="shrink-0 flex items-center gap-1.5 rounded-xl border border-primary/40 bg-primary/20 px-4 py-2 text-xs font-extrabold text-primary hover:bg-primary hover:text-white transition shadow-md"
+              className="shrink-0 flex items-center gap-1.5 rounded-xl border border-primary/40 bg-primary/20 px-4 py-2 text-xs font-extrabold text-primary hover:bg-primary hover:text-on-primary transition shadow-md"
             >
               <Eye className="h-4 w-4" />
               Xem góc nhìn 3D (POV)
@@ -625,7 +637,7 @@ export function SeatMap({
             </div>
 
             <div className="my-6 relative flex flex-col items-center justify-center rounded-2xl bg-black p-8 overflow-hidden min-h-[220px] border border-border-light">
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(232,99,122,0.12),transparent_70%)]" />
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,255,135,0.12),transparent_70%)]" />
               
               {/* Simulated Screen Arc */}
               <div
@@ -650,7 +662,7 @@ export function SeatMap({
               <button
                 type="button"
                 onClick={() => setPovSeat(null)}
-                className="rounded-xl bg-primary px-6 py-2.5 text-xs font-bold text-white shadow-lg shadow-primary/30 hover:bg-primary-hover transition"
+                className="rounded-xl bg-primary px-6 py-2.5 text-xs font-bold text-on-primary shadow-lg shadow-primary/30 hover:bg-primary-hover transition"
               >
                 Đồng ý chọn ghế này →
               </button>
