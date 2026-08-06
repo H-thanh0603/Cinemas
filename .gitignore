@@ -38,6 +38,7 @@ prisma/dev.db-journal
 .playwright-mcp/
 .superpowers/
 .hermes/
+.claude/
 .stitch/
 prompt-master/
 tools/
