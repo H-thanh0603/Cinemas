@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { getLockedSeatIds } from "@/lib/booking-expire";
+import { checkApiRateLimit } from "@/lib/api-rate-limit";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -34,6 +36,16 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id: showtimeId } = await params;
+  const rid = req.headers.get("x-request-id") ?? crypto.randomUUID();
+
+  const rateLimited = await checkApiRateLimit(req.headers, "seats-stream", 20, 60_000);
+  if (!rateLimited.allowed) {
+    logger.warn("seats-stream rate limited", { rid, showtimeId });
+    return new Response("Too many requests", {
+      status: 429,
+      headers: { "Retry-After": String(rateLimited.retryAfterSeconds) },
+    });
+  }
 
   const showtime = await prisma.showtime.findUnique({
     where: { id: showtimeId },
@@ -84,7 +96,7 @@ export async function GET(
             controller.enqueue(encoder.encode(`: ping\n\n`));
           }
         } catch (e) {
-          console.error("SSE seats error:", e);
+          logger.error("SSE seats error", e, { rid, showtimeId });
         }
       };
 

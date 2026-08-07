@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -9,7 +10,7 @@ export async function GET() {
     await prisma.$queryRaw`SELECT 1`;
     return NextResponse.json({ status: "ok", db: "connected" });
   } catch (error) {
-    console.error("[health] database check failed:", error);
+    logger.error("health database check failed", error);
     return NextResponse.json(
       { status: "degraded", db: "disconnected", error: "Database unreachable" },
       { status: 503 }

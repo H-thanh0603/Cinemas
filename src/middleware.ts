@@ -5,10 +5,22 @@ import { getToken } from "next-auth/jwt";
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  // Gắn request-id để nối log từng request (middleware → route → error).
+  const requestId = req.headers.get("x-request-id") ?? crypto.randomUUID();
+  const resp = NextResponse.next();
+  resp.headers.set("x-request-id", requestId);
+
+  // Log tóm tắt mọi API request để theo dõi status/route (không log body).
+  if (pathname.startsWith("/api")) {
+    console.info(
+      `ts=${new Date().toISOString()} lvl=info rid=${requestId} msg=api_request method=${req.method} path=${pathname}`
+    );
+  }
+
   const isAdminPage = pathname.startsWith("/admin");
   const isAdminApi = pathname.startsWith("/api/admin");
   if (!isAdminPage && !isAdminApi) {
-    return NextResponse.next();
+    return resp;
   }
 
   const token = await getToken({
@@ -22,7 +34,7 @@ export async function middleware(req: NextRequest) {
     if (isAdmin) {
       return NextResponse.redirect(new URL("/admin", req.url));
     }
-    return NextResponse.next();
+    return resp;
   }
 
   if (!isAdmin) {
@@ -43,9 +55,18 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  return NextResponse.next();
+  return resp;
 }
 
 export const config = {
-  matcher: ["/admin", "/admin/:path*", "/api/admin/:path*"],
+  matcher: [
+    "/admin",
+    "/admin/:path*",
+    "/api/admin/:path*",
+    "/api/showtimes/:path*",
+    "/api/payments/:path*",
+    "/api/cron/:path*",
+    "/api/health",
+    "/api/loadtest/:path*",
+  ],
 };

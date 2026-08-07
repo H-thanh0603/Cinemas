@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { logger } from "@/lib/logger";
 import { consumeRateLimit, getRequestIp, rateLimitKey } from "@/lib/rate-limit";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -17,8 +18,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, request) {
+        const email = credentials?.email?.toString().trim().toLowerCase() ?? "";
         try {
-          const email = credentials?.email?.toString().trim().toLowerCase();
           const password = credentials?.password?.toString() ?? "";
           if (!email || !password) return null;
           const loginLimit = await consumeRateLimit(
@@ -43,12 +44,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
           const user = await prisma.user.findUnique({ where: { email } });
           if (!user?.passwordHash) {
-            console.warn("[auth] login failed");
+            logger.warn("login failed", { email });
             return null;
           }
           const ok = await bcrypt.compare(password, user.passwordHash);
           if (!ok) {
-            console.warn("[auth] login failed");
+            logger.warn("login failed", { email });
             return null;
           }
 
@@ -60,7 +61,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           };
         } catch (err) {
           // DB down / Prisma errors previously looked like "wrong password"
-          console.error("[auth] authorize failed:", err);
+          logger.error("authorize failed", err, { email });
           throw new Error("AUTH_SERVICE_UNAVAILABLE");
         }
       },
