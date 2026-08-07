@@ -19,15 +19,14 @@ const nextConfig: NextConfig = {
     const production = process.env.NODE_ENV === "production";
     const csp = [
       "default-src 'self'",
-      // In production, we can remove 'unsafe-inline' since Next.js 15 doesn't
-      // require it for scripts. In dev mode, keep 'unsafe-inline' AND
-      // 'unsafe-eval' - Next.js Fast Refresh/HMR uses eval() for its webpack
-      // runtime, so without 'unsafe-eval' the client bundle throws EvalError
-      // and React never hydrates (pages silently render as if data were empty).
-      // TODO: Migrate to nonce-based CSP for production (requires custom Document)
-      production
-        ? "script-src 'self' https://js.stripe.com https://accounts.google.com"
-        : "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com",
+      // Next.js App Router injects inline bootstrap/flight scripts
+      // (self.__next_f) that MUST run for hydration. Until we migrate to
+      // nonce-based CSP, 'unsafe-inline' is required on script-src in
+      // production too; without it React never hydrates and the page
+      // flashes SSR content then goes blank with "Connection closed".
+      // keep 'unsafe-eval' in dev for webpack Fast Refresh/HMR.
+      // TODO: Migrate to nonce-based CSP (requires custom Document)
+      "script-src 'self' 'unsafe-inline' https://js.stripe.com https://accounts.google.com",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https://placehold.co https://images.unsplash.com https://image.tmdb.org",
       "connect-src 'self' https://api.stripe.com https://accounts.google.com",
