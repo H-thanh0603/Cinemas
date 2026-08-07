@@ -9,6 +9,7 @@ import {
 } from "@/lib/stripe-payment";
 import type { ActionResult } from "./actions";
 import { consumeRateLimit, rateLimitKey } from "@/lib/rate-limit";
+import { expirePendingBookings } from "@/lib/booking-expire";
 
 function appUrl(): string {
   const value =
@@ -33,6 +34,7 @@ export async function createStripeCheckout(
   if (!paymentLimit.allowed) {
     return { ok: false, error: "Bạn thao tác quá nhanh. Vui lòng thử lại sau." };
   }
+  await expirePendingBookings();
   const booking = await prisma.booking.findUnique({
     where: { code },
     include: {

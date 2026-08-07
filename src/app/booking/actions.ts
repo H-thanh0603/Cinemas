@@ -16,6 +16,7 @@ import {
 import { MAX_SEATS_PER_BOOKING, SEAT_HOLD_MINUTES } from "@/lib/constants";
 import { auth } from "@/auth";
 import { consumeRateLimit, rateLimitKey } from "@/lib/rate-limit";
+import { expirePendingBookings } from "@/lib/booking-expire";
 
 export type CreateBookingInput = {
   showtimeId: string;
@@ -83,6 +84,7 @@ export async function createBooking(
     needsPayment: boolean;
   }>
 > {
+  await expirePendingBookings();
   const contactError = validateContact({
     name: input.contact.name ?? "",
     email: input.contact.email ?? "",
@@ -411,6 +413,7 @@ export async function completeSandboxPayment(
     };
   }
   if (booking.expiresAt && booking.expiresAt < new Date()) {
+    await expirePendingBookings();
     return { ok: false, error: "Hết thời gian giữ ghế" };
   }
 
