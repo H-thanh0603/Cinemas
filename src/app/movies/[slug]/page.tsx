@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/ui";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
+import { getTmdbImageUrl } from "@/lib/tmdb-image";
 import { PosterImage } from "@/components/ui/poster-image";
 import { ShowtimeSection } from "@/components/movies/showtime-section";
 import {
@@ -50,7 +51,7 @@ export default async function MovieDetailPage({
       <section className="relative overflow-hidden border-b border-border">
         <div className="absolute inset-0 pointer-events-none">
           <PosterImage
-            src={movie.backdropUrl ?? movie.posterUrl}
+            src={getTmdbImageUrl(movie.backdropUrl ?? movie.posterUrl, "hero")}
             alt={movie.title}
             fill
             priority
@@ -64,7 +65,7 @@ export default async function MovieDetailPage({
           <div className="mt-2 flex flex-col gap-8 md:flex-row">
             <div className="relative mx-auto aspect-[2/3] w-52 shrink-0 overflow-hidden rounded-2xl border border-border shadow-2xl md:mx-0 md:w-72">
               <PosterImage
-                src={movie.posterUrl}
+                src={getTmdbImageUrl(movie.posterUrl, "card")}
                 alt={movie.title}
                 fill
                 priority

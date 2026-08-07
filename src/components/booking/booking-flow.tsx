@@ -13,6 +13,7 @@ import {
   formatVnd,
 } from "@/lib/constants";
 import { seatBasePrice } from "@/lib/booking";
+import { getTmdbImageUrl } from "@/lib/tmdb-image";
 import { PosterImage } from "@/components/ui/poster-image";
 import { BookingProgress } from "./progress";
 import { SeatMap } from "./seat-map";
@@ -274,7 +275,7 @@ export function BookingFlow({
                 <div className="flex items-center gap-4">
                   <div className="relative aspect-[2/3] w-14 shrink-0 overflow-hidden rounded-lg shadow-md border border-border-light hidden sm:block">
                     <PosterImage
-                      src={showtime.movie.posterUrl}
+                      src={getTmdbImageUrl(showtime.movie.posterUrl, "thumbnail")}
                       alt={showtime.movie.title}
                       fill
                       sizes="56px"
@@ -358,7 +359,7 @@ export function BookingFlow({
               <div className="flex gap-4">
                 <div className="relative aspect-[2/3] w-20 shrink-0 overflow-hidden rounded-xl shadow-lg border border-border-light">
                   <PosterImage
-                    src={showtime.movie.posterUrl}
+                    src={getTmdbImageUrl(showtime.movie.posterUrl, "thumbnail")}
                     alt={showtime.movie.title}
                     fill
                     priority

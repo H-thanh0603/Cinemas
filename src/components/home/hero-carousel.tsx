@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Play, Ticket } from "lucide-react";
 import { formatDate } from "@/lib/constants";
+import { getTmdbImageUrl } from "@/lib/tmdb-image";
 import { PosterImage } from "@/components/ui/poster-image";
 
 export type HeroSlide = {
@@ -116,7 +117,7 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
             transition={{ type: "spring", stiffness: 60, damping: 20 }}
           >
             <PosterImage
-              src={current.backdropUrl ?? current.posterUrl}
+              src={getTmdbImageUrl(current.backdropUrl ?? current.posterUrl, "hero")}
               alt={current.title}
               fill
               priority
@@ -269,7 +270,13 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
                   : "border-transparent opacity-50 hover:opacity-80 hover:border-white/10"
               }`}
             >
-              <PosterImage src={s.posterUrl} alt={s.title} fill sizes="64px" quality={90} />
+              <PosterImage
+                src={getTmdbImageUrl(s.posterUrl, "thumbnail")}
+                alt={s.title}
+                fill
+                sizes="64px"
+                quality={90}
+              />
             </button>
           ))}
         </div>

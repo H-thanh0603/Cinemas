@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { getTmdbImageUrl } from "@/lib/tmdb-image";
 import { formatDate, formatTime, formatVnd } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
@@ -157,7 +158,7 @@ export default async function CinemaDetailPage({
                         className="relative hidden aspect-[2/3] w-20 shrink-0 overflow-hidden rounded-lg sm:block"
                       >
                         <Image
-                          src={group.movie.posterUrl}
+                          src={getTmdbImageUrl(group.movie.posterUrl, "thumbnail")}
                           alt={group.movie.title}
                           fill
                           sizes="80px"

@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { getTmdbImageUrl } from "@/lib/tmdb-image";
 import { Badge } from "@/components/ui";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import {
@@ -149,7 +150,7 @@ export default async function ConfirmationPage({
           <div className="flex gap-4">
             <div className="relative aspect-[2/3] w-20 shrink-0 overflow-hidden rounded-xl">
               <Image
-                src={booking.showtime.movie.posterUrl}
+                src={getTmdbImageUrl(booking.showtime.movie.posterUrl, "thumbnail")}
                 alt={booking.showtime.movie.title}
                 fill
                 sizes="80px"

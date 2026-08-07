@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { getTmdbImageUrl } from "@/lib/tmdb-image";
 import { Badge, EmptyState } from "@/components/ui";
 import {
   BOOKING_STATUS_LABELS,
@@ -66,7 +67,7 @@ function BookingCard({ booking }: { booking: BookingWithRelations }) {
     >
       <div className="relative hidden aspect-[2/3] w-16 shrink-0 overflow-hidden rounded-lg sm:block">
         <Image
-          src={booking.showtime.movie.posterUrl}
+          src={getTmdbImageUrl(booking.showtime.movie.posterUrl, "thumbnail")}
           alt={booking.showtime.movie.title}
           fill
           sizes="64px"

@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { escapeLikePattern } from "@/lib/search-utils";
+import { getTmdbImageUrl } from "@/lib/tmdb-image";
 import { MOVIE_STATUS_LABELS, formatDate } from "@/lib/constants";
 import { MovieActions } from "./movie-actions";
 import { AdminSearch, AdminFilter } from "../admin-search";
@@ -94,7 +95,7 @@ export default async function AdminMoviesPage({
                     <div className="flex items-center gap-3">
                       {m.posterUrl && (
                         <Image
-                          src={m.posterUrl}
+                          src={getTmdbImageUrl(m.posterUrl, "thumbnail")}
                           alt={m.title}
                           width={40}
                           height={56}

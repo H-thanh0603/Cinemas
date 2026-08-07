@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Clock, Ticket, CalendarClock } from "lucide-react";
 import { Badge } from "@/components/ui";
+import { getTmdbImageUrl } from "@/lib/tmdb-image";
 import { PosterImage } from "@/components/ui/poster-image";
 
 type MovieCardProps = {
@@ -69,7 +70,7 @@ export function MovieCard({ movie, index = 0 }: MovieCardProps) {
       <Link href={`/movies/${movie.slug}`} className="block">
         <div className="relative aspect-[2/3] overflow-hidden">
           <PosterImage
-            src={movie.posterUrl}
+            src={getTmdbImageUrl(movie.posterUrl, "card")}
             alt={movie.title}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
