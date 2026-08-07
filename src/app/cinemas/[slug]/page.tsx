@@ -5,7 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { getTmdbImageUrl } from "@/lib/tmdb-image";
 import { formatDate, formatTime, formatVnd } from "@/lib/constants";
 
-export const dynamic = "force-dynamic";
+// Catalog detail — ISR 60s (showtime thay đổi hiếm)
+export const revalidate = 60;
 
 export default async function CinemaDetailPage({
   params,

@@ -16,18 +16,30 @@ export function PromoPopup({
   title?: string;
   description?: string;
 }) {
+  const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  // Mount trễ khi trang idle — popup là thứ chèn lên, không được chặn FCP/INP.
   useEffect(() => {
+    if (typeof requestIdleCallback === "function") {
+      const id = requestIdleCallback(() => setMounted(true), { timeout: 2000 });
+      return () => cancelIdleCallback(id);
+    }
+    const t = setTimeout(() => setMounted(true), 1800);
+    return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
     try {
       if (sessionStorage.getItem(STORAGE_KEY)) return;
     } catch {
       /* ignore */
     }
-    const t = setTimeout(() => setOpen(true), 1800);
+    const t = setTimeout(() => setOpen(true), 300);
     return () => clearTimeout(t);
-  }, []);
+  }, [mounted]);
 
   function close() {
     setOpen(false);

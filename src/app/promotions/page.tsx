@@ -7,7 +7,8 @@ export const metadata: Metadata = {
   title: "Ưu đãi",
 };
 
-export const dynamic = "force-dynamic";
+// Catalog — ISR 60s
+export const revalidate = 60;
 
 export default async function PromotionsPage() {
   const promotions = await prisma.promotion.findMany({

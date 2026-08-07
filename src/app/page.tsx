@@ -19,7 +19,9 @@ import {
   Crown,
 } from "lucide-react";
 
-export const dynamic = "force-dynamic";
+// Catalog: đổi hiếm — ISR 60s đủ tươi, cắt tải DB mỗi render.
+// ponytail: xóa dynamic → revalidate khi có admin-trigger revalidation.
+export const revalidate = 60;
 
 export default async function HomePage() {
   const [featuredList, nowShowing, comingSoon, cinemas, promotions, genres, stats] =

@@ -9,7 +9,8 @@ export const metadata: Metadata = {
   title: "Danh sách phim",
 };
 
-export const dynamic = "force-dynamic";
+// Catalog — ISR 60s, filter theo query param vẫn cache theo URL
+export const revalidate = 60;
 
 const PAGE_SIZE = 15;
 
