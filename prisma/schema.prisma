@@ -179,6 +179,8 @@ model Booking {
   discountTotal  Int            @default(0)
   finalTotal     Int
   promotionId    String?
+  idempotencyKey String?        @unique // client retry key, optional
+  expiresAt      DateTime? // PENDING (pay-at-counter) bookings expire and free seats
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
   showtime       Showtime       @relation(fields: [showtimeId], references: [id])
@@ -190,12 +192,15 @@ model Booking {
 
   @@index([showtimeId])
   @@index([contactEmail])
+  @@index([status])
+  @@index([createdAt])
 }
 
 model BookingSeat {
   id           String     @id @default(cuid())
   bookingId    String
   seatId       String
+  showtimeId   String // denormalized from Booking so the DB can enforce one-seat-one-booking
   ticketTypeId String
   price        Int // final per-seat price at time of booking
   booking      Booking    @relation(fields: [bookingId], references: [id], onDelete: Cascade)
@@ -203,6 +208,7 @@ model BookingSeat {
   ticketType   TicketType @relation(fields: [ticketTypeId], references: [id])
 
   @@unique([bookingId, seatId])
+  @@unique([showtimeId, seatId]) // hard guard against double booking, even under race
 }
 
 model BookingCombo {
@@ -227,4 +233,6 @@ model Payment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([status])
 }
