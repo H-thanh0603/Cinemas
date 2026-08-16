@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { AdminSidebar } from "./admin-sidebar";
 
 export const metadata: Metadata = {

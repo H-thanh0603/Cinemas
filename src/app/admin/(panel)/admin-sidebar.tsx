@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { logout } from "../login/actions";
 
 type NavItem = { href: string; label: string; icon: string };
 
@@ -82,7 +83,7 @@ export function AdminSidebar({ navItems }: { navItems: NavItem[] }) {
           })}
         </nav>
 
-        {/* Bottom link */}
+        {/* Bottom links */}
         <div className="absolute bottom-0 left-0 right-0 border-t border-border p-3">
           <Link
             href="/"
@@ -91,6 +92,15 @@ export function AdminSidebar({ navItems }: { navItems: NavItem[] }) {
             <span className="text-base">🌐</span>
             Về trang web
           </Link>
+          <form action={logout}>
+            <button
+              type="submit"
+              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted transition-colors hover:bg-surface hover:text-red-400"
+            >
+              <span className="text-base">🚪</span>
+              Đăng xuất
+            </button>
+          </form>
         </div>
       </aside>
 

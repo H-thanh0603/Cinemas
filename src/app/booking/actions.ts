@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { generateBookingCode, seatBasePrice } from "@/lib/booking";
 import { MAX_SEATS_PER_BOOKING } from "@/lib/constants";
@@ -11,6 +12,7 @@ export type CreateBookingInput = {
   promotionCode?: string;
   contact: { name: string; email: string; phone: string };
   paymentMethod: string;
+  idempotencyKey?: string;
 };
 
 export type ActionResult<T> =
@@ -26,6 +28,55 @@ const PAYMENT_METHODS = [
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RE = /^0\d{9,10}$/;
+
+// Pay-at-counter bookings hold seats this long before expiring
+const HOLD_MINUTES = 15;
+
+// ── Rate limiting ────────────────────────────────────────────────────────
+// ponytail: in-memory per-process limiter, resets on restart and doesn't
+// share state across instances. Move to Redis when running >1 instance.
+const RATE_LIMIT = { windowMs: 60_000, max: 10 };
+const hits = new Map<string, number[]>();
+
+async function rateLimited(): Promise<boolean> {
+  const ip =
+    (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() ?? "local";
+  const now = Date.now();
+  const recent = (hits.get(ip) ?? []).filter((t) => now - t < RATE_LIMIT.windowMs);
+  if (recent.length >= RATE_LIMIT.max) {
+    hits.set(ip, recent);
+    return true;
+  }
+  recent.push(now);
+  hits.set(ip, recent);
+  return false;
+}
+
+// ── Expired-hold sweep ───────────────────────────────────────────────────
+// Lazy sweep: runs on booking attempts, no cron needed. Seats of expired
+// bookings free up because seat queries filter status IN (PENDING, CONFIRMED).
+async function sweepExpiredBookings() {
+  const expired = await prisma.booking.findMany({
+    where: { status: "PENDING", expiresAt: { lt: new Date() } },
+    select: { id: true, promotionId: true },
+  });
+  if (expired.length === 0) return;
+  await prisma.$transaction([
+    prisma.booking.updateMany({
+      where: { id: { in: expired.map((b) => b.id) } },
+      data: { status: "EXPIRED" },
+    }),
+    // give back promo slots that expired holds consumed
+    ...expired
+      .filter((b) => b.promotionId)
+      .map((b) =>
+        prisma.promotion.update({
+          where: { id: b.promotionId! },
+          data: { usedCount: { decrement: 1 } },
+        })
+      ),
+  ]);
+}
 
 export async function validatePromotion(
   code: string,
@@ -81,6 +132,13 @@ function computeDiscount(
 export async function createBooking(
   input: CreateBookingInput
 ): Promise<ActionResult<{ code: string }>> {
+  if (await rateLimited()) {
+    return {
+      ok: false,
+      error: "Quá nhiều yêu cầu, vui lòng thử lại sau ít phút.",
+    };
+  }
+
   // ── Contact validation ────────────────────────────────────────────────
   const name = input.contact.name?.trim();
   const email = input.contact.email?.trim();
@@ -113,6 +171,19 @@ export async function createBooking(
   if (new Set(seatIds).size !== seatIds.length) {
     return { ok: false, error: "Danh sách ghế bị trùng lặp" };
   }
+
+  // ── Idempotency: a retry with the same key returns the original booking ─
+  const idempotencyKey = input.idempotencyKey?.trim() || null;
+  if (idempotencyKey) {
+    const existing = await prisma.booking.findUnique({
+      where: { idempotencyKey },
+      select: { code: true },
+    });
+    if (existing) return { ok: true, data: { code: existing.code } };
+  }
+
+  // free seats held by expired pay-at-counter bookings before we check
+  await sweepExpiredBookings();
 
   // ── Showtime validation ──────────────────────────────────────────────
   const showtime = await prisma.showtime.findUnique({
@@ -170,7 +241,12 @@ export async function createBooking(
       0,
       seatBasePrice(showtime.basePrice, seat.type) + tt.priceModifier
     );
-    return { seatId: s.seatId, ticketTypeId: s.ticketTypeId, price };
+    return {
+      seatId: s.seatId,
+      ticketTypeId: s.ticketTypeId,
+      showtimeId: showtime.id,
+      price,
+    };
   });
   const seatsTotal = seatLines.reduce((sum, l) => sum + l.price, 0);
 
@@ -189,7 +265,7 @@ export async function createBooking(
 
   const orderValue = seatsTotal + combosTotal;
 
-  // ── Promotion ────────────────────────────────────────────────────────
+  // ── Promotion (claimed atomically inside the transaction below) ──────
   let promotionId: string | null = null;
   let discountTotal = 0;
   if (input.promotionCode?.trim()) {
@@ -221,10 +297,13 @@ export async function createBooking(
 
   const finalTotal = orderValue - discountTotal;
 
-  // ── Transaction: prevent double booking ──────────────────────────────
+  // ── Transaction ───────────────────────────────────────────────────────
+  // Double booking is impossible: the unique index (showtimeId, seatId) on
+  // BookingSeat rejects the second insert even if two requests race past
+  // the conflict check.
   try {
     const result = await prisma.$transaction(async (tx) => {
-      // check conflicts inside the transaction
+      // fast friendly error before the constraint fires
       const conflicts = await tx.bookingSeat.findMany({
         where: {
           seatId: { in: seatIds },
@@ -242,14 +321,29 @@ export async function createBooking(
         throw new Error(`SEAT_TAKEN:${names}`);
       }
 
+      // atomic promo claim: read+increment inside the write transaction.
+      // ponytail: safe because SQLite serializes write transactions; on
+      // Postgres use a conditional UPDATE ... WHERE usedCount < limit.
       if (promotionId) {
+        const promo = await tx.promotion.findUnique({
+          where: { id: promotionId },
+        });
+        const claimable =
+          promo &&
+          promo.isActive &&
+          promo.startsAt <= new Date() &&
+          promo.expiresAt >= new Date() &&
+          (promo.usageLimit === null || promo.usedCount < promo.usageLimit) &&
+          orderValue >= promo.minOrderValue;
+        if (!claimable) throw new Error("PROMO_INVALID");
         await tx.promotion.update({
           where: { id: promotionId },
           data: { usedCount: { increment: 1 } },
         });
       }
 
-      // simulate payment: AT_COUNTER stays UNPAID, others succeed
+      // simulate payment: AT_COUNTER stays UNPAID and holds seats only
+      // until expiresAt; other methods succeed immediately
       const paid = input.paymentMethod !== "AT_COUNTER";
 
       // generate unique code with retries
@@ -267,7 +361,9 @@ export async function createBooking(
           contactName: name,
           contactEmail: email,
           contactPhone: phone,
-          status: "CONFIRMED",
+          status: paid ? "CONFIRMED" : "PENDING",
+          idempotencyKey,
+          expiresAt: paid ? null : new Date(Date.now() + HOLD_MINUTES * 60_000),
           seatsTotal,
           combosTotal,
           discountTotal,
@@ -296,6 +392,24 @@ export async function createBooking(
       return {
         ok: false,
         error: `Ghế ${names} vừa được người khác đặt. Vui lòng chọn ghế khác.`,
+      };
+    }
+    if (e instanceof Error && e.message === "PROMO_INVALID") {
+      return {
+        ok: false,
+        error: "Mã ưu đãi không hợp lệ hoặc đã hết hạn. Vui lòng kiểm tra lại.",
+      };
+    }
+    // unique (showtimeId, seatId) violation = lost the race for a seat
+    if (
+      typeof e === "object" &&
+      e !== null &&
+      "code" in e &&
+      (e as { code?: string }).code === "P2002"
+    ) {
+      return {
+        ok: false,
+        error: "Có ghế vừa được người khác đặt. Vui lòng chọn ghế khác.",
       };
     }
     console.error("createBooking failed:", e);
