@@ -44,3 +44,9 @@ prompt-master/
 tools/
 config/
 ~/
+
+# local verification artifacts
+.pgdata-test/
+.pgsock/
+.npm-cache/
+.npm-log/

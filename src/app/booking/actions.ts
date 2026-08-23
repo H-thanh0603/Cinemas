@@ -92,9 +92,19 @@ export async function createBooking(
   if (idempotencyKey) {
     const existing = await prisma.booking.findUnique({
       where: { idempotencyKey },
-      select: { code: true },
+      select: { code: true, status: true, expiresAt: true },
     });
-    if (existing) return { ok: true, data: { code: existing.code } };
+    if (existing) {
+      return {
+        ok: true,
+        data: {
+          code: existing.code,
+          status: existing.status,
+          expiresAt: existing.expiresAt?.toISOString() ?? null,
+          needsPayment: existing.status === "PENDING",
+        },
+      };
+    }
   }
 
   const contactError = validateContact({

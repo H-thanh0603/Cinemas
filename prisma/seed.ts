@@ -638,7 +638,6 @@ async function main() {
         seats: {
           create: chosen.map((s) => ({
             seatId: s.id,
-            showtimeId: st.id,
             ticketTypeId: adultTicket.id,
             price: seatPrice(s.type),
           })),
@@ -648,9 +647,7 @@ async function main() {
         },
         payment: {
           create: {
-            method: ["CREDIT_CARD", "E_WALLET", "BANK_TRANSFER", "AT_COUNTER"][
-              bookingIdx % 4
-            ],
+            method: ["STRIPE", "SANDBOX", "AT_COUNTER"][bookingIdx % 3],
             status: status === "CANCELLED" ? "REFUNDED" : "PAID",
             amount: finalTotal,
             paidAt: new Date(),
