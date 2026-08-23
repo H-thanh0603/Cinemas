@@ -16,6 +16,7 @@
     "catalogue:real": "tsx scripts/replace-demo-movies.ts",
     "db:seed-future": "tsx scripts/seed-future-showtimes.ts",
     "db:setup": "docker compose up -d db && prisma db push && tsx prisma/seed.ts",
+    "db:cleanup": "tsx prisma/cleanup.ts",
     "cron:expire": "tsx -e \"import { expirePendingBookings } from './src/lib/booking-expire.ts'; expirePendingBookings().then(n => console.log('expired', n))\"",
     "test:security": "tsx scripts/test-security.ts",
     "test:schema-hardening": "tsx scripts/test-schema-hardening.ts",

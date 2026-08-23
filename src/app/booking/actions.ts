@@ -25,6 +25,7 @@ export type CreateBookingInput = {
   promotionCode?: string;
   contact: { name: string; email: string; phone: string };
   paymentMethod: string;
+  idempotencyKey?: string;
 };
 
 export type ActionResult<T> =
@@ -85,6 +86,17 @@ export async function createBooking(
   }>
 > {
   await expirePendingBookings();
+
+  // ── Idempotency: a retry with the same key returns the original booking ─
+  const idempotencyKey = input.idempotencyKey?.trim() || null;
+  if (idempotencyKey) {
+    const existing = await prisma.booking.findUnique({
+      where: { idempotencyKey },
+      select: { code: true },
+    });
+    if (existing) return { ok: true, data: { code: existing.code } };
+  }
+
   const contactError = validateContact({
     name: input.contact.name ?? "",
     email: input.contact.email ?? "",
@@ -285,6 +297,7 @@ export async function createBooking(
           discountTotal,
           finalTotal,
           promotionId,
+          idempotencyKey,
           expiresAt,
           seats: { create: seatLines },
           combos: { create: comboLines },

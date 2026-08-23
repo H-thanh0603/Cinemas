@@ -638,6 +638,7 @@ async function main() {
         seats: {
           create: chosen.map((s) => ({
             seatId: s.id,
+            showtimeId: st.id,
             ticketTypeId: adultTicket.id,
             price: seatPrice(s.type),
           })),

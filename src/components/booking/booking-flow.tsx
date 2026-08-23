@@ -163,6 +163,8 @@ export function BookingFlow({
     setSubmitting(true);
     const result = await createBooking({
       showtimeId: showtime.id,
+      // retry-safe: same key returns the same booking instead of a duplicate
+      idempotencyKey: crypto.randomUUID(),
       seats: selectedSeats.map((seat) => ({
         seatId: seat.id,
         ticketTypeId: ticketAssignments[seat.id] ?? defaultTicket!.id,

@@ -187,6 +187,7 @@ model Booking {
   discountTotal Int                @default(0)
   finalTotal    Int
   promotionId   String?
+  idempotencyKey String?           @unique // client retry key, optional
   expiresAt     DateTime? // seat hold deadline for PENDING bookings
   emailSentAt   DateTime?
   createdAt     DateTime           @default(now())
@@ -224,6 +225,7 @@ model BookingSeat {
   id           String     @id @default(cuid())
   bookingId    String
   seatId       String
+  showtimeId   String // denormalized from Booking so the DB can enforce one-seat-one-booking
   ticketTypeId String
   price        Int // final per-seat price at time of booking
   booking      Booking    @relation(fields: [bookingId], references: [id], onDelete: Cascade)

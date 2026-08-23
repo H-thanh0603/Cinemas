@@ -91,3 +91,45 @@ export function AdminFilter({
     </select>
   );
 }
+
+export function Pagination({
+  page,
+  pageSize,
+  total,
+}: {
+  page: number;
+  pageSize: number;
+  total: number;
+}) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const pages = Math.max(1, Math.ceil(total / pageSize));
+  if (pages <= 1) return null;
+
+  const goTo = (p: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (p <= 1) params.delete("page");
+    else params.set("page", String(p));
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  const btn =
+    "rounded-lg border border-border bg-surface px-3 py-1.5 text-sm transition-colors hover:bg-surface-raised disabled:opacity-40 disabled:hover:bg-surface";
+
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <p className="text-sm text-muted">
+        Trang {page}/{pages} · {total} bản ghi
+      </p>
+      <div className="flex gap-2">
+        <button className={btn} disabled={page <= 1} onClick={() => goTo(page - 1)}>
+          ← Trước
+        </button>
+        <button className={btn} disabled={page >= pages} onClick={() => goTo(page + 1)}>
+          Sau →
+        </button>
+      </div>
+    </div>
+  );
+}
