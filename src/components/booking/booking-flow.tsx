@@ -13,6 +13,7 @@ import {
   formatVnd,
 } from "@/lib/constants";
 import { seatBasePrice } from "@/lib/booking";
+import { effectiveBasePrice } from "@/lib/booking-pricing";
 import { getTmdbImageUrl } from "@/lib/tmdb-image";
 import { PosterImage } from "@/components/ui/poster-image";
 import { BookingProgress } from "./progress";
@@ -88,15 +89,16 @@ export function BookingFlow({
     .filter((s): s is SeatDto => Boolean(s));
 
   // ── Price computation ──────────────────────────────────────────────
+  const effBasePrice = effectiveBasePrice(
+    showtime.basePrice,
+    new Date(showtime.startsAt)
+  );
   const seatsTotal = selectedSeats.reduce((sum, seat) => {
     const ttId = ticketAssignments[seat.id] ?? defaultTicket?.id;
     const tt = ttId ? ticketById.get(ttId) : undefined;
     return (
       sum +
-      Math.max(
-        0,
-        seatBasePrice(showtime.basePrice, seat.type) + (tt?.priceModifier ?? 0)
-      )
+      Math.max(0, seatBasePrice(effBasePrice, seat.type) + (tt?.priceModifier ?? 0))
     );
   }, 0);
 
@@ -136,6 +138,24 @@ export function BookingFlow({
       return [...prev, seat.id];
     });
     // seat change invalidates applied promo (order value changes)
+    setPromo(null);
+  }
+
+  // Replace the whole selection with the auto-picked group (keeps default ticket).
+  function handleAutoPick(picked: SeatDto[]) {
+    setSelectedSeatIds((prev) => {
+      if (defaultTicket) {
+        setTicketAssignments((ta) => {
+          const next = { ...ta };
+          for (const id of prev) delete next[id];
+          for (const s of picked) next[s.id] = defaultTicket.id;
+          return next;
+        });
+      } else {
+        setTicketAssignments({});
+      }
+      return picked.map((s) => s.id);
+    });
     setPromo(null);
   }
 
@@ -264,7 +284,8 @@ export function BookingFlow({
                   bookedSeatIds={bookedSet}
                   selectedSeatIds={selectedSeatIds}
                   onToggle={toggleSeat}
-                  basePrice={showtime.basePrice}
+                  onAutoPick={handleAutoPick}
+                  basePrice={effBasePrice}
                 />
               </div>
 
@@ -323,7 +344,7 @@ export function BookingFlow({
 
           {step === "extras" && (
             <ExtrasStep
-              basePrice={showtime.basePrice}
+              basePrice={effBasePrice}
               selectedSeats={selectedSeats}
               ticketTypes={ticketTypes}
               ticketAssignments={ticketAssignments}
@@ -414,7 +435,7 @@ export function BookingFlow({
                       const tt = ttId ? ticketById.get(ttId) : undefined;
                       const price = Math.max(
                         0,
-                        seatBasePrice(showtime.basePrice, seat.type) +
+                        seatBasePrice(effBasePrice, seat.type) +
                           (tt?.priceModifier ?? 0)
                       );
                       return (

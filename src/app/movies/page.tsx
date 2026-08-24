@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { MovieCard } from "@/components/movies/movie-card";
 import { EmptyState } from "@/components/ui";
 import { MovieFilters } from "./movie-filters";
+import { fuzzyMovieIds } from "@/lib/fuzzy-search";
 import type { Prisma } from "@prisma/client";
 
 export const metadata: Metadata = {
@@ -36,7 +37,12 @@ export default async function MoviesPage({
   };
 
   if (params.q) {
-    where.title = { contains: params.q };
+    // Fuzzy match: pg_trgm similarity (typo-tolerant) OR plain substring.
+    // Raw SQL for similarity because Prisma has no trigram operator.
+    where.OR = [
+      { title: { contains: params.q, mode: "insensitive" } },
+      { id: { in: await fuzzyMovieIds(params.q) } },
+    ];
   }
   if (params.status === "NOW_SHOWING" || params.status === "COMING_SOON") {
     where.status = params.status;

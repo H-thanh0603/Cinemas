@@ -9,6 +9,7 @@ import {
   buildComboPricing,
   buildSeatPricing,
   computeDiscount,
+  effectiveBasePrice,
   validateComboInputs,
   validateContact,
   validateSeatSelection,
@@ -187,7 +188,7 @@ export async function createBooking(
   const comboById = new Map(combosDb.map((c) => [c.id, c]));
 
   const { seatLines, seatsTotal } = buildSeatPricing({
-    basePrice: showtime.basePrice,
+    basePrice: effectiveBasePrice(showtime.basePrice, showtime.startsAt),
     seats: input.seats.map((s) => ({
       seatId: s.seatId,
       ticketTypeId: s.ticketTypeId,

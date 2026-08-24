@@ -13,6 +13,7 @@ import {
 import type { SeatDto } from "./types";
 import { formatVnd, SEAT_TYPE_LABELS } from "@/lib/constants";
 import { seatBasePrice } from "@/lib/booking";
+import { pickBestSeats } from "@/lib/seat-scoring";
 import { seatSound } from "@/lib/seat-sound";
 
 type SeatMapProps = {
@@ -20,6 +21,7 @@ type SeatMapProps = {
   bookedSeatIds: Set<string>;
   selectedSeatIds: string[];
   onToggle: (seat: SeatDto) => void;
+  onAutoPick?: (picked: SeatDto[]) => void;
   basePrice?: number;
 };
 
@@ -45,6 +47,7 @@ export function SeatMap({
   bookedSeatIds,
   selectedSeatIds,
   onToggle,
+  onAutoPick,
   basePrice = 90000,
 }: SeatMapProps) {
   const seatMapRef = useRef<HTMLDivElement>(null);
@@ -59,6 +62,9 @@ export function SeatMap({
   const [hoveredSeatPos, setHoveredSeatPos] = useState<{ x: number; y: number } | null>(null);
   const [povSeat, setPovSeat] = useState<SeatDto | null>(null);
   const [showGoldenTicket, setShowGoldenTicket] = useState(false);
+  // How many seats auto-pick should select — mirrors the current selection size,
+  // defaulting to a pair (most common booking).
+  const autoPickCount = selectedSeatIds.length > 0 ? selectedSeatIds.length : 2;
 
   // Theo dõi width map trong effect (không đọc ref lúc render — fix react-hooks/refs)
   useEffect(() => {
@@ -140,6 +146,13 @@ export function SeatMap({
     setSoundEnabled(nextState);
   }
 
+  // Auto-pick the best contiguous group of free seats (up to MAX per booking).
+  function handleAutoPick() {
+    if (!onAutoPick) return;
+    const picked = pickBestSeats(seats, Math.max(1, autoPickCount), bookedSeatIds);
+    if (picked.length > 0) onAutoPick(picked);
+  }
+
   const [animatingSeatId, setAnimatingSeatId] = useState<string | null>(null);
 
   function handleSeatClick(seat: SeatDto, state: string) {
@@ -204,6 +217,18 @@ export function SeatMap({
 
         {/* View Controls */}
         <div className="flex items-center gap-2 bg-surface-raised/90 backdrop-blur rounded-2xl border border-border-light p-1.5 shadow-md">
+          {onAutoPick && (
+            <button
+              type="button"
+              onClick={handleAutoPick}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs sm:text-sm font-semibold rounded-xl transition text-muted hover:text-primary hover:bg-primary/10"
+              title="Tự động chọn nhóm ghế đẹp nhất còn trống"
+            >
+              <Sparkles className="h-4 w-4" />
+              <span className="hidden sm:inline">Chọn giúp tôi</span>
+            </button>
+          )}
+
           <button
             type="button"
             onClick={() => setHighlightSweetSpot(!highlightSweetSpot)}

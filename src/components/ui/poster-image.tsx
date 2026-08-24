@@ -27,7 +27,7 @@ export function PosterImage({
   priority = false,
   sizes = "(max-width: 768px) 100vw, 50vw",
   className = "",
-  quality = 95,
+  quality = 80,
   objectFit = "cover",
 }: PosterImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);

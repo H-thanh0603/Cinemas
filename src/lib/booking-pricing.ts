@@ -5,6 +5,34 @@ import { seatBasePrice } from "./booking";
  * để unit-test được (thuần, không phụ thuộc DB).
  */
 
+// ── Time-slot pricing ────────────────────────────────────────────────
+// ponytail: fixed Asia/Ho_Chi_Minh slot logic — extract per-cinema timezone only when multi-region arrives.
+
+export const WEEKEND_MULTIPLIER = 1.2; // Sat/Sun all day
+export const PEAK_EVENING_MULTIPLIER = 1.1; // weekdays 17:00-22:59
+
+const vnParts = new Intl.DateTimeFormat("en-US", {
+  timeZone: "Asia/Ho_Chi_Minh",
+  weekday: "short",
+  hour: "numeric",
+  hour12: false,
+});
+
+/** Multiplier for a showtime start: weekends 1.2, weekday evenings 1.1, otherwise 1. */
+export function timeSlotMultiplier(startsAt: Date): number {
+  const parts = vnParts.formatToParts(startsAt);
+  const weekday = parts.find((p) => p.type === "weekday")!.value;
+  const hour = Number(parts.find((p) => p.type === "hour")!.value);
+  if (weekday === "Sat" || weekday === "Sun") return WEEKEND_MULTIPLIER;
+  if (hour >= 17 && hour < 23) return PEAK_EVENING_MULTIPLIER;
+  return 1;
+}
+
+/** Base price after slot multiplier, rounded to nearest 1_000 VND. */
+export function effectiveBasePrice(basePrice: number, startsAt: Date): number {
+  return Math.round((basePrice * timeSlotMultiplier(startsAt)) / 1000) * 1000;
+}
+
 export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export const PHONE_RE = /^0\d{9,10}$/;
 

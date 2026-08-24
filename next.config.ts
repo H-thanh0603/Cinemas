@@ -3,6 +3,10 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   outputFileTracingRoot: __dirname,
   images: {
+    // AVIF first (smaller than WebP); optimizer falls back per-browser support
+    formats: ["image/avif", "image/webp"],
+    // TMDB posters are immutable once published; cache optimized output a week
+    minimumCacheTTL: 604800,
     remotePatterns: [
       { protocol: "https", hostname: "placehold.co" },
       { protocol: "https", hostname: "images.unsplash.com" },
