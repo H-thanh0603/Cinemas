@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/header";
@@ -33,6 +34,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Nonce-based CSP (src/lib/csp.ts): đọc request headers — nơi middleware đặt
+  // CSP kèm nonce — buộc MỌI route render động, nhờ đó Next gắn đúng nonce của
+  // từng request vào các <script> bootstrap. Không có bước này, các trang tĩnh
+  // trả HTML đóng gói lúc build (không nonce) và script bị strict-dynamic chặn.
+  headers();
   return (
     <html lang="vi" suppressHydrationWarning className={`${inter.variable} ${outfit.variable}`}>
       <body className="flex min-h-screen flex-col font-sans">
