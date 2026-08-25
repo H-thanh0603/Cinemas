@@ -200,6 +200,54 @@ npx tsx scripts/db-check.ts
 npx tsx scripts/test-booking.ts
 ```
 
+## Bảo mật
+
+Ba lớp bảo mật chủ chốt (chi tiết audit: `AUDIT-REPORT.md`):
+
+### 1. Nonce-based CSP (strict CSP)
+
+`src/middleware.ts` sinh một nonce mỗi request và đặt header
+`Content-Security-Policy` lên cả request lẫn response; Next.js App Router đọc
+header của request để tự gắn nonce vào toàn bộ `<script>` bootstrap. Kết quả:
+
+```
+script-src 'self' 'nonce-<mỗi-request>' 'strict-dynamic'
+```
+
+— **không còn `'unsafe-inline'`** cho script ở cả dev và production (dev thêm
+`'unsafe-eval'` cho HMR). Builder CSP nằm tại `src/lib/csp.ts`. Đánh đổi: mọi
+route render động (`headers()` được gọi trong root layout) vì HTML tĩnh đóng
+gói lúc build không thể mang nonce theo từng request.
+
+### 2. 2FA/TOTP cho tài khoản ADMIN
+
+- Admin bật 2FA trong panel: **Bảo mật 2FA** → quét QR (otplib, tương thích
+  Google Authenticator) → nhập mã xác nhận.
+- Sau khi bật, mọi đăng nhập ADMIN yêu cầu mã 6 số; thiếu mã server trả
+  lỗi `TOTP_REQUIRED` để form hiển thị ô nhập mã (2 bước), sai mã bị từ chối.
+- Tắt 2FA phải nhập lại mật khẩu (re-authentication); bật/tắt đều ghi
+  `AuditLog`.
+- API: `/api/admin/2fa/{status,setup,enable,disable}` — tất cả yêu cầu session
+  ADMIN và có rate limit riêng chống brute-force mã 6 số.
+
+### 3. Rate limit Upstash Redis (fallback Postgres)
+
+`consumeRateLimit()` (`src/lib/rate-limit.ts`) tự chọn backend:
+
+- Có `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` → đếm qua Redis với
+  script Lua nguyên tử (`INCR + PEXPIRE + PTTL`) — 1 roundtrip/request, mọi
+  instance chia sẻ bộ đếm khi scale ngang.
+- Thiếu cấu hình (local dev/test) → dùng đúng logic cũ trên bảng
+  `RateLimitBucket` trong Postgres.
+
+Kiểm tra:
+
+```bash
+npm run test:admin-2fa        # unit luồng 2FA (không cần server)
+npm run -s test:admin-2fa-http BASE_URL=http://localhost:3000   # E2E qua HTTP
+npm run test:rate-limit       # rate limit cả 2 backend (Redis mock qua fetch stub)
+```
+
 ## Giấy phép
 
 MIT
