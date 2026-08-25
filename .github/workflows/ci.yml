@@ -44,8 +44,24 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Push schema + seed
-        run: npx prisma db push && npx prisma db seed
+      - name: Apply migrations (same path as production deploy)
+        run: npx prisma migrate deploy
+
+      - name: Detect schema drift (migrations vs schema.prisma)
+        run: |
+          DIFF=$(npx prisma migrate diff --from-url "$DATABASE_URL" \
+            --to-schema-datamodel prisma/schema.prisma --script)
+          echo "$DIFF"
+          # Allow-list: index pg_trgm được tạo chủ đích bằng raw SQL trong
+          # migration fuzzy_search — Prisma schema không diễn đạt được GIN
+          # expression index nên luôn hiện ở đây. Mọi khác biệt khác = drift.
+          if echo "$DIFF" | grep -E '^(ALTER|CREATE|DROP)' | grep -v 'Movie_title_trgm_idx'; then
+            echo "::error::Drift giữa migrations và schema.prisma — hãy tạo migration mới thay vì sửa schema tay"
+            exit 1
+          fi
+
+      - name: Seed
+        run: npx prisma db seed
 
       - name: Unit self-checks (seat scoring, dynamic pricing)
         run: |
