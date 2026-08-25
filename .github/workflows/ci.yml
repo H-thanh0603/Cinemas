@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: cinestar
+          POSTGRES_PASSWORD: cinestar
+          POSTGRES_DB: cinestar_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U cinestar"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://cinestar:cinestar@localhost:5432/cinestar_test
+      AUTH_SECRET: ci-only-secret-not-used-for-real-auth
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Push schema + seed
+        run: npx prisma db push && npx prisma db seed
+
+      - name: Unit self-checks (seat scoring, dynamic pricing)
+        run: |
+          npx tsx scripts/test-seat-scoring.ts
+          npx tsx scripts/test-dynamic-pricing.ts
+
+      - name: Build
+        run: npm run build
