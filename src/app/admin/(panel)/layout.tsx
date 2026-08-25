@@ -13,6 +13,7 @@ const navItems = [
   { href: "/admin/showtimes", label: "Suất chiếu", icon: "🕐" },
   { href: "/admin/bookings", label: "Đặt vé", icon: "🎫" },
   { href: "/admin/promotions", label: "Khuyến mãi", icon: "🎁" },
+  { href: "/admin/security", label: "Bảo mật 2FA", icon: "🛡️" },
 ];
 
 export default function AdminLayout({
