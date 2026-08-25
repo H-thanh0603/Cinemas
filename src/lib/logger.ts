@@ -41,5 +41,26 @@ export const logger = {
       m.error = String(err);
     }
     console.error(render("error", msg, m));
+
+    // Forward lên Sentry khi được cấu hình (xem src/lib/sentry.ts).
+    // Dynamic import để bundle không load SDK khi DSN chưa set.
+    if (process.env.SENTRY_DSN ?? process.env.NEXT_PUBLIC_SENTRY_DSN) {
+      import("@sentry/nextjs")
+        .then((Sentry) => {
+          const scopeMeta: Record<string, unknown> = { ...meta, rid: m.rid };
+          if (err instanceof Error) {
+            Sentry.captureException(err, { extra: { message: msg, ...scopeMeta } });
+          } else if (err !== undefined) {
+            Sentry.captureException(new Error(`${msg}: ${String(err)}`), {
+              extra: scopeMeta,
+            });
+          } else {
+            Sentry.captureMessage(msg, { extra: scopeMeta, level: "error" });
+          }
+        })
+        .catch(() => {
+          /* Sentry không khả dụng — đã có console.error ở trên */
+        });
+    }
   },
 };

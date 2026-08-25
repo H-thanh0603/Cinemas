@@ -21,31 +21,14 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     const production = process.env.NODE_ENV === "production";
-    const csp = [
-      "default-src 'self'",
-      // Next.js App Router injects inline bootstrap/flight scripts
-      // (self.__next_f) that MUST run for hydration. Until we migrate to
-      // nonce-based CSP, 'unsafe-inline' is required on script-src in
-      // production too; without it React never hydrates and the page
-      // flashes SSR content then goes blank with "Connection closed".
-      // keep 'unsafe-eval' in dev for webpack Fast Refresh/HMR.
-      // TODO: Migrate to nonce-based CSP (requires custom Document)
-      "script-src 'self' 'unsafe-inline' https://js.stripe.com https://accounts.google.com",
-      "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: blob: https://placehold.co https://images.unsplash.com https://image.tmdb.org",
-      "connect-src 'self' https://api.stripe.com https://accounts.google.com",
-      "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://accounts.google.com",
-      "object-src 'none'",
-      "base-uri 'self'",
-      "form-action 'self'",
-      "frame-ancestors 'none'",
-      ...(production ? ["upgrade-insecure-requests"] : []),
-    ].filter(Boolean).join("; ");
     return [
       {
         source: "/(.*)",
         headers: [
-          { key: "Content-Security-Policy", value: csp },
+          // Content-Security-Policy đã chuyển sang middleware (nonce-based,
+          // xem src/lib/csp.ts) vì nonce là giá trị theo từng request — không
+          // thể khai báo tĩnh ở đây. KHÔNG đặt thêm CSP ở đây: hai header CSP
+          // sẽ bị trình duyệt giao hoán và làm vô hiệu nonce.
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "X-Frame-Options", value: "DENY" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },

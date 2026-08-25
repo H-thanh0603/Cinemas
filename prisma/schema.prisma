@@ -16,6 +16,11 @@ model User {
   phone               String?
   passwordHash        String?
   role                String               @default("CUSTOMER") // CUSTOMER | ADMIN
+  // 2FA (TOTP) — chỉ dùng cho tài khoản ADMIN.
+  // Secret Base32; có secret nhưng twoFactorEnabled=false nghĩa là đang chờ
+  // xác nhận mã đầu tiên (pending setup).
+  twoFactorSecret     String?
+  twoFactorEnabled    Boolean              @default(false)
   createdAt           DateTime             @default(now())
   bookings            Booking[]
   passwordResetTokens PasswordResetToken[]

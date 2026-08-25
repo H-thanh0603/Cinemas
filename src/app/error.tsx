@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+
 export default function ErrorPage({
   error,
   reset,
@@ -7,6 +9,14 @@ export default function ErrorPage({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  // Forward lỗi render client lên Sentry (no-op khi chưa set DSN).
+  useEffect(() => {
+    if (!(process.env.NEXT_PUBLIC_SENTRY_DSN)) return;
+    import("@sentry/nextjs").then((Sentry) =>
+      Sentry.captureException(error, { extra: { digest: error.digest } })
+    );
+  }, [error]);
+
   return (
     <div className="mx-auto flex max-w-7xl flex-col items-center px-4 py-24 text-center sm:px-6">
       <span className="text-6xl">⚠️</span>
