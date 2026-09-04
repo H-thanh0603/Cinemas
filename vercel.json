@@ -3,7 +3,7 @@
   "crons": [
     {
       "path": "/api/cron/expire-bookings",
-      "schedule": "0 3 * * *"
+      "schedule": "*/2 * * * *"
     },
     {
       "path": "/api/cron/reconcile-payments",
