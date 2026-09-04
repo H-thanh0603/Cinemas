@@ -434,6 +434,13 @@ export function getRequestIp(headers: Headers): string {
 
 ### [SEC-007] CSP allows `unsafe-inline` for scripts
 
+> **✅ ĐÃ XỬ LÝ (nonce-based CSP / strict CSP):** middleware (`src/middleware.ts`)
+> sinh một nonce mỗi request và đặt header CSP lên cả request lẫn response;
+> Next.js App Router đọc header CSP của request để tự gắn nonce vào toàn bộ
+> `<script>` bootstrap. script-src giờ là `'self' 'nonce-…' 'strict-dynamic'`
+> (thêm `'unsafe-eval'` chỉ trong dev cho HMR) — không còn `'unsafe-inline'`
+> cho script ở cả dev lẫn production. Builder: `src/lib/csp.ts`.
+
 **Severity:** Medium
 **Confidence:** High
 **Area:** HTTP Security Headers

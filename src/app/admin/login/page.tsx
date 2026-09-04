@@ -14,6 +14,10 @@ function AdminLoginForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  // Bước 2 của đăng nhập admin có 2FA: server trả code "TOTP_REQUIRED"
+  // khi mật khẩu đúng nhưng thiếu mã → hiện ô nhập mã xác thực.
+  const [awaiting2fa, setAwaiting2fa] = useState(false);
+  const [totpCode, setTotpCode] = useState("");
   const [error, setError] = useState(
     notAdmin
       ? "Tài khoản hiện tại không có quyền quản trị. Đăng nhập bằng tài khoản ADMIN."
@@ -29,21 +33,33 @@ function AdminLoginForm() {
     // Clear previous session so we don't mix customer + admin
     await signOut({ redirect: false });
 
-    const res = await signIn("credentials", {
+    const res = (await signIn("credentials", {
       email: email.trim().toLowerCase(),
       password,
+      ...(awaiting2fa ? { totpCode } : {}),
       redirect: false,
-    });
+    })) as { error?: string; code?: string } | undefined;
 
     if (res?.error) {
-      setError(
-        res.error === "CredentialsSignin"
-          ? "Email hoặc mật khẩu không đúng"
-          : "Không thể đăng nhập — kiểm tra database đang chạy (Docker Postgres)"
-      );
+      if (res.code === "TOTP_REQUIRED") {
+        setAwaiting2fa(true);
+        setError(
+          "Mật khẩu đúng. Tài khoản đã bật 2FA — hãy nhập mã 6 số từ ứng dụng authenticator."
+        );
+      } else {
+        setError(
+          awaiting2fa
+            ? "Email, mật khẩu hoặc mã 2FA không đúng"
+            : res.error === "CredentialsSignin"
+              ? "Email hoặc mật khẩu không đúng"
+              : "Không thể đăng nhập — kiểm tra database đang chạy (Docker Postgres)"
+        );
+      }
       setLoading(false);
       return;
     }
+
+    setAwaiting2fa(false);
 
     // Verify ADMIN role via session endpoint
     const sessionRes = await fetch("/api/auth/session");
@@ -122,6 +138,36 @@ function AdminLoginForm() {
             />
           </div>
 
+          {awaiting2fa && (
+            <div>
+              <label
+                htmlFor="admin-totp"
+                className="mb-1.5 block text-sm font-medium"
+              >
+                Mã xác thực 2 lớp (2FA)
+              </label>
+              <input
+                id="admin-totp"
+                type="text"
+                inputMode="numeric"
+                pattern="\d{6}"
+                maxLength={6}
+                autoComplete="one-time-code"
+                autoFocus
+                value={totpCode}
+                onChange={(e) =>
+                  setTotpCode(e.target.value.replace(/\D/g, "").slice(0, 6))
+                }
+                className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-center text-lg font-bold tracking-[0.4em] outline-none ring-primary/40 focus:ring-2"
+                placeholder="000000"
+                required
+              />
+              <p className="mt-1.5 text-xs text-muted">
+                Mở ứng dụng authenticator (Google Authenticator, Authy…) để lấy mã.
+              </p>
+            </div>
+          )}
+
           {error && (
             <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-400">
               {error}
@@ -130,7 +176,12 @@ function AdminLoginForm() {
 
           <button
             type="submit"
-            disabled={loading || !password || !email}
+            disabled={
+              loading ||
+              !password ||
+              !email ||
+              (awaiting2fa && totpCode.length !== 6)
+            }
             className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-on-primary transition hover:brightness-110 disabled:opacity-50"
           >
             {loading ? "Đang đăng nhập…" : "Đăng nhập quản trị"}

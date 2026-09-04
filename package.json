@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "postinstall": "prisma generate",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -25,6 +26,8 @@
     "test:stripe-payment": "tsx scripts/test-stripe-payment.ts",
     "test:payment-fulfillment": "tsx scripts/test-payment-fulfillment.ts",
     "test:admin-auth": "tsx scripts/test-admin-auth.ts",
+    "test:admin-2fa": "tsx scripts/test-admin-2fa.ts",
+    "test:admin-2fa-http": "tsx scripts/test-admin-2fa-http.ts",
     "test:admin-routes": "tsx scripts/test-admin-routes.ts",
     "test:admin-validation": "tsx scripts/test-admin-validation.ts",
     "test:rate-limit": "tsx scripts/test-rate-limit.ts",
