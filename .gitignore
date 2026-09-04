@@ -50,3 +50,6 @@ config/
 .pgsock/
 .npm-cache/
 .npm-log/
+
+# supabase CLI local cache
+supabase/.temp/
