@@ -1,42 +1,15 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
 /**
  * Mark PENDING bookings past expiresAt as EXPIRED and release seat locks.
- * Called by cron job (every 1-2 min) and server actions.
+ * Bulk SQL (no per-booking loop) — safe under concurrency: UPDATE ... WHERE
+ * status='PENDING' guards against double-expire; locks released only for
+ * bookings this transaction actually flipped.
  */
 export async function expirePendingBookings(): Promise<number> {
-  const now = new Date();
-
-  return prisma.$transaction(async (tx) => {
-    const candidates = await tx.booking.findMany({
-      where: {
-        status: "PENDING",
-        expiresAt: { lt: now },
-      },
-      select: { id: true },
-    });
-
-    let expiredCount = 0;
-    for (const { id } of candidates) {
-      const expired = await tx.booking.updateMany({
-        where: { id, status: "PENDING", expiresAt: { lt: now } },
-        data: { status: "EXPIRED" },
-      });
-      if (expired.count === 0) continue;
-
-      await tx.showtimeSeatLock.deleteMany({ where: { bookingId: id } });
-      await tx.payment.updateMany({
-        where: {
-          bookingId: id,
-          status: { in: ["UNPAID", "PROCESSING"] },
-        },
-        data: { status: "FAILED", lastError: "booking_expired" },
-      });
-      expiredCount++;
-    }
-
-    return expiredCount;
-  });
+  const { expiredCount } = await expirePendingBookingsBatch();
+  return expiredCount;
 }
 
 /**
@@ -59,33 +32,29 @@ export async function expirePendingBookingsBatch(): Promise<{
   const now = new Date();
 
   return prisma.$transaction(async (tx) => {
-    const candidates = await tx.booking.findMany({
+    // Flip PENDING→EXPIRED in one statement; RETURNING ids so we only touch
+    // locks/payments of bookings this call won (race-safe vs concurrent runs).
+    const expired = await tx.$queryRaw<{ id: string }[]>(Prisma.sql`
+      UPDATE "Booking"
+      SET "status" = 'EXPIRED'
+      WHERE "status" = 'PENDING' AND "expiresAt" < ${now}
+      RETURNING "id"
+    `);
+
+    if (expired.length === 0) return { expiredCount: 0 };
+    const ids = expired.map((r) => r.id);
+
+    await tx.showtimeSeatLock.deleteMany({
+      where: { bookingId: { in: ids } },
+    });
+    await tx.payment.updateMany({
       where: {
-        status: "PENDING",
-        expiresAt: { lt: now },
+        bookingId: { in: ids },
+        status: { in: ["UNPAID", "PROCESSING"] },
       },
-      select: { id: true },
+      data: { status: "FAILED", lastError: "booking_expired" },
     });
 
-    let expiredCount = 0;
-    for (const { id } of candidates) {
-      const expired = await tx.booking.updateMany({
-        where: { id, status: "PENDING", expiresAt: { lt: now } },
-        data: { status: "EXPIRED" },
-      });
-      if (expired.count === 0) continue;
-
-      await tx.showtimeSeatLock.deleteMany({ where: { bookingId: id } });
-      await tx.payment.updateMany({
-        where: {
-          bookingId: id,
-          status: { in: ["UNPAID", "PROCESSING"] },
-        },
-        data: { status: "FAILED", lastError: "booking_expired" },
-      });
-      expiredCount++;
-    }
-
-    return { expiredCount };
+    return { expiredCount: ids.length };
   });
 }
