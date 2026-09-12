@@ -53,3 +53,7 @@ config/
 
 # supabase CLI local cache
 supabase/.temp/
+backups/
+.npm-cache-tmp/
+.vercel-home/
+.vercel-cache-tmp/

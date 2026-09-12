@@ -62,11 +62,23 @@ jobs:
 
       - name: Seed
         run: npx prisma db seed
+        env:
+          SEED_FORCE_WIPE: "true"
 
       - name: Unit self-checks (seat scoring, dynamic pricing)
         run: |
           npx tsx scripts/test-seat-scoring.ts
           npx tsx scripts/test-dynamic-pricing.ts
+
+      - name: Middleware auth regression (HTTPS __Secure- cookie)
+        run: npx tsx scripts/test-middleware-auth.ts
+
+      - name: Integration tests (booking, concurrency, expiry, schedule)
+        run: |
+          npx tsx scripts/test-booking.ts
+          npx tsx scripts/test-booking-concurrency.ts
+          npx tsx scripts/test-future-showtimes.ts
+          npx tsx scripts/test-showtime-schedule.ts
 
       - name: Build
         run: npm run build

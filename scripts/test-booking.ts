@@ -5,6 +5,7 @@ import {
   validatePromotion,
 } from "../src/app/booking/actions";
 import { SANDBOX_CARD_FAIL, SANDBOX_CARD_SUCCESS } from "../src/lib/payment-sandbox";
+import { effectiveBasePrice } from "../src/lib/booking-pricing";
 
 const prisma = new PrismaClient();
 process.env.ENABLE_PAYMENT_SANDBOX = "true";
@@ -93,9 +94,12 @@ async function main() {
     check("payment PAID", b2?.payment?.status === "PAID");
     check("sandboxTxnId set", !!b2?.payment?.sandboxTxnId);
 
+    // Dynamic pricing: cuối tuần ×1.2 / tối ×1.1 — phải tính qua
+    // effectiveBasePrice (trùng logic app) chứ không dùng giá gốc.
+    const effBase = effectiveBasePrice(showtime.basePrice, showtime.startsAt);
     const expectSeats =
-      Math.max(0, showtime.basePrice + surcharge(freeSeats[0].type) + adult.priceModifier) +
-      Math.max(0, showtime.basePrice + surcharge(freeSeats[1].type) + student.priceModifier);
+      Math.max(0, effBase + surcharge(freeSeats[0].type) + adult.priceModifier) +
+      Math.max(0, effBase + surcharge(freeSeats[1].type) + student.priceModifier);
     check("seatsTotal computed correctly", b?.seatsTotal === expectSeats);
   }
 

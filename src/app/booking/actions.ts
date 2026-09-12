@@ -441,22 +441,24 @@ export async function completeSandboxPayment(
     return { ok: false, error: "Hết thời gian giữ ghế" };
   }
 
-  const { runSandboxPayment } = await import("@/lib/payment-sandbox");
+  const { runSandboxPayment, SANDBOX_CARD_FAIL } = await import(
+    "@/lib/payment-sandbox"
+  );
+  // Card fail (kết thúc 0002) phải fail kể cả khi caller quên truyền
+  // outcome — map sang "fail" để nhất quán với mọi method.
+  const digits = (input.cardNumber ?? "").replace(/\D/g, "");
+  const cardIsFail = digits === SANDBOX_CARD_FAIL || digits.endsWith("0002");
   const pay = runSandboxPayment({
     method: "E_WALLET",
     cardNumber: input.cardNumber,
-    outcome: input.outcome ?? "success",
+    outcome: cardIsFail ? "fail" : input.outcome ?? "success",
   });
 
   if (!pay.ok) {
-    await prisma.payment.updateMany({
-      where: {
-        id: booking.payment.id,
-        bookingId: booking.id,
-        status: "UNPAID",
-      },
-      data: { status: "FAILED" },
-    });
+    // KHÔNG đánh dấu FAILED — payment vẫn UNPAID để khách được thử lại
+    // bằng thẻ khác trong thời gian giữ ghế. FAILED chỉ khi booking EXPIRED
+    // (expirePendingBookings đã xử lý phần đó). Trước đây set FAILED khiến
+    // retry sau card fail bị throw PAYMENT_STATE_CHANGED.
     return { ok: false, error: pay.error };
   }
 

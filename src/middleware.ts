@@ -41,9 +41,24 @@ export async function middleware(req: NextRequest) {
     return resp;
   }
 
+  // Production chạy HTTPS nên NextAuth đặt cookie có prefix __Secure-.
+  // getToken() mặc định tìm cookie "authjs.session-token" (không prefix)
+  // và salt = cookieName khi derive key giải mã JWE — sai tên cookie thì
+  // session hợp lệ vẫn bị đọc là null → admin bị đá về login (bug này
+  // không hiện trên local HTTP vì cookie không có prefix).
+  // Fix: truyền đúng secureCookie theo scheme request + salt/cookieName khớp.
+  const secureCookie =
+    req.nextUrl.protocol === "https:" ||
+    req.headers.get("x-forwarded-proto") === "https";
+  const sessionCookieName = secureCookie
+    ? "__Secure-authjs.session-token"
+    : "authjs.session-token";
   const token = await getToken({
     req,
     secret: process.env.AUTH_SECRET,
+    secureCookie,
+    salt: sessionCookieName,
+    cookieName: sessionCookieName,
   });
   const isAdmin = token?.role === "ADMIN";
 

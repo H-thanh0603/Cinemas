@@ -30,6 +30,18 @@ async function main() {
     );
   }
 
+  // Guard chống mất dữ liệu thật: seed XÓA SẠCH toàn bộ bảng trước khi ghi.
+  // Nếu DB đang có booking/showtime (tức đã vận hành) thì yêu cầu gỡ cờ
+  // tường minh — tránh ai `npm run db:seed` nhầm vào DB production/develop
+  // có dữ liệu thật. Muốn seed lại từ đầu: SEED_FORCE_WIPE=true.
+  const hasRealData = await prisma.booking.count();
+  if (hasRealData > 0 && process.env.SEED_FORCE_WIPE !== "true") {
+    throw new Error(
+      `DB đang có ${hasRealData} booking — seed sẽ xóa toàn bộ dữ liệu. ` +
+        `Chạy lại với SEED_FORCE_WIPE=true nếu chắc chắn muốn wipe.`
+    );
+  }
+
   console.log("🧹 Clearing existing data...");
   await prisma.payment.deleteMany();
   await prisma.bookingCombo.deleteMany();
