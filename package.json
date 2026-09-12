@@ -80,5 +80,13 @@
   "overrides": {
     "postcss": "^8.4.44",
     "sharp": "^0.35.3"
+  },
+  "allowScripts": {
+    "@prisma/client": true,
+    "@prisma/engines": true,
+    "@sentry/cli": true,
+    "esbuild": true,
+    "prisma": true,
+    "unrs-resolver": true
   }
 }
