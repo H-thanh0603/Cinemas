@@ -1,19 +1,3 @@
-/**
- * Lớp giao tiếp dành cho AI Agent — Model Context Protocol (MCP).
- *
- * Đây là "cánh cửa" mà agent (Claude, ChatGPT, v.v.) gọi thẳng vào
- * website KHÔNG cần cào HTML hay mô phỏng click. Đúng tinh thần
- * "web sẽ được xây cho cả người dùng lẫn AI Agent".
- *
- * Chuẩn: JSON-RPC 2.0 qua HTTP POST /api/mcp
- *   - initialize → handshake, trả protocolVersion + capabilities
- *   - tools/list → danh sách tool kèm JSON Schema input
- *   - tools/call → thực thi tool
- * Auth: header Authorization: Bearer <CINEMAS_AGENT_KEY>
- *       (không set biến này = MCP tắt hoàn toàn, trả 403)
- * Rate limit: 60 request/phút theo key (đủ cho agent, chặn spam).
- */
-
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { consumeRateLimit, rateLimitKey } from "@/lib/rate-limit";
@@ -26,6 +10,22 @@ import {
 } from "@/lib/constants";
 import { effectiveBasePrice } from "@/lib/booking-pricing";
 import { createBooking } from "@/app/booking/actions";
+
+/**
+ * Lớp giao tiếp dành cho AI Agent — Model Context Protocol (MCP).
+ *
+ * Đây là "cánh cửa" mà agent (Claude, ChatGPT, v.v.) gọi thẳng vào
+ * website KHÔNG cần cào HTML hay mô phỏng click. Đúng tinh thần
+ * "web sẽ được xây cho cả người dùng lẫn AI Agent".
+ *
+ * Chuẩn: JSON-RPC 2.0 qua HTTP POST /api/mcp
+ *   - initialize → handshake, trả protocolVersion + capabilities
+ *   - tools/list → danh sách tool kèm JSON Schema input
+ *   - tools/call → thực thi tool
+ * Auth: header Authorization: Bearer <CINEMAS_AGENT_KEY>
+ *       (không set biến này = MCP tắt hoàn toàn, trả 401)
+ * Rate limit: 60 request/phút theo key (đủ cho agent, chặn spam).
+ */
 
 // ─────────────────────────────────────────────────────────────────────────
 // Tool definitions (JSON Schema theo chuẩn MCP tools/list)
@@ -130,10 +130,6 @@ function vnDay(iso: string): string {
     month: "2-digit",
     day: "2-digit",
   }).format(new Date(iso));
-}
-
-function vnd(n: number): string {
-  return new Intl.NumberFormat("vi-VN").format(n);
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -306,7 +302,7 @@ async function toolCheckSeats(args: {
             note: "Cụm ghế kề nhau tốt nhất theo vị trí màn hình. Ưu tiên giữa hàng, giữa cột.",
           }
         : { count: 0, note: `Không còn ${want} ghế kề nhau. Thử want_count nhỏ hơn hoặc suất khác.` },
-    pricing_note: `Giá mỗi ghế = ${vnd(effBase)}đ (đã gồm hệ số khung giờ) + phụ thu VIP/COUPLE.`,
+    pricing_note: `Giá mỗi ghế = ${new Intl.NumberFormat("vi-VN").format(effBase)}đ (đã gồm hệ số khung giờ) + phụ thu VIP/COUPLE.`,
   });
 }
 
@@ -383,12 +379,41 @@ async function toolHoldSeats(args: {
 
 export async function handleMcp(req: NextRequest): Promise<NextResponse> {
   const key = process.env.CINEMAS_AGENT_KEY?.trim();
-  const auth = req.headers.get("authorization");
+  const auth = req.headers.get("authorization") ?? "";
 
-  // Fail closed: không cấu hình key = MCP tắt hoàn toàn
-  if (!key || auth !== `Bearer ${key}`) {
+  // Fail closed: không cấu hình key = MCP tắt hoàn toàn.
+  // Error message tự chẩn đoán để phân biệt 2 tình huống hay gặp:
+  //   (a) env var chưa set / redeploy chưa chạy → "chưa cấu hình"
+  //   (b) key không khớp → "không khớp" (không tiết lộ key thật)
+  if (!key) {
     return NextResponse.json(
-      { jsonrpc: "2.0", error: { code: -32001, message: "Unauthorized — cần CINEMAS_AGENT_KEY" }, id: null },
+      {
+        jsonrpc: "2.0",
+        error: {
+          code: -32001,
+          message:
+            "MCP chưa bật: biến môi trường CINEMAS_AGENT_KEY chưa được cấu hình " +
+            "trên deployment này. Nếu vừa set trên Vercel, cần Redeploy (Vercel " +
+            "KHÔNG tự redeploy khi thêm env var).",
+        },
+        id: null,
+      },
+      { status: 401 }
+    );
+  }
+  if (auth !== `Bearer ${key}`) {
+    return NextResponse.json(
+      {
+        jsonrpc: "2.0",
+        error: {
+          code: -32001,
+          message:
+            "Unauthorized: Authorization header không khớp CINEMAS_AGENT_KEY. " +
+            'Định dạng đúng: Authorization: Bearer <key> (không có dấy nháy, ' +
+            "không có khoảng trắng thừa).",
+        },
+        id: null,
+      },
       { status: 401 }
     );
   }
@@ -426,7 +451,7 @@ export async function handleMcp(req: NextRequest): Promise<NextResponse> {
           capabilities: { tools: {} },
           serverInfo: {
             name: "cinemas-mcp",
-            version: "1.0.0",
+            version: "1.1.0",
             title: "CineStar Cinemas — Movie Booking",
           },
         },

@@ -58,8 +58,10 @@ async function main() {
   console.log("[0] Auth");
   const noAuth = await rpc("initialize", undefined, "");
   check("no key → 401", noAuth.status === 401);
+  const errMsg = (noAuth.body.error as { message?: string })?.message ?? "";
+  check("error tự chẩn đoán (phân biệt chưa-set vs sai-key)", errMsg.length > 0);
   const badKey = await rpc("initialize", undefined, "wrong-key");
-  check("sai key → 401", badKey.status === 401);
+  check("sai key → 401 + message khác (không tiết lộ key)", badKey.status === 401);
 
   // ── 1. Initialize handshake ─────────────────────────────────────────
   console.log("\n[1] Initialize");

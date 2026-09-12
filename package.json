@@ -37,9 +37,6 @@
     "loadtest:100": "docker run --rm -e BASE_URL=http://host.docker.internal:3000 -e LOADTEST_SECRET=loadtest-dev-secret -e VUS=100 -e DURATION=30s -e BOOK_RATIO=0.1 -v \"%cd%/scripts/k6/mixed.js:/scripts/test.js:ro\" grafana/k6:0.54.0 run /scripts/test.js",
     "build:start": "next build && next start"
   },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
-  },
   "dependencies": {
     "@prisma/client": "^6.2.1",
     "@sentry/nextjs": "^10.71.0",

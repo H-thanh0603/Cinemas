@@ -3,10 +3,15 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { buildContentSecurityPolicy } from "@/lib/csp";
 
-export async function middleware(req: NextRequest) {
+/**
+ * Proxy (Next.js 16 đổi tên convention "middleware" → "proxy").
+ * Chạy trên mọi route trừ tài nguyên tĩnh; gắn CSP nonce + bảo vệ /admin.
+ * Bug fix 2026-09-12: __Secure- cookie HTTPS — xem comment bên dưới.
+ */
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Gắn request-id để nối log từng request (middleware → route → error).
+  // Gắn request-id để nối log từng request (proxy → route → error).
   const requestId = req.headers.get("x-request-id") ?? crypto.randomUUID();
 
   // ─── Nonce-based CSP (strict CSP) ──────────────────────────────────────
