@@ -80,5 +80,21 @@ jobs:
           npx tsx scripts/test-future-showtimes.ts
           npx tsx scripts/test-showtime-schedule.ts
 
+      - name: Timezone-safety regression (naive-UTC vs session TZ)
+        run: npx tsx scripts/test-timezone-safety.ts
+
+      - name: MCP agent endpoint (dev server + JSON-RPC)
+        run: |
+          # Start dev server với MCP key + DB CI
+          CINEMAS_AGENT_KEY=ci-mcp-key npx next dev -p 3100 &
+          DEV_PID=$!
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:3100/api/health >/dev/null 2>&1 && break
+            sleep 1
+          done
+          BASE_URL=http://localhost:3100 AGENT_KEY=ci-mcp-key \
+            npx tsx scripts/test-mcp.ts
+          kill $DEV_PID
+
       - name: Build
         run: npm run build

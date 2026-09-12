@@ -57,3 +57,5 @@ backups/
 .npm-cache-tmp/
 .vercel-home/
 .vercel-cache-tmp/
+ADMIN-CREDENTIALS-LOCAL.txt
+admin-cred.json

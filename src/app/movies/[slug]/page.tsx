@@ -37,9 +37,31 @@ export default async function MovieDetailPage({
 
   if (!movie) notFound();
 
+  // JSON-LD schema.org — Movie schema cho cả Google lẫn AI agent
+  // hiểu cấu trúc dữ liệu phim (lớp "web xây cho cả người lẫn AI đọc").
+  const appUrl = process.env.APP_URL ?? "https://cinemas-khaki.vercel.app";
+  const movieJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Movie",
+    name: movie.title,
+    description: movie.description,
+    image: movie.posterUrl,
+    genre: movie.genres.map((g) => g.genre.name),
+    director: { "@type": "Person", name: movie.director },
+    duration: `PT${movie.durationMin}M`,
+    datePublished: movie.releaseDate.toISOString(),
+    actor: movie.cast
+      .split(",")
+      .map((n) => ({ "@type": "Person", name: n.trim() })),
+    url: `${appUrl}/movies/${movie.slug}`,
+  };
 
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(movieJsonLd) }}
+      />
       {/* Breadcrumbs */}
       <div className="mx-auto max-w-7xl px-4 pt-4 sm:px-6">
         <Breadcrumbs items={[

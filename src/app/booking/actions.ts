@@ -267,14 +267,16 @@ export async function createBooking(
       }
 
       if (promotionId) {
-        const promotionNow = new Date();
+        // TIMEZONE-SAFETY: naive-UTC cột so timestamptz — ép cùng múi giờ
+        // (xem booking-expire.ts) để không lệch theo session timezone.
+        const promotionNowNutc = Prisma.sql`(${new Date()} AT TIME ZONE 'UTC')`;
         const claimed = await tx.$queryRaw<{ id: string }[]>(Prisma.sql`
           UPDATE "Promotion"
           SET "usedCount" = "usedCount" + 1
           WHERE "id" = ${promotionId}
             AND "isActive" = true
-            AND "startsAt" <= ${promotionNow}
-            AND "expiresAt" >= ${promotionNow}
+            AND "startsAt" <= ${promotionNowNutc}
+            AND "expiresAt" >= ${promotionNowNutc}
             AND ("usageLimit" IS NULL OR "usedCount" < "usageLimit")
           RETURNING "id"
         `);

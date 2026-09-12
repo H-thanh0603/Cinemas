@@ -86,6 +86,10 @@ async function consumeRateLimitPostgres(
 ): Promise<RateLimitDecision> {
   const windowStart = now;
   const expiresAt = new Date(now.getTime() + windowMs);
+  // TIMEZONE-SAFETY: cột naive-UTC so với timestamptz phải ép cùng múi giờ
+  // (xem booking-expire.ts). Không ép → session TZ +07 đọc bucket "đã hết
+  // hạn từ 7 tiếng trước" → reset count mỗi request → rate limit vô hiệu.
+  const nowNutc = Prisma.sql`(${now} AT TIME ZONE 'UTC')`;
   const rows = await prisma.$queryRaw<{ count: number; expiresAt: Date }[]>(
     Prisma.sql`
       INSERT INTO "RateLimitBucket" ("key", "count", "windowStart", "expiresAt")
@@ -93,15 +97,15 @@ async function consumeRateLimitPostgres(
       ON CONFLICT ("key") DO UPDATE
       SET
         "count" = CASE
-          WHEN "RateLimitBucket"."expiresAt" <= ${now} THEN 1
+          WHEN "RateLimitBucket"."expiresAt" <= ${nowNutc} THEN 1
           ELSE "RateLimitBucket"."count" + 1
         END,
         "windowStart" = CASE
-          WHEN "RateLimitBucket"."expiresAt" <= ${now} THEN ${windowStart}
+          WHEN "RateLimitBucket"."expiresAt" <= ${nowNutc} THEN ${windowStart}
           ELSE "RateLimitBucket"."windowStart"
         END,
         "expiresAt" = CASE
-          WHEN "RateLimitBucket"."expiresAt" <= ${now} THEN ${expiresAt}
+          WHEN "RateLimitBucket"."expiresAt" <= ${nowNutc} THEN ${expiresAt}
           ELSE "RateLimitBucket"."expiresAt"
         END
       RETURNING "count", "expiresAt"

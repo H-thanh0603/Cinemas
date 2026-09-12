@@ -34,10 +34,17 @@ export async function expirePendingBookingsBatch(): Promise<{
   return prisma.$transaction(async (tx) => {
     // Flip PENDING→EXPIRED in one statement; RETURNING ids so we only touch
     // locks/payments of bookings this call won (race-safe vs concurrent runs).
+    //
+    // TIMEZONE-SAFETY: cột "expiresAt" là timestamp NAIVE ghi theo UTC wall
+    // (Prisma DateTime → timestamp without timezone). new Date() gửi qua
+    // driver là timestamptz. So sánh trực tiếp naive < timestamptz khiến
+    // Postgres diễn giải naive theo SESSION timezone — lệch cả tiếng khi
+    // server để TZ khác UTC (vd local dev +07). Ép so sánh cùng múi giờ:
+    // naive-UTC (cột) so với naive-UTC (now AT TIME ZONE 'UTC').
     const expired = await tx.$queryRaw<{ id: string }[]>(Prisma.sql`
       UPDATE "Booking"
       SET "status" = 'EXPIRED'
-      WHERE "status" = 'PENDING' AND "expiresAt" < ${now}
+      WHERE "status" = 'PENDING' AND "expiresAt" < (${now} AT TIME ZONE 'UTC')
       RETURNING "id"
     `);
 
