@@ -344,7 +344,9 @@ export async function createBooking(
           })),
         });
       } catch {
-        throw new Error("SEAT_TAKEN:ghế vừa bị người khác giữ");
+        // "ghế vừa bị..." không kèm tên vì nhánh này là race insert-thất-bại
+        // (unique constraint trúng giữa chừng) — names không xác định được.
+        throw new Error("SEAT_TAKEN:");
       }
 
       return booking;
@@ -362,9 +364,14 @@ export async function createBooking(
   } catch (e) {
     if (e instanceof Error && e.message.startsWith("SEAT_TAKEN:")) {
       const names = e.message.slice("SEAT_TAKEN:".length);
+      // names rỗng = race-insert thất bại (unique constraint trúng giữa
+      // chừng) — không biết ghế nào, dùng câu chung.
+      const seatPart = names
+        ? `Ghế ${names} vừa được người khác đặt/giữ.`
+        : "Ghế vừa bị người khác giữ.";
       return {
         ok: false,
-        error: `Ghế ${names} vừa được người khác đặt. Vui lòng chọn ghế khác.`,
+        error: `${seatPart} Vui lòng chọn ghế khác.`,
       };
     }
     if (e instanceof Error && e.message === "PROMO_TAKEN") {
